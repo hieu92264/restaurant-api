@@ -11,50 +11,44 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): JsonResponse
     {
-        $data = User::latest()->get();
+        $users = User::query()
+            ->with('role')
+            ->get();
 
-        return $this->success($data);
+        return $this->success($users);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreUserRequest $request)
+    public function store(StoreUserRequest $request): JsonResponse
     {
-        $data = User::create($request->validated());
-        return $this->success($data, 'Tạo tài khoản thành công!', Response::HTTP_CREATED);
+        $user = User::create($request->validated());
+
+        return $this->success(
+            $user->load('role'),
+            'Tạo tài khoản thành công.',
+            Response::HTTP_CREATED
+        );
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
+    public function show(User $user): JsonResponse
     {
-        //
+        return $this->success($user->load('role'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id): JsonResponse
+    public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        $user = User::findOrFail($id);
-        $user->update(['is_active' => 'N']);
-        return $this->success(null, 'Xóa tài khoản thành công!');
+        $user->update($request->validated());
+
+        return $this->success($user->fresh()->load('role'), 'Cập nhật tài khoản thành công.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateUserRequest $request, string $id)
+    public function destroy(User $user): JsonResponse
     {
-        $user = User::findOrFail($id);
-        $data = $user->update($request->validated());
-        return $this->success($data, 'Cập nhật tài khoản thành công!', Response::HTTP_CREATED);
+        $user->update([
+            'is_active' => 'N',
+        ]);
+
+        return $this->success(null, 'Xoá tài khoản thành công.');
     }
 }
