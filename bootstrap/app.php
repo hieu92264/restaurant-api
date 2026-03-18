@@ -1,5 +1,6 @@
 <?php
 
+use App\Common\Traits\ApiResponse;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -8,11 +9,12 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__ . '/../routes/web.php',
-//        api: __DIR__.'/../routes/api.php',
+        //        api: __DIR__.'/../routes/api.php',
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
         then: function () {
@@ -57,31 +59,37 @@ return Application::configure(basePath: dirname(__DIR__))
                 default => $e->getMessage() ?: 'Server Error',
             };
 
-            $payload = [
-                'success' => false,
-                'message' => $message,
-                'errors' => null,
-                'meta' => [
-                    'status_code' => $statusCode,
-                    'path' => $request->path(),
-                    'timestamp' => now()->toISOString(),
-                ],
-            ];
+            $metadata = null;
+            $stack = null;
 
             if ($e instanceof ValidationException) {
-                $payload['errors'] = $e->errors();
+                $metadata = $e->errors();
             }
 
             if (app()->isLocal() || config('app.debug')) {
-                $payload['debug'] = [
+                $metadata ??= [
                     'exception' => get_class($e),
                     'message' => $e->getMessage(),
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
                 ];
+                $stack = $e->getTraceAsString();
             }
 
-            return response()->json($payload, $statusCode);
+            $apiResponse = new class {
+                use ApiResponse;
+
+                public function make(
+                    mixed $metadata,
+                    string $message,
+                    int $statusCode,
+                    ?string $stack
+                ): \Illuminate\Http\JsonResponse {
+                    return $this->apiResponse($metadata, $message, $statusCode, $stack);
+                }
+            };
+
+            return $apiResponse->make($metadata, $message, $statusCode, $stack);
         });
     })
     ->create();

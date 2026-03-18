@@ -2,12 +2,15 @@
 
 namespace App\Http\Middleware;
 
+use App\Common\Traits\ApiResponse;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckPermission
 {
+    use ApiResponse;
+
     /**
      * Handle an incoming request.
      *
@@ -16,16 +19,11 @@ class CheckPermission
     public function handle(Request $request, Closure $next, string $permissionCode): Response
     {
         if (!$request->user() || !$request->user()->hasPermission($permissionCode)) {
-            return response()->json([
-                'data' => null,
-                'message' => 'Forbidden',
-                'errors' => ['message' => 'Bạn không có quyền truy cập URL này.'],
-                'meta' => [
-                    'uri' => $request->fullUrl(),
-                    'timestamp' => now()->toDateTimeString(),
-                ],
-            ], Response::HTTP_FORBIDDEN);
+            return $this->error([
+                'message' => 'Ban khong co quyen truy cap URL nay.',
+            ], 'Forbidden', Response::HTTP_FORBIDDEN);
         }
+
         return $next($request);
     }
 }

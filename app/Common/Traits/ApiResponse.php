@@ -8,49 +8,57 @@ use Throwable;
 
 trait ApiResponse
 {
-    protected function success(mixed $data = null, string $message = 'Success', int $statusCode = Response::HTTP_OK): JsonResponse
-    {
-        return response()->json(
-            [
-                'data' => $data,
-                'message' => $message,
-                'meta' => [
-                    'uri' => request()->fullUrl(),
-                    'timestamp' => now()->toDateTimeString()
-                ]
-            ], $statusCode
-        );
+    protected function apiResponse(
+        mixed $metadata = null,
+        string $message = 'Success',
+        int $statusCode = Response::HTTP_OK,
+        ?string $stack = null
+    ): JsonResponse {
+        $payload = [
+            'message' => $message,
+            'statusCode' => $statusCode,
+            'metadata' => $metadata,
+            'path' => request()->getPathInfo(),
+            'timestamp' => now()->toISOString(),
+        ];
+
+        if ($stack !== null) {
+            $payload['stack'] = $stack;
+        }
+
+        return response()->json($payload, $statusCode);
+    }
+
+    protected function success(
+        mixed $data = null,
+        string $message = 'Success',
+        int $statusCode = Response::HTTP_OK
+    ): JsonResponse {
+        return $this->apiResponse($data, $message, $statusCode);
     }
 
     protected function error(
-        mixed  $data = null,
+        mixed $data = null,
         string $message = 'Error',
-        int    $statusCode = Response::HTTP_BAD_REQUEST
-    ): JsonResponse
-    {
-        $payload = [
-            'data' => null,
-            'message' => $message,
-            'errors' => null,
-            'meta' => [
-                'uri' => request()->fullUrl(),
-                'timestamp' => now()->toDateTimeString(),
-            ],
-        ];
+        int $statusCode = Response::HTTP_BAD_REQUEST
+    ): JsonResponse {
+        $metadata = null;
+        $stack = null;
 
         if ($data instanceof Throwable) {
-            $payload['errors'] = app()->isLocal() || config('app.debug')
-                ? [
+            if (app()->isLocal() || config('app.debug')) {
+                $metadata = [
                     'exception' => get_class($data),
                     'message' => $data->getMessage(),
                     'file' => $data->getFile(),
                     'line' => $data->getLine(),
-                ]
-                : ['message' => 'Internal Server Error'];
+                ];
+                $stack = $data->getTraceAsString();
+            }
         } else {
-            $payload['errors'] = $data;
+            $metadata = $data;
         }
 
-        return response()->json($payload, $statusCode);
+        return $this->apiResponse($metadata, $message, $statusCode, $stack);
     }
 }
