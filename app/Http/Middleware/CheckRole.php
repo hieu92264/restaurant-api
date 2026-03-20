@@ -23,13 +23,11 @@ class CheckRole
         $allowRoles = collect(explode(',', $allowPart))
             ->map(fn($role) => trim($role))
             ->filter()
-            ->values()
             ->toArray();
 
         $denyRoles = collect(explode(',', $denyPart))
             ->map(fn($role) => trim($role))
             ->filter()
-            ->values()
             ->toArray();
 
         $currentRole = $user->role?->code;

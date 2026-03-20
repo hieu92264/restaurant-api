@@ -49,22 +49,22 @@ class AuthController extends Controller
     {
         $user = auth('api')->user()->load([
             'role',
-//            'role.permissions' => function ($query) {
-//                $query->where('is_active', 'Y')
-//                    ->select(
-//                        'permissions.id',
-//                        'permissions.name',
-//                        'permissions.code',
-//                        'permissions.remark',
-//                        'permissions.url',
-//                        'permissions.parent_id'
-//                    )
-//                    ->orderBy('permissions.parent_id')
-//                    ->orderBy('permissions.id');
-//            },
+            //            'role.permissions' => function ($query) {
+            //                $query->where('is_active', 'Y')
+            //                    ->select(
+            //                        'permissions.id',
+            //                        'permissions.name',
+            //                        'permissions.code',
+            //                        'permissions.remark',
+            //                        'permissions.url',
+            //                        'permissions.parent_id'
+            //                    )
+            //                    ->orderBy('permissions.parent_id')
+            //                    ->orderBy('permissions.id');
+            //            },
         ]);
 
-//        $permissionTree = $this->buildPermissionTree($user->role?->permissions ?? collect());
+        //        $permissionTree = $this->buildPermissionTree($user->role?->permissions ?? collect());
 
         return $this->success([
             'id' => $user->id,
@@ -77,7 +77,7 @@ class AuthController extends Controller
                 'code' => $user->role?->code,
                 'remark' => $user->role?->remark,
             ],
-//            'permissions' => $permissionTree,
+            //            'permissions' => $permissionTree,
         ]);
     }
 
@@ -97,7 +97,6 @@ class AuthController extends Controller
                         'children' => $build($permission->id),
                     ];
                 })
-                ->values()
                 ->toArray();
         };
 
