@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
+use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class MenuCategory extends BaseModel
 {
-    public $timestamps = false;
-
     protected $fillable = [
         'parent_id',
         'item_type_id',

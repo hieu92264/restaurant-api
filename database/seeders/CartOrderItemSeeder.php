@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\OrderLineStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\OrderLineStatus;
 use App\Models\CartOrder;
 use App\Models\CartOrderItem;
 use App\Models\Combo;

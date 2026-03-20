@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
+use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TableArea extends BaseModel
 {
-    public $timestamps = false;
-
     protected $fillable = [
         'code',
         'name',

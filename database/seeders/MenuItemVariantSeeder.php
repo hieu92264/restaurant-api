@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\MenuItemStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\MenuItemStatus;
 use App\Models\MenuItem;
 use App\Models\MenuItemVariant;
 use Illuminate\Database\Seeder;

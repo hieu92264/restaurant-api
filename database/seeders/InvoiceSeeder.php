@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\InvoiceStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\InvoiceStatus;
 use App\Models\CartOrder;
 use App\Models\Invoice;
 use App\Models\RestaurantTable;

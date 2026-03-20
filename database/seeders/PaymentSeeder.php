@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\PaymentMethod;
-use App\Common\Enums\PaymentStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\PaymentMethod;
+use App\Common\Constants\PaymentStatus;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\User;

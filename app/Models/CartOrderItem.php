@@ -2,15 +2,13 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\OrderLineStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\OrderLineStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CartOrderItem extends BaseModel
 {
-    const UPDATED_AT = null;
-
     protected $fillable = [
         'cart_order_id',
         'menu_item_id',
@@ -42,6 +40,7 @@ class CartOrderItem extends BaseModel
             'line_total' => 'decimal:2',
             'line_status' => 'string',
             'created_at' => 'datetime',
+            'updated_at' => 'datetime',
             'is_active' => 'string',
         ];
     }

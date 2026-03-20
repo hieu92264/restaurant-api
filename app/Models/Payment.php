@@ -2,15 +2,13 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\PaymentMethod;
-use App\Common\Enums\PaymentStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\PaymentMethod;
+use App\Common\Constants\PaymentStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends BaseModel
 {
-    public $timestamps = false;
-
     protected $fillable = [
         'invoice_id',
         'method',
@@ -36,6 +34,8 @@ class Payment extends BaseModel
             'status' => 'string',
             'confirmed_by_employee_id' => 'integer',
             'is_active' => 'string',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 

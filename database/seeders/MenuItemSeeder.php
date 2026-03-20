@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\MenuItemStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\MenuItemStatus;
 use App\Models\CookingMethod;
 use App\Models\ItemType;
 use App\Models\MenuCategory;

@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
+use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class OptionValue extends BaseModel
 {
-    public $timestamps = false;
-
     protected $fillable = [
         'option_group_id',
         'value_code',

@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
+use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InvoiceItem extends BaseModel
 {
-    public $timestamps = false;
-
     protected $fillable = [
         'invoice_id',
         'menu_item_id',

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Common\Enums\ActiveStatus;
+use App\Common\Constants\ActiveStatus;
 use App\Models\CookingMethod;
 use Illuminate\Database\Seeder;
 

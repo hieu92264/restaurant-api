@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Common\Enums\Concerns;
+namespace App\Common\Constants\Concerns;
 
 use ReflectionClass;
 

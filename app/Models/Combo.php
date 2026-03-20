@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
+use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Combo extends BaseModel
 {
-    const UPDATED_AT = null;
-
     protected $fillable = [
         'code',
         'name',
@@ -25,6 +23,7 @@ class Combo extends BaseModel
             'is_active' => 'string',
             'is_customize_allowed' => 'boolean',
             'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 

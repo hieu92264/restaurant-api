@@ -2,16 +2,14 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\MenuItemStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\MenuItemStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class MenuItemVariant extends BaseModel
 {
-    const UPDATED_AT = null;
-
     protected $fillable = [
         'menu_item_id',
         'sku_code',
@@ -35,6 +33,7 @@ class MenuItemVariant extends BaseModel
             'status' => 'string',
             'compare_at_price' => 'decimal:2',
             'created_at' => 'datetime',
+            'updated_at' => 'datetime',
             'is_active' => 'string',
         ];
     }

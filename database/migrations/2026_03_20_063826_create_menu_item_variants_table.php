@@ -1,7 +1,7 @@
 <?php
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\MenuItemStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\MenuItemStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -26,7 +26,7 @@ return new class extends Migration
                 ->default(MenuItemStatus::ACTIVE);
             $table->decimal('compare_at_price', 12, 2)->nullable();
             $table->char('is_active', 1)->default(ActiveStatus::YES);
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
         });
     }
 

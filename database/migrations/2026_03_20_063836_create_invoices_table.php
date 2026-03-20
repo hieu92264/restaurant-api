@@ -1,7 +1,7 @@
 <?php
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\InvoiceStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\InvoiceStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -35,6 +35,7 @@ return new class extends Migration
             $table->dateTime('paid_at')->nullable();
             $table->string('note', 255)->nullable();
             $table->char('is_active', 1)->default(ActiveStatus::YES);
+            $table->timestamps();
         });
     }
 

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\RestaurantTableStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\RestaurantTableStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 

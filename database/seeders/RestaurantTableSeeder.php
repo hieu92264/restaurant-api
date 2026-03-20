@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\RestaurantTableStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\RestaurantTableStatus;
 use App\Models\RestaurantTable;
 use App\Models\TableArea;
 use Illuminate\Database\Seeder;

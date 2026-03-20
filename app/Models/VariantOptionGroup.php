@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
+use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class VariantOptionGroup extends BaseModel
 {
     public $incrementing = false;
-
-    public $timestamps = false;
 
     protected $primaryKey = null;
 
@@ -27,6 +25,8 @@ class VariantOptionGroup extends BaseModel
             'option_group_id' => 'integer',
             'display_order' => 'integer',
             'is_active' => 'string',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Common\Enums\ActiveStatus;
+use App\Common\Constants\ActiveStatus;
 use App\Models\MenuItemVariant;
 use App\Models\OptionGroup;
 use Illuminate\Support\Facades\DB;
@@ -42,6 +42,8 @@ class VariantOptionGroupSeeder extends Seeder
                 [
                     'display_order' => $link['display_order'],
                     'is_active' => ActiveStatus::YES,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]
             );
         }

@@ -2,15 +2,13 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\SelectionType;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\SelectionType;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class OptionGroup extends BaseModel
 {
-    public $timestamps = false;
-
     protected $fillable = [
         'code',
         'name',

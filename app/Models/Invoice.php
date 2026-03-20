@@ -2,15 +2,13 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\InvoiceStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\InvoiceStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Invoice extends BaseModel
 {
-    public $timestamps = false;
-
     protected $fillable = [
         'no',
         'cart_order_id',
@@ -51,6 +49,8 @@ class Invoice extends BaseModel
             'issued_at' => 'datetime',
             'paid_at' => 'datetime',
             'is_active' => 'string',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 

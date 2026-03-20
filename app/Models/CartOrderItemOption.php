@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
+use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CartOrderItemOption extends BaseModel
 {
-    public $timestamps = false;
-
     protected $fillable = [
         'cart_order_item_id',
         'option_group_id',

@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\SelectionType;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\SelectionType;
 use App\Models\OptionGroup;
 use Illuminate\Database\Seeder;
 

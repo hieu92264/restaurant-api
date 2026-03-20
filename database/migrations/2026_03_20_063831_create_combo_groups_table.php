@@ -1,6 +1,6 @@
 <?php
 
-use App\Common\Enums\ActiveStatus;
+use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('max_select')->default(1);
             $table->integer('display_order')->default(0);
             $table->char('is_active', 1)->default(ActiveStatus::YES);
+            $table->timestamps();
         });
     }
 

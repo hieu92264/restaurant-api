@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
+use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ComboGroup extends BaseModel
 {
-    public $timestamps = false;
-
     protected $fillable = [
         'combo_id',
         'group_name',

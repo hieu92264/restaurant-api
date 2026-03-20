@@ -1,8 +1,8 @@
 <?php
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\PaymentMethod;
-use App\Common\Enums\PaymentStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\PaymentMethod;
+use App\Common\Constants\PaymentStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -28,6 +28,7 @@ return new class extends Migration
             $table->foreignId('confirmed_by_employee_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('note', 255)->nullable();
             $table->char('is_active', 1)->default(ActiveStatus::YES);
+            $table->timestamps();
         });
     }
 

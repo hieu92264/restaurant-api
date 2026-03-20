@@ -1,6 +1,6 @@
 <?php
 
-use App\Common\Enums\ActiveStatus;
+use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('price_delta', 12, 2)->default(0);
             $table->char('is_active', 1)->default(ActiveStatus::YES);
             $table->unique(['option_group_id', 'value_code']);
+            $table->timestamps();
         });
     }
 

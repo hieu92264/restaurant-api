@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\TableSessionStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\TableSessionStatus;
 use App\Models\RestaurantTable;
 use App\Models\TableSession;
 use App\Models\User;

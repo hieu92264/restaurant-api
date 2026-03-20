@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Common\Enums;
+namespace App\Common\Constants;
 
-use App\Common\Enums\Concerns\HasValues;
+use App\Common\Constants\Concerns\HasValues;
 
 final class InvoiceStatus
 {

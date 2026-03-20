@@ -2,15 +2,13 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\TableSessionStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\TableSessionStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TableSession extends BaseModel
 {
-    public $timestamps = false;
-
     protected $fillable = [
         'table_id',
         'opened_by_employee_id',
@@ -34,6 +32,8 @@ class TableSession extends BaseModel
             'opened_at' => 'datetime',
             'closed_at' => 'datetime',
             'is_active' => 'string',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 

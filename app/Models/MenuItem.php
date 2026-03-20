@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\MenuItemStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\MenuItemStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 

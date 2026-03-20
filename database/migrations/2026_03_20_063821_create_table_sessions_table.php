@@ -1,7 +1,7 @@
 <?php
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\TableSessionStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\TableSessionStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -25,6 +25,7 @@ return new class extends Migration
             $table->dateTime('closed_at')->nullable();
             $table->string('remark', 255)->nullable();
             $table->char('is_active', 1)->default(ActiveStatus::YES);
+            $table->timestamps();
         });
     }
 

@@ -1,7 +1,7 @@
 <?php
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\CartOrderStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\CartOrderStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

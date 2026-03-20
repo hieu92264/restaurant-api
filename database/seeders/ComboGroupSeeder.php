@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Common\Enums\ActiveStatus;
+use App\Common\Constants\ActiveStatus;
 use App\Models\Combo;
 use App\Models\ComboGroup;
 use Illuminate\Database\Seeder;

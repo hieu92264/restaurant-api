@@ -1,7 +1,7 @@
 <?php
 
-use App\Common\Enums\ActiveStatus;
-use App\Common\Enums\OrderLineStatus;
+use App\Common\Constants\ActiveStatus;
+use App\Common\Constants\OrderLineStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->enum('line_status', OrderLineStatus::values())
                 ->default(OrderLineStatus::ACTIVE);
             $table->char('is_active', 1)->default(ActiveStatus::YES);
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
         });
     }
 
