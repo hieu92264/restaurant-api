@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRoleRequest;
@@ -30,14 +30,6 @@ class RoleController extends Controller
         return $this->success($role);
     }
 
-    public function update(UpdateRoleRequest $request, int $id): JsonResponse
-    {
-        $role = Role::query()->findOrFail($id);
-        $role->update($request->validated());
-
-        return $this->success($role->fresh(), 'Cập nhật vai trò thành công.');
-    }
-
     public function destroy(int $id): JsonResponse
     {
         $role = Role::query()->findOrFail($id);
@@ -46,5 +38,13 @@ class RoleController extends Controller
         ]);
 
         return $this->success(null, 'Xoá vai trò thành công.');
+    }
+
+    public function update(UpdateRoleRequest $request, int $id): JsonResponse
+    {
+        $role = Role::query()->findOrFail($id);
+        $role->update($request->validated());
+
+        return $this->success($role->fresh(), 'Cập nhật vai trò thành công.');
     }
 }

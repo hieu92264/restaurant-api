@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
@@ -36,14 +36,6 @@ class UserController extends Controller
         return $this->success($user->load('role'));
     }
 
-    public function update(UpdateUserRequest $request, int $id): JsonResponse
-    {
-        $user = User::query()->findOrFail($id);
-        $user->update($request->validated());
-
-        return $this->success($user->fresh()->load('role'), 'Cập nhật tài khoản thành công.');
-    }
-
     public function destroy(int $id): JsonResponse
     {
         $user = User::query()->findOrFail($id);
@@ -52,5 +44,13 @@ class UserController extends Controller
         ]);
 
         return $this->success(null, 'Xoá tài khoản thành công.');
+    }
+
+    public function update(UpdateUserRequest $request, int $id): JsonResponse
+    {
+        $user = User::query()->findOrFail($id);
+        $user->update($request->validated());
+
+        return $this->success($user->fresh()->load('role'), 'Cập nhật tài khoản thành công.');
     }
 }
