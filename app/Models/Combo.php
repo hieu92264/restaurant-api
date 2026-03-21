@@ -5,6 +5,36 @@ namespace App\Models;
 use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property string $code
+ * @property string $name
+ * @property string|null $remark
+ * @property numeric $base_price
+ * @property string $is_active
+ * @property bool $is_customize_allowed
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CartOrderItem> $cartOrderItems
+ * @property-read int|null $cart_order_items_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ComboGroup> $groups
+ * @property-read int|null $groups_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceItem> $invoiceItems
+ * @property-read int|null $invoice_items_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereBasePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereIsCustomizeAllowed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereRemark($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Combo extends BaseModel
 {
     protected $fillable = [

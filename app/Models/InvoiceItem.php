@@ -5,6 +5,48 @@ namespace App\Models;
 use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $invoice_id
+ * @property int|null $menu_item_id
+ * @property int|null $variant_id
+ * @property int|null $combo_id
+ * @property string $item_name_snapshot
+ * @property string|null $variant_name_snapshot
+ * @property numeric $quantity
+ * @property numeric $base_unit_price
+ * @property numeric $option_total_price
+ * @property numeric $unit_final_price
+ * @property numeric $line_total
+ * @property string|null $item_note
+ * @property string $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Combo|null $combo
+ * @property-read \App\Models\Invoice $invoice
+ * @property-read \App\Models\MenuItem|null $menuItem
+ * @property-read \App\Models\MenuItemVariant|null $variant
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereBaseUnitPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereComboId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereInvoiceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereItemNameSnapshot($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereItemNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereLineTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereMenuItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereOptionTotalPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereUnitFinalPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereVariantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereVariantNameSnapshot($value)
+ * @mixin \Eloquent
+ */
 class InvoiceItem extends BaseModel
 {
     protected $fillable = [

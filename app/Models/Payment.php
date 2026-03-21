@@ -7,6 +7,42 @@ use App\Common\Constants\PaymentMethod;
 use App\Common\Constants\PaymentStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $invoice_id
+ * @property string $method
+ * @property string|null $transaction_code
+ * @property string|null $qr_content
+ * @property numeric $requested_amount
+ * @property numeric $paid_amount
+ * @property \Illuminate\Support\Carbon|null $paid_time
+ * @property string $status
+ * @property int|null $confirmed_by_employee_id
+ * @property string|null $note
+ * @property string $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User|null $confirmedByEmployee
+ * @property-read \App\Models\Invoice $invoice
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereConfirmedByEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereInvoiceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereMethod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment wherePaidAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment wherePaidTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereQrContent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereRequestedAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereTransactionCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Payment extends BaseModel
 {
     protected $fillable = [

@@ -7,6 +7,40 @@ use App\Common\Constants\SelectionType;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property string $code
+ * @property string $name
+ * @property string $selection_type
+ * @property bool $is_required
+ * @property int $min_select
+ * @property int|null $max_select
+ * @property int $display_order
+ * @property string $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CartOrderItemOption> $cartOrderItemOptions
+ * @property-read int|null $cart_order_item_options_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OptionValue> $values
+ * @property-read int|null $values_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MenuItemVariant> $variants
+ * @property-read int|null $variants_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup whereDisplayOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup whereIsRequired($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup whereMaxSelect($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup whereMinSelect($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup whereSelectionType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OptionGroup whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class OptionGroup extends BaseModel
 {
     protected $fillable = [

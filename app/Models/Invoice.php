@@ -7,6 +7,64 @@ use App\Common\Constants\InvoiceStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property string $no
+ * @property int $cart_order_id
+ * @property int $session_id
+ * @property int $table_id
+ * @property int $created_by_employee_id
+ * @property string|null $customer_name
+ * @property string|null $customer_phone
+ * @property numeric $subtotal_amount
+ * @property numeric $discount_amount
+ * @property numeric $service_charge_amount
+ * @property numeric $tax_amount
+ * @property numeric $total_amount
+ * @property numeric $paid_amount
+ * @property numeric $change_amount
+ * @property string $invoice_status
+ * @property \Illuminate\Support\Carbon $issued_at
+ * @property \Illuminate\Support\Carbon|null $paid_at
+ * @property string|null $note
+ * @property string $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\CartOrder $cartOrder
+ * @property-read \App\Models\User $createdByEmployee
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceItem> $items
+ * @property-read int|null $items_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read int|null $payments_count
+ * @property-read \App\Models\TableSession $session
+ * @property-read \App\Models\RestaurantTable $table
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCartOrderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereChangeAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCreatedByEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCustomerName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCustomerPhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereDiscountAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereInvoiceStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereIssuedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereNo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice wherePaidAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice wherePaidAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereServiceChargeAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereSessionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereSubtotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereTableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereTaxAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Invoice extends BaseModel
 {
     protected $fillable = [

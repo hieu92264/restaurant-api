@@ -7,6 +7,43 @@ use App\Common\Constants\TableSessionStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $table_id
+ * @property int $opened_by_employee_id
+ * @property int|null $closed_by_employee_id
+ * @property int|null $guest_count
+ * @property string $status
+ * @property \Illuminate\Support\Carbon $opened_at
+ * @property \Illuminate\Support\Carbon|null $closed_at
+ * @property string|null $remark
+ * @property string $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CartOrder> $cartOrders
+ * @property-read int|null $cart_orders_count
+ * @property-read \App\Models\User|null $closedByEmployee
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
+ * @property-read int|null $invoices_count
+ * @property-read \App\Models\User $openedByEmployee
+ * @property-read \App\Models\RestaurantTable $table
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereClosedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereClosedByEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereGuestCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereOpenedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereOpenedByEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereRemark($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereTableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class TableSession extends BaseModel
 {
     protected $fillable = [
