@@ -11,8 +11,8 @@ Route::prefix('users')
         Route::get('/', 'index')->middleware('role:MANAGER');
         Route::get('/{user}', 'show')->middleware('role:MANAGER');
         Route::post('/', 'store')->middleware('role:');
-        Route::patch('/{user}', 'update')->middleware('role:MANAGER');
-        Route::delete('/{user}', 'destroy')->middleware('role:');
+        Route::patch('/{id}', 'update')->middleware('role:MANAGER');
+        Route::delete('/{id}', 'destroy')->middleware('role:');
     });
 
 Route::prefix('roles')
@@ -22,6 +22,6 @@ Route::prefix('roles')
         Route::get('/', 'index')->middleware('role:MANAGER');
         Route::get('/{role}', 'show')->middleware('role:MANAGER');
         Route::post('/', 'store')->middleware('role:');
-        Route::patch('/{role}', 'update')->middleware('role:');
-        Route::delete('/{role}', 'destroy')->middleware('role:');
+        Route::patch('/{id}', 'update')->middleware('role:');
+        Route::delete('/{id}', 'destroy')->middleware('role:');
     });

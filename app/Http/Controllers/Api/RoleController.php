@@ -30,15 +30,17 @@ class RoleController extends Controller
         return $this->success($role);
     }
 
-    public function update(UpdateRoleRequest $request, Role $role): JsonResponse
+    public function update(UpdateRoleRequest $request, int $id): JsonResponse
     {
+        $role = Role::query()->findOrFail($id);
         $role->update($request->validated());
 
         return $this->success($role->fresh(), 'Cập nhật vai trò thành công.');
     }
 
-    public function destroy(Role $role): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
+        $role = Role::query()->findOrFail($id);
         $role->update([
             'is_active' => 'N',
         ]);

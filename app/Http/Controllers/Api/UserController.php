@@ -36,15 +36,17 @@ class UserController extends Controller
         return $this->success($user->load('role'));
     }
 
-    public function update(UpdateUserRequest $request, User $user): JsonResponse
+    public function update(UpdateUserRequest $request, int $id): JsonResponse
     {
+        $user = User::query()->findOrFail($id);
         $user->update($request->validated());
 
         return $this->success($user->fresh()->load('role'), 'Cập nhật tài khoản thành công.');
     }
 
-    public function destroy(User $user): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
+        $user = User::query()->findOrFail($id);
         $user->update([
             'is_active' => 'N',
         ]);
