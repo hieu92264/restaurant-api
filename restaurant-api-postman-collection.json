@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "b065272b-f7b0-4a60-bba3-850a544f24a7",
     "name": "Restaurant API",
-    "description": "Postman collection generated from uploaded Laravel API source. Base URL and token are stored as collection variables.",
+    "description": "Postman collection synced with current Laravel routes.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -18,7 +18,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost",
+      "value": "http://127.0.0.1:8000",
       "type": "string"
     },
     {
@@ -37,6 +37,31 @@
       "type": "string"
     },
     {
+      "key": "roleId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "itemTypeId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "cookingMethodId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "menuCategoryId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "optionGroupId",
+      "value": "1",
+      "type": "string"
+    },
+    {
       "key": "username",
       "value": "owner",
       "type": "string"
@@ -50,7 +75,6 @@
   "item": [
     {
       "name": "Auth",
-      "description": "Authentication endpoints using JWT guard (auth:api). Login/refresh scripts save access_token to collection variable accessToken.",
       "item": [
         {
           "name": "Login",
@@ -88,8 +112,7 @@
                 "auth",
                 "login"
               ]
-            },
-            "description": "Login with username or email plus password. Only users with is_active = Y can authenticate."
+            }
           },
           "event": [
             {
@@ -103,7 +126,7 @@
                   "",
                   "let jsonData = {};",
                   "try { jsonData = pm.response.json(); } catch (e) {}",
-                  "const token = jsonData?.data?.access_token;",
+                  "const token = jsonData?.metadata?.access_token;",
                   "if (token) {",
                   "    pm.collectionVariables.set('accessToken', token);",
                   "}"
@@ -133,8 +156,7 @@
                 "auth",
                 "refresh"
               ]
-            },
-            "description": "Refresh JWT token. In this codebase, this endpoint is not explicitly protected by middleware, but JWT refresh usually expects the current bearer token."
+            }
           },
           "event": [
             {
@@ -144,7 +166,7 @@
                 "exec": [
                   "let jsonData = {};",
                   "try { jsonData = pm.response.json(); } catch (e) {}",
-                  "const token = jsonData?.data?.access_token;",
+                  "const token = jsonData?.metadata?.access_token;",
                   "if (token) {",
                   "    pm.collectionVariables.set('accessToken', token);",
                   "}"
@@ -174,8 +196,7 @@
                 "auth",
                 "me"
               ]
-            },
-            "description": "Return current user profile, role, and permission tree. Requires bearer token."
+            }
           },
           "response": []
         },
@@ -199,8 +220,7 @@
                 "auth",
                 "logout"
               ]
-            },
-            "description": "Invalidate current JWT token. Requires bearer token."
+            }
           },
           "event": [
             {
@@ -221,7 +241,6 @@
     },
     {
       "name": "Users",
-      "description": "User management endpoints under /users. All require bearer token. GET /users is limited to MANAGER, but OWNER bypasses all role checks in middleware. POST and DELETE currently use middleware role: with no explicit role list, so any authenticated role appears to pass.",
       "item": [
         {
           "name": "List Users",
@@ -242,8 +261,31 @@
                 "{{apiPrefix}}",
                 "users"
               ]
-            },
-            "description": "List users ordered by latest(). Requires auth:api and role MANAGER (OWNER also allowed by middleware)."
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Show User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/{{apiPrefix}}/users/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "{{apiPrefix}}",
+                "users",
+                "{{userId}}"
+              ]
+            }
           },
           "response": []
         },
@@ -263,7 +305,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_name\": \"newuser\",\n  \"full_name\": \"Nguyen Van A\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"12345678\",\n  \"role_id\": 2\n}",
+              "raw": "{\n  \"user_name\": \"newuser\",\n  \"full_name\": \"Nguyen Van A\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"12345678\",\n  \"role_id\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -279,8 +321,7 @@
                 "{{apiPrefix}}",
                 "users"
               ]
-            },
-            "description": "Create a user. Validation: user_name required unique, full_name required, email required unique, password min 8, role_id must exist."
+            }
           },
           "response": []
         },
@@ -300,7 +341,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"full_name\": \"Nguyen Van A Updated\",\n  \"email\": \"newuser.updated@example.com\",\n  \"password\": \"87654321\",\n  \"role_id\": 2\n}",
+              "raw": "{\n  \"full_name\": \"Nguyen Van A Updated\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -317,13 +358,12 @@
                 "users",
                 "{{userId}}"
               ]
-            },
-            "description": "Update user by ID. Any field is optional (sometimes validation). Route is protected by role MANAGER (OWNER also allowed)."
+            }
           },
           "response": []
         },
         {
-          "name": "Delete User (Soft deactivate)",
+          "name": "Delete User",
           "request": {
             "method": "DELETE",
             "header": [
@@ -342,10 +382,691 @@
                 "users",
                 "{{userId}}"
               ]
-            },
-            "description": "This endpoint does not hard delete. It sets is_active = 'N' for the target user."
+            }
           },
           "response": []
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "List Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/{{apiPrefix}}/roles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "{{apiPrefix}}",
+                "roles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Show Role",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/{{apiPrefix}}/roles/{{roleId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "{{apiPrefix}}",
+                "roles",
+                "{{roleId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Manager\",\n  \"code\": \"MANAGER\",\n  \"remark\": \"Manager role\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/{{apiPrefix}}/roles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "{{apiPrefix}}",
+                "roles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Role",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remark\": \"Manager role updated\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/{{apiPrefix}}/roles/{{roleId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "{{apiPrefix}}",
+                "roles",
+                "{{roleId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Role",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/{{apiPrefix}}/roles/{{roleId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "{{apiPrefix}}",
+                "roles",
+                "{{roleId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Menu",
+      "item": [
+        {
+          "name": "Item Types",
+          "item": [
+            {
+              "name": "List Item Types",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/item-types",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "item-types"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Item Type",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"FOOD\",\n  \"name\": \"Mon an\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/item-types/store",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "item-types",
+                    "store"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Item Type",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Do an\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/item-types/update/{{itemTypeId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "item-types",
+                    "update",
+                    "{{itemTypeId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Item Type",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/item-types/delete/{{itemTypeId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "item-types",
+                    "delete",
+                    "{{itemTypeId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cooking Methods",
+          "item": [
+            {
+              "name": "List Cooking Methods",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/cooking-methods",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "cooking-methods"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Cooking Method",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"GRILL\",\n  \"name\": \"Nuong\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/cooking-methods/store",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "cooking-methods",
+                    "store"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Cooking Method",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Ap chao\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/cooking-methods/update/{{cookingMethodId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "cooking-methods",
+                    "update",
+                    "{{cookingMethodId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Cooking Method",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/cooking-methods/delete/{{cookingMethodId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "cooking-methods",
+                    "delete",
+                    "{{cookingMethodId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Menu Categories",
+          "item": [
+            {
+              "name": "List Menu Categories",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/menu-categories",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "menu-categories"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Menu Category",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"parent_id\": null,\n  \"item_type_id\": 1,\n  \"code\": \"MON-NUONG\",\n  \"name\": \"Mon nuong\",\n  \"sort_order\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/menu-categories/store",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "menu-categories",
+                    "store"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Menu Category",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Mon nuong dac biet\",\n  \"parent_id\": null\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/menu-categories/update/{{menuCategoryId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "menu-categories",
+                    "update",
+                    "{{menuCategoryId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Menu Category",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/menu-categories/delete/{{menuCategoryId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "menu-categories",
+                    "delete",
+                    "{{menuCategoryId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Option Groups",
+          "item": [
+            {
+              "name": "List Option Groups",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/option-groups",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "option-groups"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Option Group",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"SIZE\",\n  \"name\": \"Kich thuoc\",\n  \"selection_type\": \"SINGLE\",\n  \"is_required\": true,\n  \"min_select\": 1,\n  \"max_select\": 1,\n  \"display_order\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/option-groups/store",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "option-groups",
+                    "store"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Option Group",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Size do uong\",\n  \"max_select\": null\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/option-groups/update/{{optionGroupId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "option-groups",
+                    "update",
+                    "{{optionGroupId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Option Group",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/option-groups/delete/{{optionGroupId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{apiPrefix}}",
+                    "menu",
+                    "option-groups",
+                    "delete",
+                    "{{optionGroupId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
@@ -371,8 +1092,7 @@
                 "{{apiPrefix}}",
                 "user"
               ]
-            },
-            "description": "Default Laravel route protected by auth:sanctum. This is separate from your JWT auth:api endpoints, so it may return 401 unless Sanctum is configured and used."
+            }
           },
           "response": []
         }
