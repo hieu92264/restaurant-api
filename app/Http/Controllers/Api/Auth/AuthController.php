@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
@@ -18,7 +19,7 @@ class AuthController extends Controller
             'password' => $data['password'],
             'is_active' => 'Y',
         ])) {
-            return $this->error(null, 'Unauthorized', 401);
+            return $this->error(null, 'Tên đăng nhập hoặc mật khẩu không đúng', Response::HTTP_FORBIDDEN);
         }
 
         return $this->responseWithToken($token);
