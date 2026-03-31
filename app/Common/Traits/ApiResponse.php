@@ -10,7 +10,7 @@ trait ApiResponse
 {
     protected function apiResponse(
         mixed $metadata = null,
-        string $message = 'Success',
+        string $message = 'Thành công.',
         int $statusCode = Response::HTTP_OK,
         ?string $stack = null
     ): JsonResponse {
@@ -31,7 +31,7 @@ trait ApiResponse
 
     protected function success(
         mixed $data = null,
-        string $message = 'Success',
+        string $message = 'Thành công.',
         int $statusCode = Response::HTTP_OK
     ): JsonResponse {
         return $this->apiResponse($data, $message, $statusCode);
@@ -39,7 +39,7 @@ trait ApiResponse
 
     protected function error(
         mixed $data = null,
-        string $message = 'Error',
+        string $message = 'Có lỗi xảy ra.',
         int $statusCode = Response::HTTP_BAD_REQUEST
     ): JsonResponse {
         $metadata = null;

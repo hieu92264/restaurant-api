@@ -20,8 +20,8 @@ class CheckPermission
     {
         if (!$request->user() || !$request->user()->hasPermission($permissionCode)) {
             return $this->error([
-                'message' => 'Ban khong co quyen truy cap URL nay.',
-            ], 'Forbidden', Response::HTTP_FORBIDDEN);
+                'message' => 'Bạn không có quyền truy cập tài nguyên này.',
+            ], 'Bạn không có quyền truy cập.', Response::HTTP_FORBIDDEN);
         }
 
         return $next($request);

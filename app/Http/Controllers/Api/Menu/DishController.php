@@ -45,7 +45,7 @@ class DishController extends Controller
 
         return $this->success(
             $dish->fresh()->load('category'),
-            'Tao mon an thanh cong.',
+            'Tạo món ăn thành công.',
             Response::HTTP_CREATED
         );
     }
@@ -70,7 +70,7 @@ class DishController extends Controller
 
         $dish->update($data);
 
-        return $this->success($dish->fresh()->load('category'), 'Cap nhat mon an thanh cong.');
+        return $this->success($dish->fresh()->load('category'), 'Cập nhật món ăn thành công.');
     }
 
     public function destroy(int $id): JsonResponse
@@ -80,7 +80,7 @@ class DishController extends Controller
             'is_active' => false,
         ]);
 
-        return $this->success(null, 'An mon an thanh cong.');
+        return $this->success(null, 'Ẩn món ăn thành công.');
     }
 
     private function generateUniqueCode(string $name, ?int $ignoreId = null): string
@@ -117,7 +117,7 @@ class DishController extends Controller
         $image = imagecreatefromstring($imageData);
 
         if ($image === false) {
-            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Khong the doc file anh hop le.');
+            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Không thể đọc file ảnh hợp lệ.');
         }
 
         imagesavealpha($image, true);

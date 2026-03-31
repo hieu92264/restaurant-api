@@ -37,7 +37,7 @@ class RoleController extends Controller
             'is_active' => false,
         ]);
 
-        return $this->success(null, 'Xoá vai trò thành công.');
+        return $this->success(null, 'Xóa vai trò thành công.');
     }
 
     public function update(UpdateRoleRequest $request, int $id): JsonResponse

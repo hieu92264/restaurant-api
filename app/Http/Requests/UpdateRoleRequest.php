@@ -24,6 +24,7 @@ class UpdateRoleRequest extends FormRequest
             'name' => ['sometimes', 'string', 'max:255', Rule::unique('roles', 'name')->ignore($roleId)],
             'code' => ['sometimes', 'string', 'max:255', Rule::unique('roles', 'code')->ignore($roleId)],
             'remark' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'is_active' => ['sometimes', 'boolean'],
         ];
     }
 }

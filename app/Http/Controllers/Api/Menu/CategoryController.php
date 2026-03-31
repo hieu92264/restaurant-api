@@ -37,7 +37,7 @@ class CategoryController extends Controller
 
         return $this->success(
             $category->fresh()->load(['parent', 'children']),
-            'Tao danh muc thanh cong.',
+            'Tạo danh mục thành công.',
             Response::HTTP_CREATED
         );
     }
@@ -52,14 +52,18 @@ class CategoryController extends Controller
         }
 
         if (($data['parent_id'] ?? null) === $category->id) {
-            return $this->error(null, 'Danh muc khong the chon chinh no lam danh muc cha.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->error(
+                null,
+                'Danh mục không thể chọn chính nó làm danh mục cha.',
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
         }
 
         $category->update($data);
 
         return $this->success(
             $category->fresh()->load(['parent', 'children']),
-            'Cap nhat danh muc thanh cong.'
+            'Cập nhật danh mục thành công.'
         );
     }
 
@@ -70,7 +74,7 @@ class CategoryController extends Controller
         if ($category->children_count > 0 || $category->dishes_count > 0) {
             return $this->error(
                 null,
-                'Khong the xoa danh muc dang co danh muc con hoac mon an.',
+                'Không thể xóa danh mục đang có danh mục con hoặc món ăn.',
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
@@ -79,7 +83,7 @@ class CategoryController extends Controller
             'is_active' => false,
         ]);
 
-        return $this->success(null, 'An danh muc thanh cong.');
+        return $this->success(null, 'Ẩn danh mục thành công.');
     }
 
     private function generateUniqueCode(string $name, ?int $ignoreId = null): string

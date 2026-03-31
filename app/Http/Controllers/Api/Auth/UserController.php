@@ -43,7 +43,7 @@ class UserController extends Controller
             'is_active' => false,
         ]);
 
-        return $this->success(null, 'Xoá tài khoản thành công.');
+        return $this->success(null, 'Xóa tài khoản thành công.');
     }
 
     public function update(UpdateUserRequest $request, int $id): JsonResponse

@@ -6,15 +6,14 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
-use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__ . '/../routes/web.php',
-        //        api: __DIR__.'/../routes/api.php',
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
         then: function () {
@@ -22,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             $routesPath = base_path('routes');
             $apiFiles = array_filter(
                 glob($routesPath . '/*.php'),
-                fn($file) => !in_array(basename($file), ['web.php', 'console.php'])
+                fn ($file) => !in_array(basename($file), ['web.php', 'console.php'])
             );
 
             foreach ($apiFiles as $file) {
@@ -54,9 +53,9 @@ return Application::configure(basePath: dirname(__DIR__))
             };
 
             $message = match (true) {
-                $e instanceof ValidationException => 'Validation failed',
-                $e instanceof AuthenticationException => 'Unauthenticated',
-                default => $e->getMessage() ?: 'Server Error',
+                $e instanceof ValidationException => 'Dữ liệu gửi lên không hợp lệ.',
+                $e instanceof AuthenticationException => 'Bạn chưa đăng nhập.',
+                default => $e->getMessage() ?: 'Lỗi máy chủ.',
             };
 
             $metadata = null;

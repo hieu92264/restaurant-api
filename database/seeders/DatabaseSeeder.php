@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
             TableAreaSeeder::class,
             RestaurantTableSeeder::class,
             TableSessionSeeder::class,
+            CategorySeeder::class,
+            DishSeeder::class,
             ComboSeeder::class,
             ComboGroupSeeder::class,
             CartOrderSeeder::class,

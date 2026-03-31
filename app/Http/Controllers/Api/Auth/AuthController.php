@@ -19,7 +19,7 @@ class AuthController extends Controller
             'password' => $data['password'],
             'is_active' => true,
         ])) {
-            return $this->error(null, 'Tên đăng nhập hoặc mật khẩu không đúng', Response::HTTP_FORBIDDEN);
+            return $this->error(null, 'Tên đăng nhập hoặc mật khẩu không đúng.', Response::HTTP_FORBIDDEN);
         }
 
         return $this->responseWithToken($token);
@@ -38,7 +38,7 @@ class AuthController extends Controller
     {
         auth('api')->logout();
 
-        return $this->success(null, 'Successfully logged out');
+        return $this->success(null, 'Đăng xuất thành công.');
     }
 
     public function refresh(): JsonResponse
@@ -50,22 +50,7 @@ class AuthController extends Controller
     {
         $user = auth('api')->user()->load([
             'role',
-            //            'role.permissions' => function ($query) {
-            //                $query->where('is_active', true)
-            //                    ->select(
-            //                        'permissions.id',
-            //                        'permissions.name',
-            //                        'permissions.code',
-            //                        'permissions.remark',
-            //                        'permissions.url',
-            //                        'permissions.parent_id'
-            //                    )
-            //                    ->orderBy('permissions.parent_id')
-            //                    ->orderBy('permissions.id');
-            //            },
         ]);
-
-        //        $permissionTree = $this->buildPermissionTree($user->role?->permissions ?? collect());
 
         return $this->success([
             'id' => $user->id,
@@ -78,29 +63,6 @@ class AuthController extends Controller
                 'code' => $user->role?->code,
                 'remark' => $user->role?->remark,
             ],
-            //            'permissions' => $permissionTree,
         ]);
-    }
-
-    protected function buildPermissionTree($permissions): array
-    {
-        $grouped = $permissions->groupBy('parent_id');
-
-        $build = function ($parentId) use (&$build, $grouped) {
-            return ($grouped[$parentId] ?? collect())
-                ->map(function ($permission) use (&$build) {
-                    return [
-                        'id' => $permission->id,
-                        'name' => $permission->name,
-                        'code' => $permission->code,
-                        'url' => $permission->url,
-                        'remark' => $permission->remark,
-                        'children' => $build($permission->id),
-                    ];
-                })
-                ->toArray();
-        };
-
-        return $build(null);
     }
 }
