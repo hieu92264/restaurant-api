@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -11,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property string|null $remark
  * @property numeric $base_price
- * @property string $is_active
+ * @property bool $is_active
  * @property bool $is_customize_allowed
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -50,7 +49,7 @@ class Combo extends BaseModel
     {
         return [
             'base_price' => 'decimal:2',
-            'is_active' => 'string',
+            'is_active' => 'boolean',
             'is_customize_allowed' => 'boolean',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',

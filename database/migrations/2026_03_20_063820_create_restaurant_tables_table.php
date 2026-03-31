@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('capacity');
             $table->enum('status', RestaurantTableStatus::values())
                 ->default(RestaurantTableStatus::AVAILABLE);
-            $table->char('is_active', 1)->default(ActiveStatus::YES);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

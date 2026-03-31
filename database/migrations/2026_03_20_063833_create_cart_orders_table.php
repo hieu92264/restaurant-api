@@ -27,7 +27,7 @@ return new class extends Migration
             $table->decimal('tax_amount', 12, 2)->default(0);
             $table->decimal('total_amount', 12, 2)->default(0);
             $table->string('remark', 255)->nullable();
-            $table->char('is_active', 1)->default(ActiveStatus::YES);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

@@ -34,7 +34,7 @@ return new class extends Migration
             $table->dateTime('issued_at');
             $table->dateTime('paid_at')->nullable();
             $table->string('note', 255)->nullable();
-            $table->char('is_active', 1)->default(ActiveStatus::YES);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

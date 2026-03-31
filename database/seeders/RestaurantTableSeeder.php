@@ -32,7 +32,7 @@ class RestaurantTableSeeder extends Seeder
                     'name' => $tableData['name'],
                     'capacity' => $tableData['capacity'],
                     'status' => $tableData['status'],
-                    'is_active' => ActiveStatus::YES,
+                    'is_active' => true,
                 ]
             );
         }

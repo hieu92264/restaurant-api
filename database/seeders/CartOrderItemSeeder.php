@@ -2,13 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Common\Constants\ActiveStatus;
 use App\Common\Constants\OrderLineStatus;
 use App\Models\CartOrder;
 use App\Models\CartOrderItem;
 use App\Models\Combo;
-use App\Models\MenuItem;
-use App\Models\MenuItemVariant;
 use Illuminate\Database\Seeder;
 
 class CartOrderItemSeeder extends Seeder
@@ -21,11 +18,9 @@ class CartOrderItemSeeder extends Seeder
         $items = [
             [
                 'order_no' => 'ORD20260320-0001',
-                'menu_item_code' => 'TS_TT',
-                'variant_sku' => 'TS_TT_L',
                 'combo_code' => null,
                 'item_name_snapshot' => 'Tra sua truyen thong',
-                'variant_name_snapshot' => 'Tra sua truyen thong - size L',
+                'variant_name_snapshot' => 'Ly lon',
                 'quantity' => 1,
                 'base_unit_price' => 49000,
                 'option_total_price' => 8000,
@@ -37,11 +32,9 @@ class CartOrderItemSeeder extends Seeder
             ],
             [
                 'order_no' => 'ORD20260320-0001',
-                'menu_item_code' => 'COM_RANG_HAI_SAN',
-                'variant_sku' => 'COM_RANG_STD',
                 'combo_code' => null,
                 'item_name_snapshot' => 'Com rang hai san',
-                'variant_name_snapshot' => 'Com rang hai san',
+                'variant_name_snapshot' => null,
                 'quantity' => 1,
                 'base_unit_price' => 69000,
                 'option_total_price' => 0,
@@ -53,11 +46,9 @@ class CartOrderItemSeeder extends Seeder
             ],
             [
                 'order_no' => 'ORD20260320-0002',
-                'menu_item_code' => 'TRA_DAO',
-                'variant_sku' => 'TRA_DAO_M',
                 'combo_code' => null,
                 'item_name_snapshot' => 'Tra dao cam sa',
-                'variant_name_snapshot' => 'Tra dao cam sa - size M',
+                'variant_name_snapshot' => 'Size M',
                 'quantity' => 1,
                 'base_unit_price' => 45000,
                 'option_total_price' => 0,
@@ -69,11 +60,9 @@ class CartOrderItemSeeder extends Seeder
             ],
             [
                 'order_no' => 'ORD20260320-0002',
-                'menu_item_code' => 'COCA_LON',
-                'variant_sku' => 'COCA_LON_STD',
                 'combo_code' => null,
                 'item_name_snapshot' => 'Coca cola lon',
-                'variant_name_snapshot' => 'Coca cola lon',
+                'variant_name_snapshot' => null,
                 'quantity' => 2,
                 'base_unit_price' => 18000,
                 'option_total_price' => 0,
@@ -85,8 +74,6 @@ class CartOrderItemSeeder extends Seeder
             ],
             [
                 'order_no' => 'ORD20260320-0002',
-                'menu_item_code' => 'COM_RANG_HAI_SAN',
-                'variant_sku' => 'COM_RANG_STD',
                 'combo_code' => 'CB_TRUA_A',
                 'item_name_snapshot' => 'Combo trua 2 nguoi',
                 'variant_name_snapshot' => 'Com rang hai san',
@@ -103,8 +90,6 @@ class CartOrderItemSeeder extends Seeder
 
         foreach ($items as $item) {
             $order = CartOrder::withoutGlobalScopes()->where('order_no', $item['order_no'])->first();
-            $menuItem = MenuItem::withoutGlobalScopes()->where('code', $item['menu_item_code'])->first();
-            $variant = MenuItemVariant::withoutGlobalScopes()->where('sku_code', $item['variant_sku'])->first();
             $combo = $item['combo_code']
                 ? Combo::withoutGlobalScopes()->where('code', $item['combo_code'])->first()
                 : null;
@@ -116,8 +101,6 @@ class CartOrderItemSeeder extends Seeder
                     'created_at' => $item['created_at'],
                 ],
                 [
-                    'menu_item_id' => $menuItem?->id,
-                    'variant_id' => $variant?->id,
                     'combo_id' => $combo?->id,
                     'variant_name_snapshot' => $item['variant_name_snapshot'],
                     'quantity' => $item['quantity'],
@@ -127,7 +110,7 @@ class CartOrderItemSeeder extends Seeder
                     'line_total' => $item['line_total'],
                     'item_note' => $item['item_note'],
                     'line_status' => $item['line_status'],
-                    'is_active' => ActiveStatus::YES,
+                    'is_active' => true,
                 ]
             );
         }

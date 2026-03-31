@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Common\Constants\ActiveStatus;
-use App\Common\Constants\TableSessionStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -17,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon $opened_at
  * @property \Illuminate\Support\Carbon|null $closed_at
  * @property string|null $remark
- * @property string $is_active
+ * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CartOrder> $cartOrders
@@ -68,7 +66,7 @@ class TableSession extends BaseModel
             'status' => 'string',
             'opened_at' => 'datetime',
             'closed_at' => 'datetime',
-            'is_active' => 'string',
+            'is_active' => 'boolean',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

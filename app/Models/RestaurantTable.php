@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Common\Constants\ActiveStatus;
-use App\Common\Constants\RestaurantTableStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -14,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property int $capacity
  * @property string $status
- * @property string $is_active
+ * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\TableArea|null $area
@@ -55,7 +53,7 @@ class RestaurantTable extends BaseModel
             'area_id' => 'integer',
             'capacity' => 'integer',
             'status' => 'string',
-            'is_active' => 'string',
+            'is_active' => 'boolean',
         ];
     }
 

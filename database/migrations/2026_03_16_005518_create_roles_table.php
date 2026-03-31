@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->char('is_active', 1)->default('Y');
+            $table->boolean('is_active')->default(true);
             $table->string('name')->unique();
             $table->string('code')->unique();
             $table->string('remark')->nullable();

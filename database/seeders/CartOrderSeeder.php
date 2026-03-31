@@ -55,7 +55,7 @@ class CartOrderSeeder extends Seeder
         foreach ($orders as $order) {
             CartOrder::withoutGlobalScopes()->updateOrCreate(
                 ['order_no' => $order['order_no']],
-                $order + ['is_active' => ActiveStatus::YES]
+                $order + ['is_active' => true]
             );
         }
     }

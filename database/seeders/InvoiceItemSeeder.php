@@ -2,12 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Common\Constants\ActiveStatus;
 use App\Models\Combo;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
-use App\Models\MenuItem;
-use App\Models\MenuItemVariant;
 use Illuminate\Database\Seeder;
 
 class InvoiceItemSeeder extends Seeder
@@ -20,14 +17,12 @@ class InvoiceItemSeeder extends Seeder
         $invoice = Invoice::withoutGlobalScopes()->where('no', 'INV-20260320-000001')->first();
 
         $items = [
-            ['menu_item_code' => 'TRA_DAO', 'variant_sku' => 'TRA_DAO_M', 'combo_code' => null, 'item_name_snapshot' => 'Tra dao cam sa', 'variant_name_snapshot' => 'Tra dao cam sa - size M', 'quantity' => 1, 'base_unit_price' => 45000, 'option_total_price' => 0, 'unit_final_price' => 45000, 'line_total' => 45000, 'item_note' => null],
-            ['menu_item_code' => 'COCA_LON', 'variant_sku' => 'COCA_LON_STD', 'combo_code' => null, 'item_name_snapshot' => 'Coca cola lon', 'variant_name_snapshot' => 'Coca cola lon', 'quantity' => 2, 'base_unit_price' => 18000, 'option_total_price' => 0, 'unit_final_price' => 18000, 'line_total' => 36000, 'item_note' => null],
-            ['menu_item_code' => 'COM_RANG_HAI_SAN', 'variant_sku' => 'COM_RANG_STD', 'combo_code' => 'CB_TRUA_A', 'item_name_snapshot' => 'Combo trua 2 nguoi', 'variant_name_snapshot' => 'Com rang hai san', 'quantity' => 1, 'base_unit_price' => 16000, 'option_total_price' => 0, 'unit_final_price' => 16000, 'line_total' => 16000, 'item_note' => 'Bo sung trong combo'],
+            ['combo_code' => null, 'item_name_snapshot' => 'Tra dao cam sa', 'variant_name_snapshot' => 'Size M', 'quantity' => 1, 'base_unit_price' => 45000, 'option_total_price' => 0, 'unit_final_price' => 45000, 'line_total' => 45000, 'item_note' => null],
+            ['combo_code' => null, 'item_name_snapshot' => 'Coca cola lon', 'variant_name_snapshot' => null, 'quantity' => 2, 'base_unit_price' => 18000, 'option_total_price' => 0, 'unit_final_price' => 18000, 'line_total' => 36000, 'item_note' => null],
+            ['combo_code' => 'CB_TRUA_A', 'item_name_snapshot' => 'Combo trua 2 nguoi', 'variant_name_snapshot' => 'Com rang hai san', 'quantity' => 1, 'base_unit_price' => 16000, 'option_total_price' => 0, 'unit_final_price' => 16000, 'line_total' => 16000, 'item_note' => 'Bo sung trong combo'],
         ];
 
         foreach ($items as $item) {
-            $menuItem = MenuItem::withoutGlobalScopes()->where('code', $item['menu_item_code'])->first();
-            $variant = MenuItemVariant::withoutGlobalScopes()->where('sku_code', $item['variant_sku'])->first();
             $combo = $item['combo_code']
                 ? Combo::withoutGlobalScopes()->where('code', $item['combo_code'])->first()
                 : null;
@@ -39,8 +34,6 @@ class InvoiceItemSeeder extends Seeder
                     'variant_name_snapshot' => $item['variant_name_snapshot'],
                 ],
                 [
-                    'menu_item_id' => $menuItem?->id,
-                    'variant_id' => $variant?->id,
                     'combo_id' => $combo?->id,
                     'quantity' => $item['quantity'],
                     'base_unit_price' => $item['base_unit_price'],
@@ -48,7 +41,7 @@ class InvoiceItemSeeder extends Seeder
                     'unit_final_price' => $item['unit_final_price'],
                     'line_total' => $item['line_total'],
                     'item_note' => $item['item_note'],
-                    'is_active' => ActiveStatus::YES,
+                    'is_active' => true,
                 ]
             );
         }

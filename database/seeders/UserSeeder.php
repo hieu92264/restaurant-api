@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
 
         $users = [
             [
-                'is_active' => 'Y',
+                'is_active' => true,
                 'user_name' => 'owner',
                 'full_name' => 'Chủ Nhà Hàng',
                 'email' => 'owner@restaurant.com',
@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
                 'role_id' => $ownerRole?->id,
             ],
             [
-                'is_active' => 'Y',
+                'is_active' => true,
                 'user_name' => 'manager',
                 'full_name' => 'Quản Lý Nhà Hàng',
                 'email' => 'manager@restaurant.com',
@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
                 'role_id' => $managerRole?->id,
             ],
             [
-                'is_active' => 'Y',
+                'is_active' => true,
                 'user_name' => 'cashier',
                 'full_name' => 'Thu Ngân',
                 'email' => 'cashier@restaurant.com',
@@ -45,7 +45,7 @@ class UserSeeder extends Seeder
                 'role_id' => $cashierRole?->id,
             ],
             [
-                'is_active' => 'Y',
+                'is_active' => true,
                 'user_name' => 'waiter',
                 'full_name' => 'Nhân Viên Phục Vụ Bàn',
                 'email' => 'waiter@restaurant.com',
@@ -53,7 +53,7 @@ class UserSeeder extends Seeder
                 'role_id' => $waiterRole?->id,
             ],
             [
-                'is_active' => 'Y',
+                'is_active' => true,
                 'user_name' => 'kitchen',
                 'full_name' => 'Nhân Viên Nhà Bếp',
                 'email' => 'kitchen@restaurant.com',

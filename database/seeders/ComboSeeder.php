@@ -19,7 +19,7 @@ class ComboSeeder extends Seeder
                 'name' => 'Combo trua 2 nguoi',
                 'remark' => 'Gom 1 mon chinh va 1 nuoc cho moi khach',
                 'base_price' => 169000,
-                'is_active' => ActiveStatus::YES,
+                'is_active' => true,
                 'is_customize_allowed' => true,
             ]
         );

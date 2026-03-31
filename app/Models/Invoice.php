@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Common\Constants\ActiveStatus;
-use App\Common\Constants\InvoiceStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -27,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon $issued_at
  * @property \Illuminate\Support\Carbon|null $paid_at
  * @property string|null $note
- * @property string $is_active
+ * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\CartOrder $cartOrder
@@ -106,7 +104,7 @@ class Invoice extends BaseModel
             'invoice_status' => 'string',
             'issued_at' => 'datetime',
             'paid_at' => 'datetime',
-            'is_active' => 'string',
+            'is_active' => 'boolean',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

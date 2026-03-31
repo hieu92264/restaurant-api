@@ -12,7 +12,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 /**
  * @property int $id
- * @property string $is_active
+ * @property bool $is_active
  * @property string $user_name
  * @property string $full_name
  * @property string $email
@@ -116,6 +116,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return [
             'email_verified_at' => 'datetime',
+            'is_active' => 'boolean',
             'password' => 'hashed',
         ];
     }

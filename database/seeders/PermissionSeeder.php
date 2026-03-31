@@ -16,7 +16,7 @@ class PermissionSeeder extends Seeder
         $userParent = Permission::updateOrCreate(
             ['code' => 'USER'],
             [
-                'is_active' => 'Y',
+                'is_active' => true,
                 'name' => 'User',
                 'code' => 'USER',
                 'remark' => 'Nhóm quyền người dùng',
@@ -60,7 +60,7 @@ class PermissionSeeder extends Seeder
         foreach ($userPermissions as $permission) {
             Permission::updateOrCreate(
                 ['code' => $permission['code']],
-                array_merge(['is_active' => 'Y'], $permission)
+                array_merge(['is_active' => true], $permission)
             );
         }
 
@@ -99,7 +99,7 @@ class PermissionSeeder extends Seeder
         foreach ($rolePermissions as $permission) {
             Permission::updateOrCreate(
                 ['code' => $permission['code']],
-                array_merge(['is_active' => 'Y'], $permission)
+                array_merge(['is_active' => true], $permission)
             );
         }
 
@@ -107,7 +107,7 @@ class PermissionSeeder extends Seeder
         $permissionParent = Permission::updateOrCreate(
             ['code' => 'PERMISSION'],
             [
-                'is_active' => 'Y',
+                'is_active' => true,
                 'name' => 'Permission',
                 'code' => 'PERMISSION',
                 'remark' => 'Nhóm quyền phân quyền',
@@ -151,7 +151,7 @@ class PermissionSeeder extends Seeder
         foreach ($permissionCrud as $permission) {
             Permission::updateOrCreate(
                 ['code' => $permission['code']],
-                array_merge(['is_active' => 'Y'], $permission)
+                array_merge(['is_active' => true], $permission)
             );
         }
     }

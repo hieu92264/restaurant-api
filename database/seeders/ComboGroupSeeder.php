@@ -27,7 +27,7 @@ class ComboGroupSeeder extends Seeder
                     'combo_id' => $combo?->id,
                     'group_name' => $group['group_name'],
                 ],
-                $group + ['is_active' => ActiveStatus::YES]
+                $group + ['is_active' => true]
             );
         }
     }

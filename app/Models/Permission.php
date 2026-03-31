@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
- * @property string $is_active
+ * @property bool $is_active
  * @property string $name
  * @property string $code
  * @property string|null $remark
@@ -48,7 +48,9 @@ class Permission extends BaseModel
 
     protected $hidden = [];
 
-    protected $casts = [];
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 
     public function roles(): BelongsToMany
     {

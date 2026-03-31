@@ -8,6 +8,6 @@ final class ActiveStatus
 {
     use HasValues;
 
-    public const YES = 'Y';
-    public const NO = 'N';
+    public const YES = true;
+    public const NO = false;
 }

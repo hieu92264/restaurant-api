@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -13,12 +11,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $min_select
  * @property int $max_select
  * @property int $display_order
- * @property string $is_active
+ * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Combo $combo
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ComboGroupItem> $items
- * @property-read int|null $items_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ComboGroup newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ComboGroup newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ComboGroup query()
@@ -51,7 +47,7 @@ class ComboGroup extends BaseModel
             'min_select' => 'integer',
             'max_select' => 'integer',
             'display_order' => 'integer',
-            'is_active' => 'string',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -60,8 +56,4 @@ class ComboGroup extends BaseModel
         return $this->belongsTo(Combo::class, 'combo_id');
     }
 
-    public function items(): HasMany
-    {
-        return $this->hasMany(ComboGroupItem::class, 'combo_group_id');
-    }
 }

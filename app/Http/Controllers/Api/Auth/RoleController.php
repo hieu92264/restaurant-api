@@ -34,7 +34,7 @@ class RoleController extends Controller
     {
         $role = Role::query()->findOrFail($id);
         $role->update([
-            'is_active' => 'N',
+            'is_active' => false,
         ]);
 
         return $this->success(null, 'Xoá vai trò thành công.');

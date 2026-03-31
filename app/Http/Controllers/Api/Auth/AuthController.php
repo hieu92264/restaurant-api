@@ -17,7 +17,7 @@ class AuthController extends Controller
         if (!$token = auth('api')->attempt([
             $field => $data['username'],
             'password' => $data['password'],
-            'is_active' => 'Y',
+            'is_active' => true,
         ])) {
             return $this->error(null, 'Tên đăng nhập hoặc mật khẩu không đúng', Response::HTTP_FORBIDDEN);
         }
@@ -51,7 +51,7 @@ class AuthController extends Controller
         $user = auth('api')->user()->load([
             'role',
             //            'role.permissions' => function ($query) {
-            //                $query->where('is_active', 'Y')
+            //                $query->where('is_active', true)
             //                    ->select(
             //                        'permissions.id',
             //                        'permissions.name',

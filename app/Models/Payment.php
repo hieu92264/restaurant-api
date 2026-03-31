@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use App\Common\Constants\ActiveStatus;
-use App\Common\Constants\PaymentMethod;
-use App\Common\Constants\PaymentStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -19,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $status
  * @property int|null $confirmed_by_employee_id
  * @property string|null $note
- * @property string $is_active
+ * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\User|null $confirmedByEmployee
@@ -69,7 +66,7 @@ class Payment extends BaseModel
             'paid_time' => 'datetime',
             'status' => 'string',
             'confirmed_by_employee_id' => 'integer',
-            'is_active' => 'string',
+            'is_active' => 'boolean',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

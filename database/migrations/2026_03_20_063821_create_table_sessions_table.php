@@ -24,7 +24,7 @@ return new class extends Migration
             $table->dateTime('opened_at');
             $table->dateTime('closed_at')->nullable();
             $table->string('remark', 255)->nullable();
-            $table->char('is_active', 1)->default(ActiveStatus::YES);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

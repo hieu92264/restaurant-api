@@ -14,9 +14,9 @@ class TableAreaSeeder extends Seeder
     public function run(): void
     {
         $areas = [
-            ['code' => 'AREA_1', 'name' => 'Tang 1', 'sort_order' => 1, 'is_active' => ActiveStatus::YES],
-            ['code' => 'GARDEN', 'name' => 'San vuon', 'sort_order' => 2, 'is_active' => ActiveStatus::YES],
-            ['code' => 'VIP_1', 'name' => 'Phong VIP 1', 'sort_order' => 3, 'is_active' => ActiveStatus::YES],
+            ['code' => 'AREA_1', 'name' => 'Tang 1', 'sort_order' => 1, 'is_active' => true],
+            ['code' => 'GARDEN', 'name' => 'San vuon', 'sort_order' => 2, 'is_active' => true],
+            ['code' => 'VIP_1', 'name' => 'Phong VIP 1', 'sort_order' => 3, 'is_active' => true],
         ];
 
         foreach ($areas as $area) {

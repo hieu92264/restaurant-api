@@ -57,7 +57,7 @@ class TableSessionSeeder extends Seeder
                     'status' => $sessionData['status'],
                     'closed_at' => $sessionData['closed_at'],
                     'remark' => $sessionData['remark'],
-                    'is_active' => ActiveStatus::YES,
+                    'is_active' => true,
                 ]
             );
         }

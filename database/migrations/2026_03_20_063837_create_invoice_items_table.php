@@ -15,8 +15,6 @@ return new class extends Migration
         Schema::create('invoice_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('invoice_id')->constrained('invoices');
-            $table->foreignId('menu_item_id')->nullable()->constrained('menu_items')->nullOnDelete();
-            $table->foreignId('variant_id')->nullable()->constrained('menu_item_variants')->nullOnDelete();
             $table->foreignId('combo_id')->nullable()->constrained('combos')->nullOnDelete();
             $table->string('item_name_snapshot', 150);
             $table->string('variant_name_snapshot', 150)->nullable();
@@ -26,7 +24,7 @@ return new class extends Migration
             $table->decimal('unit_final_price', 12, 2);
             $table->decimal('line_total', 12, 2);
             $table->string('item_note', 255)->nullable();
-            $table->char('is_active', 1)->default(ActiveStatus::YES);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

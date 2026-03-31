@@ -14,31 +14,31 @@ class RoleSeeder extends Seeder
     {
         $roles = [
             [
-                'is_active' => 'Y',
+                'is_active' => true,
                 'name' => 'Chủ nhà hàng',
                 'code' => 'OWNER',
                 'remark' => 'Toàn quyền hệ thống',
             ],
             [
-                'is_active' => 'Y',
+                'is_active' => true,
                 'name' => 'Quản lý',
                 'code' => 'MANAGER',
                 'remark' => 'Quản lý vận hành nhà hàng',
             ],
             [
-                'is_active' => 'Y',
+                'is_active' => true,
                 'name' => 'Thu ngân',
                 'code' => 'CASHIER',
                 'remark' => 'Quản lý thanh toán hóa đơn',
             ],
             [
-                'is_active' => 'Y',
+                'is_active' => true,
                 'name' => 'Nhân viên phục vụ bàn',
                 'code' => 'WAITER',
                 'remark' => 'Phục vụ bàn và hỗ trợ khách',
             ],
             [
-                'is_active' => 'Y',
+                'is_active' => true,
                 'name' => 'Nhà bếp',
                 'code' => 'KITCHEN',
                 'remark' => 'Chuẩn bị món ăn',

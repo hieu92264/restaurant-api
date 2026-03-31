@@ -34,7 +34,7 @@ class PaymentSeeder extends Seeder
                 'status' => PaymentStatus::SUCCESS,
                 'confirmed_by_employee_id' => $cashier?->id,
                 'note' => 'Thanh toan tien mat va tra lai 8.000',
-                'is_active' => ActiveStatus::YES,
+                'is_active' => true,
             ]
         );
     }

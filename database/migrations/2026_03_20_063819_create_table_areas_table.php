@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('code', 20)->unique();
             $table->string('name', 100);
             $table->integer('sort_order')->default(0);
-            $table->char('is_active', 1)->default(ActiveStatus::YES);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

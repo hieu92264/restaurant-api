@@ -27,7 +27,7 @@ return new class extends Migration
                 ->default(PaymentStatus::PENDING);
             $table->foreignId('confirmed_by_employee_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('note', 255)->nullable();
-            $table->char('is_active', 1)->default(ActiveStatus::YES);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

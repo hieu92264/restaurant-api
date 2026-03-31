@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Common\Constants\ActiveStatus;
-use App\Common\Constants\CartOrderStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -21,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property numeric $tax_amount
  * @property numeric $total_amount
  * @property string|null $remark
- * @property string $is_active
+ * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\User $createdByEmployee
@@ -79,7 +77,7 @@ class CartOrder extends BaseModel
             'service_charge_amount' => 'decimal:2',
             'tax_amount' => 'decimal:2',
             'total_amount' => 'decimal:2',
-            'is_active' => 'string',
+            'is_active' => 'boolean',
         ];
     }
 

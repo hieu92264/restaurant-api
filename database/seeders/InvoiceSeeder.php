@@ -43,7 +43,7 @@ class InvoiceSeeder extends Seeder
                 'issued_at' => '2026-03-20 12:30:00',
                 'paid_at' => '2026-03-20 12:35:00',
                 'note' => 'Khach thanh toan mot lan',
-                'is_active' => ActiveStatus::YES,
+                'is_active' => true,
             ]
         );
     }

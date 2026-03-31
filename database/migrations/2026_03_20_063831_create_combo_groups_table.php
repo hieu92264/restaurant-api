@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('min_select')->default(1);
             $table->integer('max_select')->default(1);
             $table->integer('display_order')->default(0);
-            $table->char('is_active', 1)->default(ActiveStatus::YES);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

@@ -40,7 +40,7 @@ class UserController extends Controller
     {
         $user = User::query()->findOrFail($id);
         $user->update([
-            'is_active' => 'N',
+            'is_active' => false,
         ]);
 
         return $this->success(null, 'Xoá tài khoản thành công.');
