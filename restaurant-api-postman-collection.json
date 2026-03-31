@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "b065272b-f7b0-4a60-bba3-850a544f24a7",
+    "_postman_id": "f4d85b4b-b215-4e09-8b4d-52d5eb3c9e19",
     "name": "Restaurant API",
-    "description": "Postman collection synced with current Laravel routes.",
+    "description": "# Restaurant API\n\nCollection đúng với route hiện tại của project.\n\n## Cấu hình\n- `{{baseUrl}}`: `http://127.0.0.1:8000`\n- `{{apiPrefix}}`: `api/v1`\n- Bearer token dùng biến `{{accessToken}}`\n\n## Ghi chú\n- Chạy `Auth / Login` trước để lấy token.\n- `DELETE` hiện là soft delete qua `is_active = false`.\n- Có thể restore bằng `PATCH` với `{\"is_active\": true}`.\n- `categories.code` và `dishes.code` được backend tự sinh từ `name`.\n- `dishes.image` upload file và backend sẽ convert sang `.webp`.\n",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -16,103 +16,41 @@
     ]
   },
   "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://127.0.0.1:8000",
-      "type": "string"
-    },
-    {
-      "key": "apiPrefix",
-      "value": "api/v1",
-      "type": "string"
-    },
-    {
-      "key": "accessToken",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "userId",
-      "value": "1",
-      "type": "string"
-    },
-    {
-      "key": "roleId",
-      "value": "1",
-      "type": "string"
-    },
-    {
-      "key": "itemTypeId",
-      "value": "1",
-      "type": "string"
-    },
-    {
-      "key": "cookingMethodId",
-      "value": "1",
-      "type": "string"
-    },
-    {
-      "key": "menuCategoryId",
-      "value": "1",
-      "type": "string"
-    },
-    {
-      "key": "optionGroupId",
-      "value": "1",
-      "type": "string"
-    },
-    {
-      "key": "username",
-      "value": "owner",
-      "type": "string"
-    },
-    {
-      "key": "password",
-      "value": "12345678",
-      "type": "string"
-    }
+    { "key": "baseUrl", "value": "http://127.0.0.1:8000", "type": "string" },
+    { "key": "apiPrefix", "value": "api/v1", "type": "string" },
+    { "key": "accessToken", "value": "", "type": "string" },
+    { "key": "username", "value": "owner", "type": "string" },
+    { "key": "password", "value": "12345678", "type": "string" },
+    { "key": "userId", "value": "1", "type": "string" },
+    { "key": "roleId", "value": "1", "type": "string" },
+    { "key": "categoryId", "value": "1", "type": "string" },
+    { "key": "dishId", "value": "1", "type": "string" }
   ],
   "item": [
     {
       "name": "Auth",
+      "description": "API xác thực: login, refresh, me, logout.",
       "item": [
         {
           "name": "Login",
           "request": {
-            "auth": {
-              "type": "noauth"
-            },
+            "auth": { "type": "noauth" },
             "method": "POST",
             "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{baseUrl}}/{{apiPrefix}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "auth",
-                "login"
-              ]
-            }
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "auth", "login"]
+            },
+            "description": "Đăng nhập bằng `username` hoặc `email`.\n\nVí dụ body:\n```json\n{\n  \"username\": \"owner\",\n  \"password\": \"12345678\"\n}\n```"
           },
           "event": [
             {
@@ -120,107 +58,83 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "let jsonData = {};",
-                  "try { jsonData = pm.response.json(); } catch (e) {}",
-                  "const token = jsonData?.metadata?.access_token;",
-                  "if (token) {",
-                  "    pm.collectionVariables.set('accessToken', token);",
-                  "}"
+                  "const json = pm.response.json();",
+                  "const token = json?.metadata?.access_token;",
+                  "if (token) pm.collectionVariables.set('accessToken', token);"
                 ]
               }
             }
-          ],
-          "response": []
+          ]
         },
         {
           "name": "Refresh Token",
           "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
             "url": {
               "raw": "{{baseUrl}}/{{apiPrefix}}/auth/refresh",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "auth",
-                "refresh"
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "let jsonData = {};",
-                  "try { jsonData = pm.response.json(); } catch (e) {}",
-                  "const token = jsonData?.metadata?.access_token;",
-                  "if (token) {",
-                  "    pm.collectionVariables.set('accessToken', token);",
-                  "}"
-                ]
-              }
-            }
-          ],
-          "response": []
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "auth", "refresh"]
+            },
+            "description": "Làm mới token. Có thể gửi kèm Bearer token hiện tại."
+          }
         },
         {
           "name": "Me",
           "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
             "url": {
               "raw": "{{baseUrl}}/{{apiPrefix}}/auth/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "auth",
-                "me"
-              ]
-            }
-          },
-          "response": []
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "auth", "me"]
+            },
+            "description": "Lấy thông tin tài khoản đang đăng nhập."
+          }
         },
         {
           "name": "Logout",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
+            "header": [{ "key": "Accept", "value": "application/json" }],
             "url": {
               "raw": "{{baseUrl}}/{{apiPrefix}}/auth/logout",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "auth",
-                "logout"
-              ]
-            }
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "auth", "logout"]
+            },
+            "description": "Đăng xuất tài khoản hiện tại."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "API người dùng. Xóa là soft delete.",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/{{apiPrefix}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "users"]
+            },
+            "description": "Lấy danh sách user.\n\nGhi chú: route hiện yêu cầu role `MANAGER`."
+          }
+        },
+        {
+          "name": "Show User",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/{{apiPrefix}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "users", "{{userId}}"]
+            },
+            "description": "Lấy chi tiết user theo id."
           },
           "event": [
             {
@@ -228,873 +142,441 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "if (pm.response.code >= 200 && pm.response.code < 300) {",
-                  "    pm.collectionVariables.unset('accessToken');",
-                  "}"
+                  "const json = pm.response.json();",
+                  "const id = json?.metadata?.id;",
+                  "if (id) pm.collectionVariables.set('userId', String(id));"
                 ]
               }
             }
-          ],
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Users",
-      "item": [
-        {
-          "name": "List Users",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/{{apiPrefix}}/users",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "users"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Show User",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/{{apiPrefix}}/users/{{userId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "users",
-                "{{userId}}"
-              ]
-            }
-          },
-          "response": []
+          ]
         },
         {
           "name": "Create User",
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_name\": \"newuser\",\n  \"full_name\": \"Nguyen Van A\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"12345678\",\n  \"role_id\": 1\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n  \"user_name\": \"manager_02\",\n  \"full_name\": \"Quản lý ca tối\",\n  \"email\": \"manager02@example.com\",\n  \"password\": \"12345678\",\n  \"role_id\": {{roleId}}\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{baseUrl}}/{{apiPrefix}}/users",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "users"
-              ]
-            }
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "users"]
+            },
+            "description": "Tạo user mới.\n\nVí dụ body:\n```json\n{\n  \"user_name\": \"manager_02\",\n  \"full_name\": \"Quản lý ca tối\",\n  \"email\": \"manager02@example.com\",\n  \"password\": \"12345678\",\n  \"role_id\": 2\n}\n```"
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const id = json?.metadata?.id;",
+                  "if (id) pm.collectionVariables.set('userId', String(id));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Update User",
           "request": {
             "method": "PATCH",
             "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"full_name\": \"Nguyen Van A Updated\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n  \"full_name\": \"Quản lý ca tối - cập nhật\",\n  \"email\": \"manager02.updated@example.com\",\n  \"is_active\": true\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{baseUrl}}/{{apiPrefix}}/users/{{userId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "users",
-                "{{userId}}"
-              ]
-            }
-          },
-          "response": []
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "users", "{{userId}}"]
+            },
+            "description": "Cập nhật user.\n\nCó thể restore bằng body:\n```json\n{\n  \"is_active\": true\n}\n```"
+          }
         },
         {
           "name": "Delete User",
           "request": {
             "method": "DELETE",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
+            "header": [{ "key": "Accept", "value": "application/json" }],
             "url": {
               "raw": "{{baseUrl}}/{{apiPrefix}}/users/{{userId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "users",
-                "{{userId}}"
-              ]
-            }
-          },
-          "response": []
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "users", "{{userId}}"]
+            },
+            "description": "Ẩn user bằng `is_active = false`."
+          }
         }
       ]
     },
     {
       "name": "Roles",
+      "description": "API vai trò. Xóa là soft delete.",
       "item": [
         {
           "name": "List Roles",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
+            "header": [{ "key": "Accept", "value": "application/json" }],
             "url": {
               "raw": "{{baseUrl}}/{{apiPrefix}}/roles",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "roles"
-              ]
-            }
-          },
-          "response": []
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "roles"]
+            },
+            "description": "Lấy danh sách vai trò."
+          }
         },
         {
           "name": "Show Role",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
+            "header": [{ "key": "Accept", "value": "application/json" }],
             "url": {
               "raw": "{{baseUrl}}/{{apiPrefix}}/roles/{{roleId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "roles",
-                "{{roleId}}"
-              ]
-            }
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "roles", "{{roleId}}"]
+            },
+            "description": "Lấy chi tiết role theo id."
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const id = json?.metadata?.id;",
+                  "if (id) pm.collectionVariables.set('roleId', String(id));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create Role",
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Manager\",\n  \"code\": \"MANAGER\",\n  \"remark\": \"Manager role\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n  \"name\": \"Giám sát\",\n  \"code\": \"SUPERVISOR\",\n  \"remark\": \"Giám sát vận hành trong ca\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{baseUrl}}/{{apiPrefix}}/roles",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "roles"
-              ]
-            }
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "roles"]
+            },
+            "description": "Tạo role mới.\n\nVí dụ body:\n```json\n{\n  \"name\": \"Giám sát\",\n  \"code\": \"SUPERVISOR\",\n  \"remark\": \"Giám sát vận hành trong ca\"\n}\n```"
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const id = json?.metadata?.id;",
+                  "if (id) pm.collectionVariables.set('roleId', String(id));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Update Role",
           "request": {
             "method": "PATCH",
             "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"remark\": \"Manager role updated\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n  \"name\": \"Giám sát ca\",\n  \"remark\": \"Vai trò giám sát ca làm việc\",\n  \"is_active\": true\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{baseUrl}}/{{apiPrefix}}/roles/{{roleId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "roles",
-                "{{roleId}}"
-              ]
-            }
-          },
-          "response": []
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "roles", "{{roleId}}"]
+            },
+            "description": "Cập nhật role. Có thể restore với `is_active = true`."
+          }
         },
         {
           "name": "Delete Role",
           "request": {
             "method": "DELETE",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
+            "header": [{ "key": "Accept", "value": "application/json" }],
             "url": {
               "raw": "{{baseUrl}}/{{apiPrefix}}/roles/{{roleId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "roles",
-                "{{roleId}}"
-              ]
-            }
-          },
-          "response": []
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "roles", "{{roleId}}"]
+            },
+            "description": "Ẩn role bằng `is_active = false`."
+          }
         }
       ]
     },
     {
       "name": "Menu",
+      "description": "API thực đơn mới gồm `categories` và `dishes`.",
       "item": [
         {
-          "name": "Item Types",
+          "name": "Categories",
+          "description": "API danh mục món ăn. `code` được backend tự sinh từ `name`.",
           "item": [
             {
-              "name": "List Item Types",
+              "name": "List Categories",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
+                "header": [{ "key": "Accept", "value": "application/json" }],
                 "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/item-types",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "item-types"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Create Item Type",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"code\": \"FOOD\",\n  \"name\": \"Mon an\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/categories",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{apiPrefix}}", "menu", "categories"]
                 },
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/item-types/store",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "item-types",
-                    "store"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Update Item Type",
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"name\": \"Do an\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/item-types/update/{{itemTypeId}}",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "item-types",
-                    "update",
-                    "{{itemTypeId}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Delete Item Type",
-              "request": {
-                "method": "DELETE",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/item-types/delete/{{itemTypeId}}",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "item-types",
-                    "delete",
-                    "{{itemTypeId}}"
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
-          "name": "Cooking Methods",
-          "item": [
-            {
-              "name": "List Cooking Methods",
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/cooking-methods",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "cooking-methods"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Create Cooking Method",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"code\": \"GRILL\",\n  \"name\": \"Nuong\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/cooking-methods/store",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "cooking-methods",
-                    "store"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Update Cooking Method",
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"name\": \"Ap chao\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/cooking-methods/update/{{cookingMethodId}}",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "cooking-methods",
-                    "update",
-                    "{{cookingMethodId}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Delete Cooking Method",
-              "request": {
-                "method": "DELETE",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/cooking-methods/delete/{{cookingMethodId}}",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "cooking-methods",
-                    "delete",
-                    "{{cookingMethodId}}"
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
-          "name": "Menu Categories",
-          "item": [
-            {
-              "name": "List Menu Categories",
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/menu-categories",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "menu-categories"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Create Menu Category",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"parent_id\": null,\n  \"item_type_id\": 1,\n  \"code\": \"MON-NUONG\",\n  \"name\": \"Mon nuong\",\n  \"sort_order\": 1\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/menu-categories/store",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "menu-categories",
-                    "store"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Update Menu Category",
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"name\": \"Mon nuong dac biet\",\n  \"parent_id\": null\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/menu-categories/update/{{menuCategoryId}}",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "menu-categories",
-                    "update",
-                    "{{menuCategoryId}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Delete Menu Category",
-              "request": {
-                "method": "DELETE",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/menu-categories/delete/{{menuCategoryId}}",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "menu-categories",
-                    "delete",
-                    "{{menuCategoryId}}"
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
-          "name": "Option Groups",
-          "item": [
-            {
-              "name": "List Option Groups",
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/option-groups",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "option-groups"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Create Option Group",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"code\": \"SIZE\",\n  \"name\": \"Kich thuoc\",\n  \"selection_type\": \"SINGLE\",\n  \"is_required\": true,\n  \"min_select\": 1,\n  \"max_select\": 1,\n  \"display_order\": 1\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/option-groups/store",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "option-groups",
-                    "store"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Update Option Group",
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"name\": \"Size do uong\",\n  \"max_select\": null\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/option-groups/update/{{optionGroupId}}",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "option-groups",
-                    "update",
-                    "{{optionGroupId}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Delete Option Group",
-              "request": {
-                "method": "DELETE",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/option-groups/delete/{{optionGroupId}}",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "{{apiPrefix}}",
-                    "menu",
-                    "option-groups",
-                    "delete",
-                    "{{optionGroupId}}"
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Default Laravel",
-      "item": [
-        {
-          "name": "Current Sanctum User",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
+                "description": "Lấy danh sách category đang active."
               }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/{{apiPrefix}}/user",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "{{apiPrefix}}",
-                "user"
+            },
+            {
+              "name": "Show Category",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/categories/{{categoryId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{apiPrefix}}", "menu", "categories", "{{categoryId}}"]
+                },
+                "description": "Lấy chi tiết category theo id. Response có `parent`, `children`, `dishes`."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const json = pm.response.json();",
+                      "const id = json?.metadata?.id;",
+                      "if (id) pm.collectionVariables.set('categoryId', String(id));"
+                    ]
+                  }
+                }
               ]
+            },
+            {
+              "name": "Create Category",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Accept", "value": "application/json" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"parent_id\": null,\n  \"name\": \"Món mới\",\n  \"description\": \"Danh mục món mới thêm vào menu\",\n  \"sort_order\": 10,\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/categories",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{apiPrefix}}", "menu", "categories"]
+                },
+                "description": "Tạo category mới.\n\nVí dụ body:\n```json\n{\n  \"parent_id\": null,\n  \"name\": \"Món mới\",\n  \"description\": \"Danh mục món mới thêm vào menu\",\n  \"sort_order\": 10,\n  \"is_active\": true\n}\n```\n\nGhi chú: không cần gửi `code`."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const json = pm.response.json();",
+                      "const id = json?.metadata?.id;",
+                      "if (id) pm.collectionVariables.set('categoryId', String(id));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update Category",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Accept", "value": "application/json" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Món mới cập nhật\",\n  \"description\": \"Danh mục sau khi cập nhật\",\n  \"sort_order\": 11,\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/categories/{{categoryId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{apiPrefix}}", "menu", "categories", "{{categoryId}}"]
+                },
+                "description": "Cập nhật category. Có thể restore bằng `{\"is_active\": true}`."
+              }
+            },
+            {
+              "name": "Delete Category",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/categories/{{categoryId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{apiPrefix}}", "menu", "categories", "{{categoryId}}"]
+                },
+                "description": "Ẩn category. Backend sẽ chặn nếu category còn danh mục con hoặc còn món ăn."
+              }
             }
-          },
-          "response": []
+          ]
+        },
+        {
+          "name": "Dishes",
+          "description": "API món ăn. `code` tự sinh từ `name`. Nếu có ảnh, backend convert sang `.webp`.",
+          "item": [
+            {
+              "name": "List Dishes",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/dishes",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{apiPrefix}}", "menu", "dishes"]
+                },
+                "description": "Lấy danh sách món ăn đang active."
+              }
+            },
+            {
+              "name": "Show Dish",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/dishes/{{dishId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{apiPrefix}}", "menu", "dishes", "{{dishId}}"]
+                },
+                "description": "Lấy chi tiết món ăn theo id."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const json = pm.response.json();",
+                      "const id = json?.metadata?.id;",
+                      "if (id) pm.collectionVariables.set('dishId', String(id));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Create Dish",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "category_id", "value": "{{categoryId}}", "type": "text" },
+                    { "key": "name", "value": "Cơm gà xối mỡ", "type": "text" },
+                    { "key": "description", "value": "Cơm gà giòn, ăn kèm dưa leo và nước mắm gừng", "type": "text" },
+                    { "key": "price", "value": "58000", "type": "text" },
+                    { "key": "original_price", "value": "65000", "type": "text" },
+                    { "key": "cost_price", "value": "28000", "type": "text" },
+                    { "key": "unit", "value": "phan", "type": "text" },
+                    { "key": "kitchen_name", "value": "Com ga", "type": "text" },
+                    { "key": "is_featured", "value": "true", "type": "text" },
+                    { "key": "is_new", "value": "true", "type": "text" },
+                    { "key": "status", "value": "active", "type": "text" },
+                    { "key": "available_from", "value": "06:00", "type": "text" },
+                    { "key": "available_to", "value": "21:30", "type": "text" },
+                    { "key": "sort_order", "value": "1", "type": "text" },
+                    { "key": "options_json[]", "value": "{\"name\":\"Size\",\"type\":\"single\",\"options\":[{\"label\":\"Thường\",\"price_delta\":0},{\"label\":\"Lớn\",\"price_delta\":10000}]}", "type": "text" },
+                    { "key": "tags_json[]", "value": "best_seller", "type": "text" },
+                    { "key": "tags_json[]", "value": "new", "type": "text" }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/dishes",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{apiPrefix}}", "menu", "dishes"]
+                },
+                "description": "Tạo món ăn mới.\n\nGhi chú:\n- Dùng `form-data`\n- Không cần gửi `code`\n- Nếu thêm `image`, backend sẽ convert sang `.webp`\n\nVí dụ body chính:\n- `category_id`\n- `name`\n- `price`\n- `status`\n- `options_json[]`\n- `tags_json[]`\n"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const json = pm.response.json();",
+                      "const id = json?.metadata?.id;",
+                      "if (id) pm.collectionVariables.set('dishId', String(id));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update Dish",
+              "request": {
+                "method": "PATCH",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "name", "value": "Cơm gà xối mỡ đặc biệt", "type": "text" },
+                    { "key": "price", "value": "62000", "type": "text" },
+                    { "key": "is_featured", "value": "true", "type": "text" },
+                    { "key": "is_active", "value": "true", "type": "text" }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/dishes/{{dishId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{apiPrefix}}", "menu", "dishes", "{{dishId}}"]
+                },
+                "description": "Cập nhật món ăn. Có thể restore bằng `is_active = true`. Có thể gửi `image` mới để thay ảnh cũ."
+              }
+            },
+            {
+              "name": "Delete Dish",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": {
+                  "raw": "{{baseUrl}}/{{apiPrefix}}/menu/dishes/{{dishId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{apiPrefix}}", "menu", "dishes", "{{dishId}}"]
+                },
+                "description": "Ẩn món ăn bằng `is_active = false`."
+              }
+            }
+          ]
         }
       ]
     }
