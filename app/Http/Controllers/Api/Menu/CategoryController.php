@@ -15,7 +15,7 @@ class CategoryController extends Controller
     public function index(): JsonResponse
     {
         $categories = Category::query()
-            ->with('children')
+            ->with(['dishes', 'children'])
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get();
@@ -106,9 +106,9 @@ class CategoryController extends Controller
 
         while (
             Category::withoutGlobalScopes()
-                ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
-                ->where('slug', $slug)
-                ->exists()
+            ->when($ignoreId, fn($query) => $query->where('id', '!=', $ignoreId))
+            ->where('slug', $slug)
+            ->exists()
         ) {
             $slug = $baseSlug . '-' . $counter;
             $counter++;

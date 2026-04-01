@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Dish extends BaseModel
 {
@@ -49,6 +51,18 @@ class Dish extends BaseModel
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function comboDishes(): HasMany
+    {
+        return $this->hasMany(ComboDish::class, 'dish_id');
+    }
+
+    public function combos(): BelongsToMany
+    {
+        return $this->belongsToMany(Combo::class, 'combo_dishes', 'dish_id', 'combo_id')
+            ->withPivot(['quantity', 'sort_order', 'is_active'])
+            ->withTimestamps();
     }
 
     public function getRouteKeyName(): string

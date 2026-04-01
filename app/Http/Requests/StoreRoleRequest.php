@@ -19,7 +19,7 @@ class StoreRoleRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255', 'unique:roles,name'],
-            'slug' => ['required', 'string', 'max:255', 'unique:roles,slug'],
+            'code' => ['required', 'string', 'max:255', 'unique:roles,code'],
             'remark' => ['nullable', 'string', 'max:255'],
         ];
     }

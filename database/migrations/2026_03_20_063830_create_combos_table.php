@@ -19,7 +19,6 @@ return new class extends Migration
             $table->text('remark')->nullable();
             $table->decimal('base_price', 12, 2);
             $table->boolean('is_active')->default(true);
-            $table->boolean('is_customize_allowed')->default(false);
             $table->timestamps();
         });
     }

@@ -99,12 +99,12 @@ class User extends Authenticatable implements JWTSubject
 
     public function hasAnyRole(array $roles): bool
     {
-        return $this->role && in_array($this->role->slug, $roles);
+        return $this->role && in_array($this->role->code, $roles, true);
     }
 
     public function hasRole(string $role): bool
     {
-        return $this->role && $this->role->slug === $role;
+        return $this->role && $this->role->code === $role;
     }
 
     /**

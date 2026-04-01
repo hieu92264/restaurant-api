@@ -13,11 +13,11 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $ownerRole = Role::where('slug', 'OWNER')->first();
-        $managerRole = Role::where('slug', 'MANAGER')->first();
-        $cashierRole = Role::where('slug', 'CASHIER')->first();
-        $waiterRole = Role::where('slug', 'WAITER')->first();
-        $kitchenRole = Role::where('slug', 'KITCHEN')->first();
+        $ownerRole = Role::where('code', 'OWNER')->first();
+        $managerRole = Role::where('code', 'MANAGER')->first();
+        $cashierRole = Role::where('code', 'CASHIER')->first();
+        $waiterRole = Role::where('code', 'WAITER')->first();
+        $kitchenRole = Role::where('code', 'KITCHEN')->first();
 
         $users = [
             [

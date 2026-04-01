@@ -14,7 +14,7 @@ class CheckRole
     public function handle(Request $request, Closure $next, string $roles = ''): Response
     {
         $user = auth('api')->user();
-        if (!$user) {
+        if (! $user) {
             return $this->error(null, 'Bạn chưa đăng nhập.', Response::HTTP_UNAUTHORIZED);
         }
 
@@ -30,15 +30,15 @@ class CheckRole
             ->filter()
             ->toArray();
 
-        $currentRole = $user->role?->slug;
+        $currentRole = $user->role?->code;
 
-        if (!$currentRole) {
+        if (! $currentRole) {
             return $this->error([
                 'role' => ['Tài khoản chưa được gán vai trò.'],
             ], 'Bạn không có quyền truy cập.', Response::HTTP_FORBIDDEN);
         }
 
-        if (!empty($denyRoles) && in_array($currentRole, $denyRoles, true)) {
+        if (! empty($denyRoles) && in_array($currentRole, $denyRoles, true)) {
             return $this->error([
                 'role' => ["Vai trò {$currentRole} không được phép truy cập tuyến này."],
             ], 'Bạn không có quyền truy cập.', Response::HTTP_FORBIDDEN);
@@ -48,7 +48,7 @@ class CheckRole
             return $next($request);
         }
 
-        if (!empty($allowRoles) && !in_array($currentRole, $allowRoles, true)) {
+        if (! empty($allowRoles) && ! in_array($currentRole, $allowRoles, true)) {
             return $this->error([
                 'role' => ["Vai trò {$currentRole} không được phép truy cập tuyến này."],
             ], 'Bạn không có quyền truy cập.', Response::HTTP_FORBIDDEN);

@@ -14,7 +14,7 @@ class AuthController extends Controller
         $data = $request->validated();
         $field = filter_var($data['username'], FILTER_VALIDATE_EMAIL) ? 'email' : 'user_name';
 
-        if (!$token = auth('api')->attempt([
+        if (! $token = auth('api')->attempt([
             $field => $data['username'],
             'password' => $data['password'],
             'is_active' => true,
@@ -60,7 +60,7 @@ class AuthController extends Controller
             'role' => [
                 'id' => $user->role?->id,
                 'name' => $user->role?->name,
-                'slug' => $user->role?->slug,
+                'code' => $user->role?->code,
                 'remark' => $user->role?->remark,
             ],
         ]);

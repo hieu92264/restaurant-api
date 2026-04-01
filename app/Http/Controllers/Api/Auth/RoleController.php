@@ -25,16 +25,16 @@ class RoleController extends Controller
         return $this->success($role, 'Tạo vai trò thành công.', Response::HTTP_CREATED);
     }
 
-    public function show(string $slug): JsonResponse
+    public function show(string $code): JsonResponse
     {
-        $role = Role::query()->where('slug', $slug)->firstOrFail();
+        $role = Role::query()->where('code', $code)->firstOrFail();
 
         return $this->success($role);
     }
 
-    public function destroy(string $slug): JsonResponse
+    public function destroy(string $code): JsonResponse
     {
-        $role = Role::query()->where('slug', $slug)->firstOrFail();
+        $role = Role::query()->where('code', $code)->firstOrFail();
 
         $role->update([
             'is_active' => false,
@@ -43,9 +43,9 @@ class RoleController extends Controller
         return $this->success(null, 'Xóa vai trò thành công.');
     }
 
-    public function update(UpdateRoleRequest $request, string $slug): JsonResponse
+    public function update(UpdateRoleRequest $request, string $code): JsonResponse
     {
-        $role = Role::query()->where('slug', $slug)->firstOrFail();
+        $role = Role::query()->where('code', $code)->firstOrFail();
 
         $role->update($request->validated());
 

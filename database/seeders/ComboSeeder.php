@@ -16,10 +16,9 @@ class ComboSeeder extends Seeder
             ['slug' => 'CB_TRUA_A'],
             [
                 'name' => 'Combo trưa 2 người',
-                'remark' => 'Gồm 1 món chính và 1 nước cho mỗi khách',
+                'remark' => 'Gồm 2 món chính và 2 nước uống cố định',
                 'base_price' => 169000,
                 'is_active' => true,
-                'is_customize_allowed' => true,
             ]
         );
     }

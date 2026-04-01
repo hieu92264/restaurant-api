@@ -13,11 +13,11 @@ class RolePermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $owner = Role::where('slug', 'OWNER')->first();
-        $manager = Role::where('slug', 'MANAGER')->first();
-        $cashier = Role::where('slug', 'CASHIER')->first();
-        $waiter = Role::where('slug', 'WAITER')->first();
-        $kitchen = Role::where('slug', 'KITCHEN')->first();
+        $owner = Role::where('code', 'OWNER')->first();
+        $manager = Role::where('code', 'MANAGER')->first();
+        $cashier = Role::where('code', 'CASHIER')->first();
+        $waiter = Role::where('code', 'WAITER')->first();
+        $kitchen = Role::where('code', 'KITCHEN')->first();
 
         $allPermissionIds = Permission::pluck('id')->toArray();
 

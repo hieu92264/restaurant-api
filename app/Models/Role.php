@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property bool $is_active
  * @property string $name
- * @property string $slug
+ * @property string $code
  * @property string|null $remark
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereIsActive($value)
@@ -34,7 +34,7 @@ class Role extends BaseModel
     protected $fillable = [
         'is_active',
         'name',
-        'slug',
+        'code',
         'remark',
     ];
 
@@ -56,6 +56,6 @@ class Role extends BaseModel
 
     public function getRouteKeyName(): string
     {
-        return 'slug';
+        return 'code';
     }
 }

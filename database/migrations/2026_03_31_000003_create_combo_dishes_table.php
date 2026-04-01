@@ -1,6 +1,5 @@
 <?php
 
-use App\Common\Constants\ActiveStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('combo_groups', function (Blueprint $table) {
+        Schema::create('combo_dishes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('combo_id')->constrained('combos');
-            $table->string('group_name', 100);
-            $table->integer('min_select')->default(1);
-            $table->integer('max_select')->default(1);
-            $table->integer('display_order')->default(0);
+            $table->foreignId('combo_id')->constrained('combos')->cascadeOnDelete();
+            $table->foreignId('dish_id')->constrained('dishes')->cascadeOnDelete();
+            $table->decimal('quantity', 10, 2)->default(1);
+            $table->integer('sort_order')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+
+            $table->unique(['combo_id', 'dish_id']);
         });
     }
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('combo_groups');
+        Schema::dropIfExists('combo_dishes');
     }
 };

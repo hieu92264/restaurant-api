@@ -20,8 +20,8 @@ Route::prefix('roles')
     ->controller(RoleController::class)
     ->group(function () {
         Route::get('/', 'index')->middleware('role:MANAGER');
-        Route::get('/{slug}', 'show')->middleware('role:MANAGER');
+        Route::get('/{code}', 'show')->middleware('role:MANAGER');
         Route::post('/', 'store')->middleware('role:');
-        Route::patch('/{slug}', 'update')->middleware('role:');
-        Route::delete('/{slug}', 'destroy')->middleware('role:');
+        Route::patch('/{code}', 'update')->middleware('role:');
+        Route::delete('/{code}', 'destroy')->middleware('role:');
     });
