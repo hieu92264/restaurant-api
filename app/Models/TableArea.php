@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
- * @property string $code
+ * @property string $slug
  * @property string $name
  * @property int $sort_order
  * @property bool $is_active
@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableArea newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableArea newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableArea query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|TableArea whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableArea whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableArea whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableArea whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableArea whereIsActive($value)
@@ -29,7 +29,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class TableArea extends BaseModel
 {
     protected $fillable = [
-        'code',
+        'slug',
         'name',
         'sort_order',
         'is_active',
@@ -46,5 +46,10 @@ class TableArea extends BaseModel
     public function restaurantTables(): HasMany
     {
         return $this->hasMany(RestaurantTable::class, 'area_id');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }

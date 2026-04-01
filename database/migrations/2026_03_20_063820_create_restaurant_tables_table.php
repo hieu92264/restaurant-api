@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('restaurant_tables', function (Blueprint $table) {
             $table->id();
             $table->foreignId('area_id')->nullable()->constrained('table_areas')->nullOnDelete();
-            $table->string('code', 20)->unique();
+            $table->string('slug', 20)->unique();
             $table->string('name', 50);
             $table->integer('capacity');
             $table->enum('status', RestaurantTableStatus::values())

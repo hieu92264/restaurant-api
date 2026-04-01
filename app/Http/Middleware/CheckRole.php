@@ -30,7 +30,7 @@ class CheckRole
             ->filter()
             ->toArray();
 
-        $currentRole = $user->role?->code;
+        $currentRole = $user->role?->slug;
 
         if (!$currentRole) {
             return $this->error([

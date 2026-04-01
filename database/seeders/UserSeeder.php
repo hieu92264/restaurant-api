@@ -13,17 +13,17 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $ownerRole = Role::where('code', 'OWNER')->first();
-        $managerRole = Role::where('code', 'MANAGER')->first();
-        $cashierRole = Role::where('code', 'CASHIER')->first();
-        $waiterRole = Role::where('code', 'WAITER')->first();
-        $kitchenRole = Role::where('code', 'KITCHEN')->first();
+        $ownerRole = Role::where('slug', 'OWNER')->first();
+        $managerRole = Role::where('slug', 'MANAGER')->first();
+        $cashierRole = Role::where('slug', 'CASHIER')->first();
+        $waiterRole = Role::where('slug', 'WAITER')->first();
+        $kitchenRole = Role::where('slug', 'KITCHEN')->first();
 
         $users = [
             [
                 'is_active' => true,
                 'user_name' => 'owner',
-                'full_name' => 'Chủ Nhà Hàng',
+                'full_name' => 'Chu Nha Hang',
                 'email' => 'owner@restaurant.com',
                 'password' => '12345678',
                 'role_id' => $ownerRole?->id,
@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
             [
                 'is_active' => true,
                 'user_name' => 'manager',
-                'full_name' => 'Quản Lý Nhà Hàng',
+                'full_name' => 'Quan Ly Nha Hang',
                 'email' => 'manager@restaurant.com',
                 'password' => '12345678',
                 'role_id' => $managerRole?->id,
@@ -39,7 +39,7 @@ class UserSeeder extends Seeder
             [
                 'is_active' => true,
                 'user_name' => 'cashier',
-                'full_name' => 'Thu Ngân',
+                'full_name' => 'Thu Ngan',
                 'email' => 'cashier@restaurant.com',
                 'password' => '12345678',
                 'role_id' => $cashierRole?->id,
@@ -47,7 +47,7 @@ class UserSeeder extends Seeder
             [
                 'is_active' => true,
                 'user_name' => 'waiter',
-                'full_name' => 'Nhân Viên Phục Vụ Bàn',
+                'full_name' => 'Nhan Vien Phuc Vu Ban',
                 'email' => 'waiter@restaurant.com',
                 'password' => '12345678',
                 'role_id' => $waiterRole?->id,
@@ -55,7 +55,7 @@ class UserSeeder extends Seeder
             [
                 'is_active' => true,
                 'user_name' => 'kitchen',
-                'full_name' => 'Nhân Viên Nhà Bếp',
+                'full_name' => 'Nhan Vien Nha Bep',
                 'email' => 'kitchen@restaurant.com',
                 'password' => '12345678',
                 'role_id' => $kitchenRole?->id,

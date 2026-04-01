@@ -21,7 +21,7 @@ class RoleTest extends TestCase
             'id',
             'is_active',
             'name',
-            'code',
+            'slug',
             'remark',
             'created_at',
             'updated_at',
@@ -32,7 +32,7 @@ class RoleTest extends TestCase
     {
         $role = Role::query()->create([
             'name' => 'Manager',
-            'code' => 'MANAGER',
+            'slug' => 'MANAGER',
             'remark' => 'System manager role',
         ]);
 
@@ -40,22 +40,22 @@ class RoleTest extends TestCase
             'id' => $role->id,
             'is_active' => true,
             'name' => 'Manager',
-            'code' => 'MANAGER',
+            'slug' => 'MANAGER',
         ]);
     }
 
-    public function test_store_role_request_requires_unique_name_and_code(): void
+    public function test_store_role_request_requires_unique_name_and_slug(): void
     {
         Role::query()->create([
             'name' => 'Manager',
-            'code' => 'MANAGER',
+            'slug' => 'MANAGER',
             'remark' => 'Existing role',
         ]);
 
         $validator = Validator::make(
             [
                 'name' => 'Manager',
-                'code' => 'MANAGER',
+                'slug' => 'MANAGER',
                 'remark' => 'Duplicate role',
             ],
             (new StoreRoleRequest())->rules()
@@ -63,6 +63,6 @@ class RoleTest extends TestCase
 
         $this->assertTrue($validator->fails());
         $this->assertArrayHasKey('name', $validator->errors()->toArray());
-        $this->assertArrayHasKey('code', $validator->errors()->toArray());
+        $this->assertArrayHasKey('slug', $validator->errors()->toArray());
     }
 }

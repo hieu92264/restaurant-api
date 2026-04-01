@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Common\Constants\ActiveStatus;
 use App\Common\Constants\TableSessionStatus;
 use App\Models\RestaurantTable;
 use App\Models\TableSession;
@@ -21,29 +20,29 @@ class TableSessionSeeder extends Seeder
 
         $sessions = [
             [
-                'table_code' => 'A01',
+                'table_slug' => 'A01',
                 'opened_by_employee_id' => $waiter?->id,
                 'closed_by_employee_id' => null,
                 'guest_count' => 3,
                 'status' => TableSessionStatus::OPEN,
                 'opened_at' => '2026-03-20 18:30:00',
                 'closed_at' => null,
-                'remark' => 'Khach muon len mon tung dot',
+                'remark' => 'Khách muốn lên món từng đợt',
             ],
             [
-                'table_code' => 'G01',
+                'table_slug' => 'G01',
                 'opened_by_employee_id' => $waiter?->id,
                 'closed_by_employee_id' => $cashier?->id,
                 'guest_count' => 2,
                 'status' => TableSessionStatus::CLOSED,
                 'opened_at' => '2026-03-20 11:45:00',
                 'closed_at' => '2026-03-20 12:35:00',
-                'remark' => 'Khach yeu cau xuat hoa don cong ty',
+                'remark' => 'Khách yêu cầu xuất hóa đơn công ty',
             ],
         ];
 
         foreach ($sessions as $sessionData) {
-            $table = RestaurantTable::withoutGlobalScopes()->where('code', $sessionData['table_code'])->first();
+            $table = RestaurantTable::withoutGlobalScopes()->where('slug', $sessionData['table_slug'])->first();
 
             TableSession::withoutGlobalScopes()->updateOrCreate(
                 [

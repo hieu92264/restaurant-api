@@ -12,45 +12,43 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Parent: user
         $userParent = Permission::updateOrCreate(
-            ['code' => 'USER'],
+            ['slug' => 'USER'],
             [
                 'is_active' => true,
                 'name' => 'User',
-                'code' => 'USER',
+                'slug' => 'USER',
                 'remark' => 'Nhóm quyền người dùng',
                 'url' => '#',
                 'parent_id' => null,
             ]
         );
 
-        // CRUD user (parent = user)
         $userPermissions = [
             [
                 'name' => 'User Create',
-                'code' => 'USER_CREATE',
+                'slug' => 'USER_CREATE',
                 'remark' => 'Tạo người dùng',
                 'url' => '#',
                 'parent_id' => $userParent->id,
             ],
             [
                 'name' => 'User Read',
-                'code' => 'USER_READ',
+                'slug' => 'USER_READ',
                 'remark' => 'Xem người dùng',
                 'url' => '#',
                 'parent_id' => $userParent->id,
             ],
             [
                 'name' => 'User Update',
-                'code' => 'USER_UPDATE',
+                'slug' => 'USER_UPDATE',
                 'remark' => 'Cập nhật người dùng',
                 'url' => '#',
                 'parent_id' => $userParent->id,
             ],
             [
                 'name' => 'User Delete',
-                'code' => 'USER_DELETE',
+                'slug' => 'USER_DELETE',
                 'remark' => 'Xóa người dùng',
                 'url' => '#',
                 'parent_id' => $userParent->id,
@@ -59,37 +57,36 @@ class PermissionSeeder extends Seeder
 
         foreach ($userPermissions as $permission) {
             Permission::updateOrCreate(
-                ['code' => $permission['code']],
+                ['slug' => $permission['slug']],
                 array_merge(['is_active' => true], $permission)
             );
         }
 
-        // CRUD role (theo yêu cầu: parent = user)
         $rolePermissions = [
             [
                 'name' => 'Role Create',
-                'code' => 'ROLE_CREATE',
+                'slug' => 'ROLE_CREATE',
                 'remark' => 'Tạo vai trò',
                 'url' => '#',
                 'parent_id' => $userParent->id,
             ],
             [
                 'name' => 'Role Read',
-                'code' => 'ROLE_READ',
+                'slug' => 'ROLE_READ',
                 'remark' => 'Xem vai trò',
                 'url' => '#',
                 'parent_id' => $userParent->id,
             ],
             [
                 'name' => 'Role Update',
-                'code' => 'ROLE_UPDATE',
+                'slug' => 'ROLE_UPDATE',
                 'remark' => 'Cập nhật vai trò',
                 'url' => '#',
                 'parent_id' => $userParent->id,
             ],
             [
                 'name' => 'Role Delete',
-                'code' => 'ROLE_DELETE',
+                'slug' => 'ROLE_DELETE',
                 'remark' => 'Xóa vai trò',
                 'url' => '#',
                 'parent_id' => $userParent->id,
@@ -98,50 +95,48 @@ class PermissionSeeder extends Seeder
 
         foreach ($rolePermissions as $permission) {
             Permission::updateOrCreate(
-                ['code' => $permission['code']],
+                ['slug' => $permission['slug']],
                 array_merge(['is_active' => true], $permission)
             );
         }
 
-        // Parent: permission
         $permissionParent = Permission::updateOrCreate(
-            ['code' => 'PERMISSION'],
+            ['slug' => 'PERMISSION'],
             [
                 'is_active' => true,
                 'name' => 'Permission',
-                'code' => 'PERMISSION',
+                'slug' => 'PERMISSION',
                 'remark' => 'Nhóm quyền phân quyền',
                 'url' => '#',
                 'parent_id' => null,
             ]
         );
 
-        // CRUD permission (parent = permission)
         $permissionCrud = [
             [
                 'name' => 'Permission Create',
-                'code' => 'PERMISSION_CREATE',
+                'slug' => 'PERMISSION_CREATE',
                 'remark' => 'Tạo quyền',
                 'url' => '#',
                 'parent_id' => $permissionParent->id,
             ],
             [
                 'name' => 'Permission Read',
-                'code' => 'PERMISSION_READ',
+                'slug' => 'PERMISSION_READ',
                 'remark' => 'Xem quyền',
                 'url' => '#',
                 'parent_id' => $permissionParent->id,
             ],
             [
                 'name' => 'Permission Update',
-                'code' => 'PERMISSION_UPDATE',
+                'slug' => 'PERMISSION_UPDATE',
                 'remark' => 'Cập nhật quyền',
                 'url' => '#',
                 'parent_id' => $permissionParent->id,
             ],
             [
                 'name' => 'Permission Delete',
-                'code' => 'PERMISSION_DELETE',
+                'slug' => 'PERMISSION_DELETE',
                 'remark' => 'Xóa quyền',
                 'url' => '#',
                 'parent_id' => $permissionParent->id,
@@ -150,7 +145,7 @@ class PermissionSeeder extends Seeder
 
         foreach ($permissionCrud as $permission) {
             Permission::updateOrCreate(
-                ['code' => $permission['code']],
+                ['slug' => $permission['slug']],
                 array_merge(['is_active' => true], $permission)
             );
         }

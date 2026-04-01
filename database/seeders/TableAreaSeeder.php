@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Common\Constants\ActiveStatus;
 use App\Models\TableArea;
 use Illuminate\Database\Seeder;
 
@@ -14,14 +13,14 @@ class TableAreaSeeder extends Seeder
     public function run(): void
     {
         $areas = [
-            ['code' => 'AREA_1', 'name' => 'Tang 1', 'sort_order' => 1, 'is_active' => true],
-            ['code' => 'GARDEN', 'name' => 'San vuon', 'sort_order' => 2, 'is_active' => true],
-            ['code' => 'VIP_1', 'name' => 'Phong VIP 1', 'sort_order' => 3, 'is_active' => true],
+            ['slug' => 'AREA_1', 'name' => 'Tầng 1', 'sort_order' => 1, 'is_active' => true],
+            ['slug' => 'GARDEN', 'name' => 'Sân vườn', 'sort_order' => 2, 'is_active' => true],
+            ['slug' => 'VIP_1', 'name' => 'Phòng VIP 1', 'sort_order' => 3, 'is_active' => true],
         ];
 
         foreach ($areas as $area) {
             TableArea::withoutGlobalScopes()->updateOrCreate(
-                ['code' => $area['code']],
+                ['slug' => $area['slug']],
                 $area
             );
         }

@@ -15,42 +15,42 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             [
-                'parent_code' => null,
+                'parent_slug' => null,
                 'name' => 'Món chính',
                 'description' => 'Các món ăn chính bán trong ngày',
                 'sort_order' => 1,
                 'is_active' => true,
             ],
             [
-                'parent_code' => null,
+                'parent_slug' => null,
                 'name' => 'Đồ uống',
                 'description' => 'Các loại nước uống của quán',
                 'sort_order' => 2,
                 'is_active' => true,
             ],
             [
-                'parent_code' => 'do_uong',
+                'parent_slug' => 'do-uong',
                 'name' => 'Trà sữa',
                 'description' => 'Nhóm trà sữa và đồ uống có sữa',
                 'sort_order' => 1,
                 'is_active' => true,
             ],
             [
-                'parent_code' => 'do_uong',
+                'parent_slug' => 'do-uong',
                 'name' => 'Cà phê',
                 'description' => 'Nhóm cà phê nóng và lạnh',
                 'sort_order' => 2,
                 'is_active' => true,
             ],
             [
-                'parent_code' => null,
+                'parent_slug' => null,
                 'name' => 'Tráng miệng',
                 'description' => 'Món ngọt và món ăn sau bữa chính',
                 'sort_order' => 3,
                 'is_active' => true,
             ],
             [
-                'parent_code' => null,
+                'parent_slug' => null,
                 'name' => 'Ăn vặt',
                 'description' => 'Các món ăn nhanh và khai vị',
                 'sort_order' => 4,
@@ -59,17 +59,17 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $item) {
-            $code = $this->makeCode($item['name']);
+            $slug = $this->makeSlug($item['name']);
             $parentId = null;
 
-            if ($item['parent_code']) {
+            if ($item['parent_slug']) {
                 $parentId = Category::withoutGlobalScopes()
-                    ->where('code', $item['parent_code'])
+                    ->where('slug', $item['parent_slug'])
                     ->value('id');
             }
 
             Category::withoutGlobalScopes()->updateOrCreate(
-                ['code' => $code],
+                ['slug' => $slug],
                 [
                     'parent_id' => $parentId,
                     'name' => $item['name'],
@@ -81,12 +81,8 @@ class CategorySeeder extends Seeder
         }
     }
 
-    private function makeCode(string $name): string
+    private function makeSlug(string $name): string
     {
-        return Str::of(Str::ascii($name))
-            ->lower()
-            ->replaceMatches('/[^a-z0-9]+/', '_')
-            ->trim('_')
-            ->value();
+        return Str::slug($name);
     }
 }

@@ -16,38 +16,38 @@ class RoleSeeder extends Seeder
             [
                 'is_active' => true,
                 'name' => 'Chủ nhà hàng',
-                'code' => 'OWNER',
+                'slug' => 'OWNER',
                 'remark' => 'Toàn quyền hệ thống',
             ],
             [
                 'is_active' => true,
                 'name' => 'Quản lý',
-                'code' => 'MANAGER',
+                'slug' => 'MANAGER',
                 'remark' => 'Quản lý vận hành nhà hàng',
             ],
             [
                 'is_active' => true,
                 'name' => 'Thu ngân',
-                'code' => 'CASHIER',
+                'slug' => 'CASHIER',
                 'remark' => 'Quản lý thanh toán hóa đơn',
             ],
             [
                 'is_active' => true,
                 'name' => 'Nhân viên phục vụ bàn',
-                'code' => 'WAITER',
+                'slug' => 'WAITER',
                 'remark' => 'Phục vụ bàn và hỗ trợ khách',
             ],
             [
                 'is_active' => true,
                 'name' => 'Nhà bếp',
-                'code' => 'KITCHEN',
+                'slug' => 'KITCHEN',
                 'remark' => 'Chuẩn bị món ăn',
             ],
         ];
 
         foreach ($roles as $role) {
             Role::updateOrCreate(
-                ['code' => $role['code']],
+                ['slug' => $role['slug']],
                 $role
             );
         }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
- * @property string $code
+ * @property string $slug
  * @property string $name
  * @property string|null $remark
  * @property numeric $base_price
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereBasePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereIsActive($value)
@@ -37,7 +37,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Combo extends BaseModel
 {
     protected $fillable = [
-        'code',
+        'slug',
         'name',
         'remark',
         'base_price',
@@ -69,5 +69,10 @@ class Combo extends BaseModel
     public function invoiceItems(): HasMany
     {
         return $this->hasMany(InvoiceItem::class, 'combo_id');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }

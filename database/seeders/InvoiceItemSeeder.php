@@ -17,14 +17,14 @@ class InvoiceItemSeeder extends Seeder
         $invoice = Invoice::withoutGlobalScopes()->where('no', 'INV-20260320-000001')->first();
 
         $items = [
-            ['combo_code' => null, 'item_name_snapshot' => 'Tra dao cam sa', 'variant_name_snapshot' => 'Size M', 'quantity' => 1, 'base_unit_price' => 45000, 'option_total_price' => 0, 'unit_final_price' => 45000, 'line_total' => 45000, 'item_note' => null],
-            ['combo_code' => null, 'item_name_snapshot' => 'Coca cola lon', 'variant_name_snapshot' => null, 'quantity' => 2, 'base_unit_price' => 18000, 'option_total_price' => 0, 'unit_final_price' => 18000, 'line_total' => 36000, 'item_note' => null],
-            ['combo_code' => 'CB_TRUA_A', 'item_name_snapshot' => 'Combo trua 2 nguoi', 'variant_name_snapshot' => 'Com rang hai san', 'quantity' => 1, 'base_unit_price' => 16000, 'option_total_price' => 0, 'unit_final_price' => 16000, 'line_total' => 16000, 'item_note' => 'Bo sung trong combo'],
+            ['combo_slug' => null, 'item_name_snapshot' => 'Trà đào cam sả', 'variant_name_snapshot' => 'Size M', 'quantity' => 1, 'base_unit_price' => 45000, 'option_total_price' => 0, 'unit_final_price' => 45000, 'line_total' => 45000, 'item_note' => null],
+            ['combo_slug' => null, 'item_name_snapshot' => 'Coca Cola lon', 'variant_name_snapshot' => null, 'quantity' => 2, 'base_unit_price' => 18000, 'option_total_price' => 0, 'unit_final_price' => 18000, 'line_total' => 36000, 'item_note' => null],
+            ['combo_slug' => 'CB_TRUA_A', 'item_name_snapshot' => 'Combo trưa 2 người', 'variant_name_snapshot' => 'Cơm rang hải sản', 'quantity' => 1, 'base_unit_price' => 16000, 'option_total_price' => 0, 'unit_final_price' => 16000, 'line_total' => 16000, 'item_note' => 'Bổ sung trong combo'],
         ];
 
         foreach ($items as $item) {
-            $combo = $item['combo_code']
-                ? Combo::withoutGlobalScopes()->where('code', $item['combo_code'])->first()
+            $combo = $item['combo_slug']
+                ? Combo::withoutGlobalScopes()->where('slug', $item['combo_slug'])->first()
                 : null;
 
             InvoiceItem::withoutGlobalScopes()->updateOrCreate(

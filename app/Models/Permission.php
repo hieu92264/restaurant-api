@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property bool $is_active
  * @property string $name
- * @property string $code
+ * @property string $slug
  * @property string|null $remark
  * @property string|null $url
  * @property int|null $parent_id
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission whereIsActive($value)
@@ -40,7 +40,7 @@ class Permission extends BaseModel
     protected $fillable = [
         'is_active',
         'name',
-        'code',
+        'slug',
         'remark',
         'url',
         'parent_id',
@@ -65,5 +65,10 @@ class Permission extends BaseModel
     public function children(): HasMany
     {
         return $this->hasMany(Permission::class, 'parent_id', 'id');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }

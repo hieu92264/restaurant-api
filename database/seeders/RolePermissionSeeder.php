@@ -13,15 +13,15 @@ class RolePermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $owner = Role::where('code', 'OWNER')->first();
-        $manager = Role::where('code', 'MANAGER')->first();
-        $cashier = Role::where('code', 'CASHIER')->first();
-        $waiter = Role::where('code', 'WAITER')->first();
-        $kitchen = Role::where('code', 'KITCHEN')->first();
+        $owner = Role::where('slug', 'OWNER')->first();
+        $manager = Role::where('slug', 'MANAGER')->first();
+        $cashier = Role::where('slug', 'CASHIER')->first();
+        $waiter = Role::where('slug', 'WAITER')->first();
+        $kitchen = Role::where('slug', 'KITCHEN')->first();
 
         $allPermissionIds = Permission::pluck('id')->toArray();
 
-        $managerPermissionIds = Permission::whereIn('code', [
+        $managerPermissionIds = Permission::whereIn('slug', [
             'USER_READ',
             'USER_CREATE',
             'USER_UPDATE',
@@ -29,15 +29,15 @@ class RolePermissionSeeder extends Seeder
             'PERMISSION_READ',
         ])->pluck('id')->toArray();
 
-        $cashierPermissionIds = Permission::whereIn('code', [
+        $cashierPermissionIds = Permission::whereIn('slug', [
             'USER_READ',
         ])->pluck('id')->toArray();
 
-        $waiterPermissionIds = Permission::whereIn('code', [
+        $waiterPermissionIds = Permission::whereIn('slug', [
             'USER_READ',
         ])->pluck('id')->toArray();
 
-        $kitchenPermissionIds = Permission::whereIn('code', [
+        $kitchenPermissionIds = Permission::whereIn('slug', [
             'USER_READ',
         ])->pluck('id')->toArray();
 

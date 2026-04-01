@@ -71,14 +71,14 @@ class User extends Authenticatable implements JWTSubject
         'remember_token',
     ];
 
-    public function hasPermission(string $permissionCode): bool
+    public function hasPermission(string $permissionSlug): bool
     {
         if (!$this->role) {
             return false;
         }
 
         return $this->role->permissions()
-            ->where('code', $permissionCode)
+            ->where('slug', $permissionSlug)
             ->exists();
     }
 
@@ -99,12 +99,12 @@ class User extends Authenticatable implements JWTSubject
 
     public function hasAnyRole(array $roles): bool
     {
-        return $this->role && in_array($this->role->code, $roles);
+        return $this->role && in_array($this->role->slug, $roles);
     }
 
     public function hasRole(string $role): bool
     {
-        return $this->role && $this->role->code === $role;
+        return $this->role && $this->role->slug === $role;
     }
 
     /**

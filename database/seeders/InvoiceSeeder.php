@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Common\Constants\ActiveStatus;
 use App\Common\Constants\InvoiceStatus;
 use App\Models\CartOrder;
 use App\Models\Invoice;
@@ -20,7 +19,7 @@ class InvoiceSeeder extends Seeder
     {
         $cashier = User::where('user_name', 'cashier')->first();
         $order = CartOrder::withoutGlobalScopes()->where('order_no', 'ORD20260320-0002')->first();
-        $table = RestaurantTable::withoutGlobalScopes()->where('code', 'G01')->first();
+        $table = RestaurantTable::withoutGlobalScopes()->where('slug', 'G01')->first();
         $session = TableSession::withoutGlobalScopes()->where('table_id', $table?->id)->where('opened_at', '2026-03-20 11:45:00')->first();
 
         Invoice::withoutGlobalScopes()->updateOrCreate(
@@ -30,7 +29,7 @@ class InvoiceSeeder extends Seeder
                 'session_id' => $session?->id,
                 'table_id' => $table?->id,
                 'created_by_employee_id' => $cashier?->id,
-                'customer_name' => 'Cong ty ABC',
+                'customer_name' => 'Công ty ABC',
                 'customer_phone' => '0909000001',
                 'subtotal_amount' => 97000,
                 'discount_amount' => 5000,
@@ -42,7 +41,7 @@ class InvoiceSeeder extends Seeder
                 'invoice_status' => InvoiceStatus::PAID,
                 'issued_at' => '2026-03-20 12:30:00',
                 'paid_at' => '2026-03-20 12:35:00',
-                'note' => 'Khach thanh toan mot lan',
+                'note' => 'Khách thanh toán một lần',
                 'is_active' => true,
             ]
         );

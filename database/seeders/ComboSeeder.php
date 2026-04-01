@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Common\Constants\ActiveStatus;
 use App\Models\Combo;
 use Illuminate\Database\Seeder;
 
@@ -14,10 +13,10 @@ class ComboSeeder extends Seeder
     public function run(): void
     {
         Combo::withoutGlobalScopes()->updateOrCreate(
-            ['code' => 'CB_TRUA_A'],
+            ['slug' => 'CB_TRUA_A'],
             [
-                'name' => 'Combo trua 2 nguoi',
-                'remark' => 'Gom 1 mon chinh va 1 nuoc cho moi khach',
+                'name' => 'Combo trưa 2 người',
+                'remark' => 'Gồm 1 món chính và 1 nước cho mỗi khách',
                 'base_price' => 169000,
                 'is_active' => true,
                 'is_customize_allowed' => true,

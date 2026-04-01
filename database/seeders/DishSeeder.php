@@ -16,14 +16,14 @@ class DishSeeder extends Seeder
     {
         $dishes = [
             [
-                'category_code' => 'mon_chinh',
+                'category_slug' => 'mon-chinh',
                 'name' => 'Cơm sườn nướng',
                 'description' => 'Cơm sườn nướng than, trứng ốp la và đồ chua',
                 'price' => 65000,
                 'original_price' => 75000,
                 'cost_price' => 32000,
-                'unit' => 'phan',
-                'kitchen_name' => 'Com suon',
+                'unit' => 'phần',
+                'kitchen_name' => 'Cơm sườn',
                 'is_featured' => true,
                 'is_new' => false,
                 'status' => 'active',
@@ -35,8 +35,8 @@ class DishSeeder extends Seeder
                         'name' => 'Size',
                         'type' => 'single',
                         'options' => [
-                            ['label' => 'Thuong', 'price_delta' => 0],
-                            ['label' => 'Lon', 'price_delta' => 10000],
+                            ['label' => 'Thường', 'price_delta' => 0],
+                            ['label' => 'Lớn', 'price_delta' => 10000],
                         ],
                     ],
                 ],
@@ -44,14 +44,14 @@ class DishSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'category_code' => 'mon_chinh',
+                'category_slug' => 'mon-chinh',
                 'name' => 'Bún bò Huế',
                 'description' => 'Bún bò với nước dùng đậm đà, chả và thịt bò',
                 'price' => 55000,
                 'original_price' => null,
                 'cost_price' => 26000,
-                'unit' => 'to',
-                'kitchen_name' => 'Bun bo',
+                'unit' => 'tô',
+                'kitchen_name' => 'Bún bò',
                 'is_featured' => true,
                 'is_new' => false,
                 'status' => 'active',
@@ -63,14 +63,14 @@ class DishSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'category_code' => 'mon_chinh',
+                'category_slug' => 'mon-chinh',
                 'name' => 'Mì xào hải sản',
                 'description' => 'Mì xào cùng tôm, mực và rau cải',
                 'price' => 72000,
                 'original_price' => 79000,
                 'cost_price' => 36000,
-                'unit' => 'phan',
-                'kitchen_name' => 'Mi xao',
+                'unit' => 'phần',
+                'kitchen_name' => 'Mì xào',
                 'is_featured' => false,
                 'is_new' => true,
                 'status' => 'active',
@@ -82,14 +82,14 @@ class DishSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'category_code' => 'tra_sua',
+                'category_slug' => 'tra-sua',
                 'name' => 'Trà sữa truyền thống',
                 'description' => 'Trà sữa vị truyền thống, thơm béo',
                 'price' => 39000,
                 'original_price' => 45000,
                 'cost_price' => 18000,
                 'unit' => 'ly',
-                'kitchen_name' => 'TS truyen thong',
+                'kitchen_name' => 'TS truyền thống',
                 'is_featured' => true,
                 'is_new' => false,
                 'status' => 'active',
@@ -98,7 +98,7 @@ class DishSeeder extends Seeder
                 'sort_order' => 1,
                 'options_json' => [
                     [
-                        'name' => 'Duong',
+                        'name' => 'Đường',
                         'type' => 'single',
                         'options' => [
                             ['label' => '100%', 'price_delta' => 0],
@@ -110,7 +110,7 @@ class DishSeeder extends Seeder
                         'name' => 'Topping',
                         'type' => 'multiple',
                         'options' => [
-                            ['label' => 'Tran chau den', 'price_delta' => 8000],
+                            ['label' => 'Trân châu đen', 'price_delta' => 8000],
                             ['label' => 'Pudding', 'price_delta' => 10000],
                         ],
                     ],
@@ -119,14 +119,14 @@ class DishSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'category_code' => 'tra_sua',
+                'category_slug' => 'tra-sua',
                 'name' => 'Trà đào cam sả',
                 'description' => 'Trà đào thanh mát cùng cam lát và sả',
                 'price' => 45000,
                 'original_price' => null,
                 'cost_price' => 19000,
                 'unit' => 'ly',
-                'kitchen_name' => 'Tra dao',
+                'kitchen_name' => 'Trà đào',
                 'is_featured' => true,
                 'is_new' => false,
                 'status' => 'active',
@@ -138,14 +138,14 @@ class DishSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'category_code' => 'ca_phe',
+                'category_slug' => 'ca-phe',
                 'name' => 'Cà phê sữa đá',
                 'description' => 'Cà phê phin truyền thống với sữa đặc',
                 'price' => 29000,
                 'original_price' => null,
                 'cost_price' => 12000,
                 'unit' => 'ly',
-                'kitchen_name' => 'Cafe sua',
+                'kitchen_name' => 'Cà phê sữa',
                 'is_featured' => false,
                 'is_new' => false,
                 'status' => 'active',
@@ -157,14 +157,14 @@ class DishSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'category_code' => 'ca_phe',
+                'category_slug' => 'ca-phe',
                 'name' => 'Bạc xỉu',
                 'description' => 'Thức uống sữa nhiều, cà phê nhẹ',
                 'price' => 32000,
                 'original_price' => null,
                 'cost_price' => 14000,
                 'unit' => 'ly',
-                'kitchen_name' => 'Bac xiu',
+                'kitchen_name' => 'Bạc xỉu',
                 'is_featured' => false,
                 'is_new' => true,
                 'status' => 'active',
@@ -176,13 +176,13 @@ class DishSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'category_code' => 'trang_mieng',
+                'category_slug' => 'trang-mieng',
                 'name' => 'Bánh flan',
                 'description' => 'Bánh flan mềm mịn, thơm mùi trứng sữa',
                 'price' => 22000,
                 'original_price' => null,
                 'cost_price' => 9000,
-                'unit' => 'phan',
+                'unit' => 'phần',
                 'kitchen_name' => 'Flan',
                 'is_featured' => false,
                 'is_new' => false,
@@ -195,14 +195,14 @@ class DishSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'category_code' => 'trang_mieng',
+                'category_slug' => 'trang-mieng',
                 'name' => 'Chè khúc bạch',
                 'description' => 'Chè thanh mát với khúc bạch và nhãn',
                 'price' => 30000,
                 'original_price' => 35000,
                 'cost_price' => 14000,
-                'unit' => 'chen',
-                'kitchen_name' => 'Khuc bach',
+                'unit' => 'chén',
+                'kitchen_name' => 'Khúc bạch',
                 'is_featured' => true,
                 'is_new' => false,
                 'status' => 'active',
@@ -214,14 +214,14 @@ class DishSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'category_code' => 'an_vat',
+                'category_slug' => 'an-vat',
                 'name' => 'Khoai tây chiên',
                 'description' => 'Khoai tây giòn, ăn kèm tương ớt và sốt mayo',
                 'price' => 35000,
                 'original_price' => null,
                 'cost_price' => 16000,
-                'unit' => 'phan',
-                'kitchen_name' => 'Khoai tay',
+                'unit' => 'phần',
+                'kitchen_name' => 'Khoai tây',
                 'is_featured' => false,
                 'is_new' => false,
                 'status' => 'active',
@@ -236,11 +236,11 @@ class DishSeeder extends Seeder
 
         foreach ($dishes as $item) {
             $categoryId = Category::withoutGlobalScopes()
-                ->where('code', $item['category_code'])
+                ->where('slug', $item['category_slug'])
                 ->value('id');
 
             Dish::withoutGlobalScopes()->updateOrCreate(
-                ['code' => $this->makeCode($item['name'])],
+                ['slug' => $this->makeSlug($item['name'])],
                 [
                     'category_id' => $categoryId,
                     'name' => $item['name'],
@@ -265,12 +265,8 @@ class DishSeeder extends Seeder
         }
     }
 
-    private function makeCode(string $name): string
+    private function makeSlug(string $name): string
     {
-        return Str::of(Str::ascii($name))
-            ->lower()
-            ->replaceMatches('/[^a-z0-9]+/', '_')
-            ->trim('_')
-            ->value();
+        return Str::slug($name);
     }
 }

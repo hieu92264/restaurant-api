@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Common\Constants\ActiveStatus;
 use App\Models\Combo;
 use App\Models\ComboGroup;
 use Illuminate\Database\Seeder;
@@ -14,11 +13,11 @@ class ComboGroupSeeder extends Seeder
      */
     public function run(): void
     {
-        $combo = Combo::withoutGlobalScopes()->where('code', 'CB_TRUA_A')->first();
+        $combo = Combo::withoutGlobalScopes()->where('slug', 'CB_TRUA_A')->first();
 
         $groups = [
-            ['group_name' => 'Chon mon chinh', 'min_select' => 1, 'max_select' => 2, 'display_order' => 1],
-            ['group_name' => 'Chon nuoc uong', 'min_select' => 1, 'max_select' => 2, 'display_order' => 2],
+            ['group_name' => 'Chọn món chính', 'min_select' => 1, 'max_select' => 2, 'display_order' => 1],
+            ['group_name' => 'Chọn nước uống', 'min_select' => 1, 'max_select' => 2, 'display_order' => 2],
         ];
 
         foreach ($groups as $group) {

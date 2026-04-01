@@ -8,7 +8,7 @@ class Dish extends BaseModel
 {
     protected $fillable = [
         'category_id',
-        'code',
+        'slug',
         'name',
         'description',
         'price',
@@ -49,5 +49,10 @@ class Dish extends BaseModel
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }

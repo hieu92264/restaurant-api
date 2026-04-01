@@ -9,7 +9,7 @@ class Category extends BaseModel
 {
     protected $fillable = [
         'parent_id',
-        'code',
+        'slug',
         'name',
         'description',
         'sort_order',
@@ -38,5 +38,10 @@ class Category extends BaseModel
     public function dishes(): HasMany
     {
         return $this->hasMany(Dish::class, 'category_id');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }

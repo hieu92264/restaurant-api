@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->boolean('is_active')->default(true);
             $table->string('name')->unique();
-            $table->string('code')->unique();
+            $table->string('slug')->unique();
             $table->string('remark')->nullable();
             $table->timestamps();
         });

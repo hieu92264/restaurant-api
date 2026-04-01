@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Common\Constants\ActiveStatus;
 use App\Common\Constants\CartOrderStatus;
 use App\Models\CartOrder;
 use App\Models\RestaurantTable;
@@ -18,8 +17,8 @@ class CartOrderSeeder extends Seeder
     public function run(): void
     {
         $waiter = User::where('user_name', 'waiter')->first();
-        $tableA01 = RestaurantTable::withoutGlobalScopes()->where('code', 'A01')->first();
-        $tableG01 = RestaurantTable::withoutGlobalScopes()->where('code', 'G01')->first();
+        $tableA01 = RestaurantTable::withoutGlobalScopes()->where('slug', 'A01')->first();
+        $tableG01 = RestaurantTable::withoutGlobalScopes()->where('slug', 'G01')->first();
         $openSession = TableSession::withoutGlobalScopes()->where('table_id', $tableA01?->id)->where('opened_at', '2026-03-20 18:30:00')->first();
         $closedSession = TableSession::withoutGlobalScopes()->where('table_id', $tableG01?->id)->where('opened_at', '2026-03-20 11:45:00')->first();
 
@@ -35,7 +34,7 @@ class CartOrderSeeder extends Seeder
                 'service_charge_amount' => 0,
                 'tax_amount' => 0,
                 'total_amount' => 126000,
-                'remark' => 'Ban dang phuc vu',
+                'remark' => 'Bàn đang phục vụ',
             ],
             [
                 'order_no' => 'ORD20260320-0002',
@@ -48,7 +47,7 @@ class CartOrderSeeder extends Seeder
                 'service_charge_amount' => 0,
                 'tax_amount' => 0,
                 'total_amount' => 92000,
-                'remark' => 'Da chuyen sang hoa don',
+                'remark' => 'Đã chuyển sang hóa đơn',
             ],
         ];
 

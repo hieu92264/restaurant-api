@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property int $id
  * @property int|null $area_id
- * @property string $code
+ * @property string $slug
  * @property string $name
  * @property int $capacity
  * @property string $status
@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereAreaId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereCapacity($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereIsActive($value)
@@ -40,7 +40,7 @@ class RestaurantTable extends BaseModel
 {
     protected $fillable = [
         'area_id',
-        'code',
+        'slug',
         'name',
         'capacity',
         'status',
@@ -75,5 +75,10 @@ class RestaurantTable extends BaseModel
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class, 'table_id');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }

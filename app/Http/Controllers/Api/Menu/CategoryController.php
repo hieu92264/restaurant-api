@@ -23,15 +23,19 @@ class CategoryController extends Controller
         return $this->success($categories);
     }
 
-    public function show(Category $category): JsonResponse
+    public function show(string $slug): JsonResponse
     {
+        $category = Category::query()
+            ->where('slug', $slug)
+            ->firstOrFail();
+
         return $this->success($category->load(['parent', 'children', 'dishes']));
     }
 
     public function store(StoreCategoryRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $data['code'] = $this->generateUniqueCode($data['name']);
+        $data['slug'] = $this->generateUniqueSlug($data['name']);
 
         $category = Category::create($data);
 
@@ -42,13 +46,13 @@ class CategoryController extends Controller
         );
     }
 
-    public function update(UpdateCategoryRequest $request, int $id): JsonResponse
+    public function update(UpdateCategoryRequest $request, string $slug): JsonResponse
     {
-        $category = Category::query()->findOrFail($id);
+        $category = Category::query()->where('slug', $slug)->firstOrFail();
         $data = $request->validated();
 
         if (array_key_exists('name', $data)) {
-            $data['code'] = $this->generateUniqueCode($data['name'], $category->id);
+            $data['slug'] = $this->generateUniqueSlug($data['name'], $category->id);
         }
 
         if (($data['parent_id'] ?? null) === $category->id) {
@@ -67,9 +71,12 @@ class CategoryController extends Controller
         );
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(string $slug): JsonResponse
     {
-        $category = Category::query()->withCount(['children', 'dishes'])->findOrFail($id);
+        $category = Category::query()
+            ->where('slug', $slug)
+            ->withCount(['children', 'dishes'])
+            ->firstOrFail();
 
         if ($category->children_count > 0 || $category->dishes_count > 0) {
             return $this->error(
@@ -86,31 +93,27 @@ class CategoryController extends Controller
         return $this->success(null, 'Ẩn danh mục thành công.');
     }
 
-    private function generateUniqueCode(string $name, ?int $ignoreId = null): string
+    private function generateUniqueSlug(string $name, ?int $ignoreId = null): string
     {
-        $baseCode = Str::of(Str::ascii($name))
-            ->lower()
-            ->replaceMatches('/[^a-z0-9]+/', '_')
-            ->trim('_')
-            ->value();
+        $baseSlug = Str::slug($name);
 
-        if ($baseCode === '') {
-            $baseCode = 'category';
+        if ($baseSlug === '') {
+            $baseSlug = 'category';
         }
 
-        $code = $baseCode;
+        $slug = $baseSlug;
         $counter = 2;
 
         while (
             Category::withoutGlobalScopes()
                 ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
-                ->where('code', $code)
+                ->where('slug', $slug)
                 ->exists()
         ) {
-            $code = $baseCode . '_' . $counter;
+            $slug = $baseSlug . '-' . $counter;
             $counter++;
         }
 
-        return $code;
+        return $slug;
     }
 }

@@ -11,19 +11,19 @@ Route::prefix('menu')
             ->controller(CategoryController::class)
             ->group(function () {
                 Route::get('/', 'index');
-                Route::get('/{category}', 'show');
+                Route::get('/{slug}', 'show');
                 Route::post('/', 'store');
-                Route::patch('/{id}', 'update');
-                Route::delete('/{id}', 'destroy');
+                Route::patch('/{slug}', 'update');
+                Route::delete('/{slug}', 'destroy');
             });
 
         Route::prefix('dishes')
             ->controller(DishController::class)
             ->group(function () {
                 Route::get('/', 'index');
-                Route::get('/{dish}', 'show');
+                Route::get('/{slug}', 'show');
                 Route::post('/', 'store');
-                Route::patch('/{id}', 'update');
-                Route::delete('/{id}', 'destroy');
+                Route::patch('/{slug}', 'update');
+                Route::delete('/{slug}', 'destroy');
             });
     });

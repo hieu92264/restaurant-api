@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('combos', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 30)->unique();
+            $table->string('slug', 30)->unique();
             $table->string('name', 150);
             $table->text('remark')->nullable();
             $table->decimal('base_price', 12, 2);
