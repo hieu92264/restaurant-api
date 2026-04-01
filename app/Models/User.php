@@ -16,6 +16,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @property string $user_name
  * @property string $full_name
  * @property string $email
+ * @property string|null $phone
  * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property string $password
  * @property int $role_id
@@ -36,6 +37,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIsActive($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRoleId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
@@ -57,6 +59,7 @@ class User extends Authenticatable implements JWTSubject
         'user_name',
         'full_name',
         'email',
+        'phone',
         'password',
         'role_id',
     ];
