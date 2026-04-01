@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "68488c30-1c63-4fd3-9947-9cc34dab894c",
     "name": "Restaurant API",
-    "description": "# Restaurant API\n\nCollection đúng với route hiện tại của project.\n\n## Cấu hình\n- `{{baseUrl}}`: `http://127.0.0.1:8000`\n- `{{apiPrefix}}`: `api/v1`\n- Bearer token dùng biến `{{accessToken}}`\n\n## Ghi chú\n- Chạy `Auth / Login` trước để lấy token.\n- `DELETE` hiện là soft delete qua `is_active = false`.\n- Có thể restore bằng `PATCH` với `{\"is_active\": true}`.\n- `categories.code` và `dishes.code` được backend tự sinh từ `name`.\n- `dishes.image` upload file và backend sẽ convert sang `.webp`.\n",
+    "description": "# Restaurant API\n\nCollection khớp với route hiện tại của project.\n\n## Cấu hình\n- `{{base_url}}`: ví dụ `http://127.0.0.1:8000/api/v1`\n- Bearer token dùng biến `{{access_token}}`\n\n## Ghi chú\n- Chạy `Auth / Login` trước để lấy token.\n- `DELETE` hiện là soft delete qua `is_active = false`.\n- Có thể restore bằng `PATCH` với `{\"is_active\": true}`.\n- `roles`, `categories`, `dishes` dùng `slug` cho các API detail/update/delete.\n- `users` hiện vẫn dùng `id` cho detail/update/delete.\n- `dishes.image` upload file và backend sẽ convert sang `.webp`.\n",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "38705991",
     "_collection_link": "https://go.postman.co/collection/38705991-68488c30-1c63-4fd3-9947-9cc34dab894c?source=collection_link"
@@ -10,6 +10,7 @@
   "item": [
     {
       "name": "Auth",
+      "description": "API xác thực: login, refresh, me, logout.",
       "item": [
         {
           "name": "Login",
@@ -17,14 +18,14 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
                 "exec": [
                   "const json = pm.response.json();",
                   "const token = json?.metadata?.access_token;",
                   "if (token) pm.environment.set('access_token', token); // Set access token base on current environment"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                ]
               }
             }
           ],
@@ -62,7 +63,7 @@
                 "login"
               ]
             },
-            "description": "Đăng nhập bằng `username` hoặc `email`.\n\nVí dụ body:\n\n``` json\n{\n  \"username\": \"owner\",\n  \"password\": \"12345678\"\n}\n\n ```"
+            "description": "Đăng nhập bằng `username` hoặc `email`."
           },
           "response": []
         },
@@ -138,11 +139,11 @@
           },
           "response": []
         }
-      ],
-      "description": "API xác thực: login, refresh, me, logout."
+      ]
     },
     {
       "name": "Users",
+      "description": "API người dùng. Xóa là soft delete.\n\n## Cấu trúc dữ liệu bảng `users`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của người dùng. |\n| `role_id` | bigint | Khóa ngoại liên kết tới bảng `roles`, xác định vai trò của user. |\n| `user_name` | varchar(255) | Tên đăng nhập duy nhất, có thể dùng để login. |\n| `full_name` | varchar(255) | Họ tên hiển thị của người dùng. |\n| `email` | varchar(255) | Email đăng nhập/liên hệ, duy nhất trong hệ thống. |\n| `password` | varchar(255) | Mật khẩu đã được hash. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` nghĩa là đã bị ẩn/khóa mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
       "item": [
         {
           "name": "List Users",
@@ -163,27 +164,12 @@
                 "users"
               ]
             },
-            "description": "Lấy danh sách user.\n\nGhi chú: route hiện yêu cầu role `MANAGER`."
+            "description": "Lấy danh sách user. Route hiện yêu cầu role `MANAGER`."
           },
           "response": []
         },
         {
           "name": "Show User",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const json = pm.response.json();",
-                  "const id = json?.metadata?.id;",
-                  "if (id) pm.collectionVariables.set('userId', String(id));"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
           "request": {
             "method": "GET",
             "header": [
@@ -193,13 +179,19 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/users/{{userId}}",
+              "raw": "{{base_url}}/users/:user_id",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "users",
-                "{{userId}}"
+                ":user_id"
+              ],
+              "variable": [
+                {
+                  "key": "user_id",
+                  "value": ""
+                }
               ]
             },
             "description": "Lấy chi tiết user theo id."
@@ -208,21 +200,6 @@
         },
         {
           "name": "Create User",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const json = pm.response.json();",
-                  "const id = json?.metadata?.id;",
-                  "if (id) pm.collectionVariables.set('userId', String(id));"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
           "request": {
             "method": "POST",
             "header": [
@@ -237,7 +214,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_name\": \"manager_02\",\n  \"full_name\": \"Quản lý ca tối\",\n  \"email\": \"manager02@example.com\",\n  \"password\": \"12345678\",\n  \"role_id\": {{roleId}}\n}",
+              "raw": "{\n  \"user_name\": \"manager_02\",\n  \"full_name\": \"Quản lý ca tối\",\n  \"email\": \"manager02@example.com\",\n  \"password\": \"12345678\",\n  \"role_id\": {{role_id}}\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -253,7 +230,7 @@
                 "users"
               ]
             },
-            "description": "Tạo user mới.\n\nVí dụ body:\n```json\n{\n  \"user_name\": \"manager_02\",\n  \"full_name\": \"Quản lý ca tối\",\n  \"email\": \"manager02@example.com\",\n  \"password\": \"12345678\",\n  \"role_id\": 2\n}\n```"
+            "description": "Tạo user mới."
           },
           "response": []
         },
@@ -296,7 +273,7 @@
                 }
               ]
             },
-            "description": "Cập nhật user.\n\nCó thể restore bằng body:\n```json\n{\n  \"is_active\": true\n}\n```"
+            "description": "Cập nhật user. Có thể restore bằng `{\"is_active\": true}`."
           },
           "response": []
         },
@@ -311,12 +288,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}//users/:user_id",
+              "raw": "{{base_url}}/users/:user_id",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "",
                 "users",
                 ":user_id"
               ],
@@ -331,11 +307,11 @@
           },
           "response": []
         }
-      ],
-      "description": "API người dùng. Xóa là soft delete."
+      ]
     },
     {
       "name": "Roles",
+      "description": "API vai trò. Xóa là soft delete. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `roles`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của vai trò. |\n| `name` | varchar(255) | Tên hiển thị của vai trò, ví dụ Quản lý, Thu ngân. |\n| `slug` | varchar(255) | Mã định danh duy nhất dùng trong API detail/update/delete. |\n| `remark` | varchar(255), nullable | Ghi chú mô tả trách nhiệm hoặc phạm vi vai trò. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
       "item": [
         {
           "name": "List Roles",
@@ -362,21 +338,6 @@
         },
         {
           "name": "Show Role",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const json = pm.response.json();",
-                  "const id = json?.metadata?.id;",
-                  "if (id) pm.collectionVariables.set('roleId', String(id));"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
           "request": {
             "method": "GET",
             "header": [
@@ -386,42 +347,27 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/roles/:role_id",
+              "raw": "{{base_url}}/roles/:role_slug",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "roles",
-                ":role_id"
+                ":role_slug"
               ],
               "variable": [
                 {
-                  "key": "role_id",
+                  "key": "role_slug",
                   "value": ""
                 }
               ]
             },
-            "description": "Lấy chi tiết role theo id."
+            "description": "Lấy chi tiết role theo slug."
           },
           "response": []
         },
         {
           "name": "Create Role",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const json = pm.response.json();",
-                  "const id = json?.metadata?.id;",
-                  "if (id) pm.collectionVariables.set('roleId', String(id));"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
           "request": {
             "method": "POST",
             "header": [
@@ -436,7 +382,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Giám sát\",\n  \"code\": \"SUPERVISOR\",\n  \"remark\": \"Giám sát vận hành trong ca\"\n}",
+              "raw": "{\n  \"name\": \"Giám sát\",\n  \"slug\": \"SUPERVISOR\",\n  \"remark\": \"Giám sát vận hành trong ca\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -452,7 +398,7 @@
                 "roles"
               ]
             },
-            "description": "Tạo role mới.\n\nVí dụ body:\n```json\n{\n  \"name\": \"Giám sát\",\n  \"code\": \"SUPERVISOR\",\n  \"remark\": \"Giám sát vận hành trong ca\"\n}\n```"
+            "description": "Tạo role mới."
           },
           "response": []
         },
@@ -480,17 +426,17 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/roles/:role_id",
+              "raw": "{{base_url}}/roles/:role_slug",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "roles",
-                ":role_id"
+                ":role_slug"
               ],
               "variable": [
                 {
-                  "key": "role_id",
+                  "key": "role_slug",
                   "value": ""
                 }
               ]
@@ -510,27 +456,34 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/roles/{{roleId}}",
+              "raw": "{{base_url}}/roles/:role_slug",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "roles",
-                "{{roleId}}"
+                ":role_slug"
+              ],
+              "variable": [
+                {
+                  "key": "role_slug",
+                  "value": ""
+                }
               ]
             },
             "description": "Ẩn role bằng `is_active = false`."
           },
           "response": []
         }
-      ],
-      "description": "API vai trò. Xóa là soft delete."
+      ]
     },
     {
       "name": "Menu",
+      "description": "API thực đơn gồm `categories` và `dishes`.",
       "item": [
         {
           "name": "Categories",
+          "description": "API danh mục món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `categories`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của danh mục. |\n| `parent_id` | bigint, nullable | Khóa ngoại tự tham chiếu đến `categories.id`, dùng cho danh mục cha/con. |\n| `name` | varchar(150) | Tên danh mục hiển thị trên menu. |\n| `slug` | varchar(50) | Mã định danh duy nhất dùng trong API detail/update/delete. |\n| `description` | text, nullable | Mô tả ý nghĩa hoặc phạm vi của danh mục. |\n| `sort_order` | integer | Thứ tự sắp xếp danh mục trên giao diện hoặc trong danh sách. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm khỏi luồng sử dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
           "item": [
             {
               "name": "List Categories",
@@ -552,27 +505,12 @@
                     "categories"
                   ]
                 },
-                "description": "Lấy danh sách category đang active."
+                "description": "Lấy danh sách category."
               },
               "response": []
             },
             {
               "name": "Show Category",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "const json = pm.response.json();",
-                      "const id = json?.metadata?.id;",
-                      "if (id) pm.collectionVariables.set('categoryId', String(id));"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                }
-              ],
               "request": {
                 "method": "GET",
                 "header": [
@@ -582,43 +520,28 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{base_url}}/menu/categories/:category_id",
+                  "raw": "{{base_url}}/menu/categories/:category_slug",
                   "host": [
                     "{{base_url}}"
                   ],
                   "path": [
                     "menu",
                     "categories",
-                    ":category_id"
+                    ":category_slug"
                   ],
                   "variable": [
                     {
-                      "key": "category_id",
-                      "value": "1"
+                      "key": "category_slug",
+                      "value": ""
                     }
                   ]
                 },
-                "description": "Lấy chi tiết category theo id. Response có `parent`, `children`, `dishes`."
+                "description": "Lấy chi tiết category theo slug."
               },
               "response": []
             },
             {
               "name": "Create Category",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "const json = pm.response.json();",
-                      "const id = json?.metadata?.id;",
-                      "if (id) pm.collectionVariables.set('categoryId', String(id));"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                }
-              ],
               "request": {
                 "method": "POST",
                 "header": [
@@ -650,7 +573,7 @@
                     "categories"
                   ]
                 },
-                "description": "Tạo category mới.\n\nVí dụ body:\n\n``` json\n{\n  \"parent_id\": null,\n  \"name\": \"Món mới\",\n  \"description\": \"Danh mục món mới thêm vào menu\",\n  \"sort_order\": 10,\n  \"is_active\": true\n}\n\n ```\n\nGhi chú: không cần gửi `code`."
+                "description": "Tạo category mới. Backend tự sinh slug từ name nếu bạn đang xử lý như hiện tại."
               },
               "response": []
             },
@@ -678,19 +601,19 @@
                   }
                 },
                 "url": {
-                  "raw": "{{base_url}}/menu/categories/:category_id",
+                  "raw": "{{base_url}}/menu/categories/:category_slug",
                   "host": [
                     "{{base_url}}"
                   ],
                   "path": [
                     "menu",
                     "categories",
-                    ":category_id"
+                    ":category_slug"
                   ],
                   "variable": [
                     {
-                      "key": "category_id",
-                      "value": "x"
+                      "key": "category_slug",
+                      "value": ""
                     }
                   ]
                 },
@@ -709,19 +632,19 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{base_url}}/menu/categories/:category_id",
+                  "raw": "{{base_url}}/menu/categories/:category_slug",
                   "host": [
                     "{{base_url}}"
                   ],
                   "path": [
                     "menu",
                     "categories",
-                    ":category_id"
+                    ":category_slug"
                   ],
                   "variable": [
                     {
-                      "key": "category_id",
-                      "value": "x"
+                      "key": "category_slug",
+                      "value": ""
                     }
                   ]
                 },
@@ -729,11 +652,11 @@
               },
               "response": []
             }
-          ],
-          "description": "API danh mục món ăn. `code` được backend tự sinh từ `name`."
+          ]
         },
         {
           "name": "Dishes",
+          "description": "API món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `dishes`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của món ăn. |\n| `category_id` | bigint | Khóa ngoại liên kết tới `categories`, xác định món thuộc danh mục nào. |\n| `name` | varchar(150) | Tên món ăn hiển thị cho người dùng. |\n| `slug` | varchar(50) | Mã định danh duy nhất dùng trong API detail/update/delete. |\n| `description` | text, nullable | Mô tả ngắn về món ăn, thành phần hoặc cách phục vụ. |\n| `price` | decimal(12,2) | Giá bán hiện tại của món. |\n| `original_price` | decimal(12,2), nullable | Giá gốc/tham chiếu trước khuyến mãi để phục vụ hiển thị hoặc so sánh. |\n| `cost_price` | decimal(12,2), nullable | Giá vốn nội bộ để theo dõi kinh doanh, không phải giá bán cho khách. |\n| `image_url` | varchar(255), nullable | Đường dẫn ảnh món ăn đã upload/lưu trữ. |\n| `unit` | varchar(50), nullable | Đơn vị bán, ví dụ `phần`, `ly`, `tô`. |\n| `kitchen_name` | varchar(100), nullable | Tên rút gọn/in bếp để nhân sự bếp dễ nhận biết. |\n| `is_featured` | boolean | Đánh dấu món nổi bật để ưu tiên hiển thị. |\n| `is_new` | boolean | Đánh dấu món mới để gắn nhãn trên giao diện. |\n| `status` | varchar(30) | Trạng thái nghiệp vụ của món, ví dụ `active`. |\n| `available_from` | time, nullable | Giờ bắt đầu phục vụ món trong ngày. |\n| `available_to` | time, nullable | Giờ kết thúc phục vụ món trong ngày. |\n| `sort_order` | integer | Thứ tự sắp xếp món trong danh mục hoặc danh sách. |\n| `options_json` | json, nullable | Danh sách tùy chọn đi kèm món như size, topping, mức giá cộng thêm. |\n| `tags_json` | json, nullable | Danh sách tag phục vụ lọc, hiển thị hoặc phân loại. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm khỏi menu. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
           "item": [
             {
               "name": "List Dishes",
@@ -755,27 +678,12 @@
                     "dishes"
                   ]
                 },
-                "description": "Lấy danh sách món ăn đang active."
+                "description": "Lấy danh sách món ăn."
               },
               "response": []
             },
             {
               "name": "Show Dish",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "const json = pm.response.json();",
-                      "const id = json?.metadata?.id;",
-                      "if (id) pm.collectionVariables.set('dishId', String(id));"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                }
-              ],
               "request": {
                 "method": "GET",
                 "header": [
@@ -785,43 +693,28 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{base_url }}/menu/dishes/:dish_id",
+                  "raw": "{{base_url}}/menu/dishes/:dish_slug",
                   "host": [
-                    "{{base_url }}"
+                    "{{base_url}}"
                   ],
                   "path": [
                     "menu",
                     "dishes",
-                    ":dish_id"
+                    ":dish_slug"
                   ],
                   "variable": [
                     {
-                      "key": "dish_id",
+                      "key": "dish_slug",
                       "value": ""
                     }
                   ]
                 },
-                "description": "Lấy chi tiết món ăn theo id."
+                "description": "Lấy chi tiết món ăn theo slug."
               },
               "response": []
             },
             {
               "name": "Create Dish",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "const json = pm.response.json();",
-                      "const id = json?.metadata?.id;",
-                      "if (id) pm.collectionVariables.set('dishId', String(id));"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                }
-              ],
               "request": {
                 "method": "POST",
                 "header": [
@@ -835,7 +728,7 @@
                   "formdata": [
                     {
                       "key": "category_id",
-                      "value": "{{categoryId}}",
+                      "value": "{{category_id}}",
                       "type": "text"
                     },
                     {
@@ -865,12 +758,12 @@
                     },
                     {
                       "key": "unit",
-                      "value": "phan",
+                      "value": "phần",
                       "type": "text"
                     },
                     {
                       "key": "kitchen_name",
-                      "value": "Com ga",
+                      "value": "Cơm gà",
                       "type": "text"
                     },
                     {
@@ -930,7 +823,7 @@
                     "dishes"
                   ]
                 },
-                "description": "Tạo món ăn mới.\n\nGhi chú:\n\n- Dùng `form-data`\n    \n- Không cần gửi `code`\n    \n- Nếu thêm `image`, backend sẽ convert sang `.webp`\n    \n\nVí dụ body chính:\n\n- `category_id`\n    \n- `name`\n    \n- `price`\n    \n- `status`\n    \n- `options_json[]`\n    \n- `tags_json[]`"
+                "description": "Tạo món ăn mới bằng `form-data`. Nếu thêm `image`, backend sẽ convert sang `.webp`."
               },
               "response": []
             },
@@ -970,23 +863,23 @@
                   ]
                 },
                 "url": {
-                  "raw": "{{base_url}}/menu/dishes/:dish_id",
+                  "raw": "{{base_url}}/menu/dishes/:dish_slug",
                   "host": [
                     "{{base_url}}"
                   ],
                   "path": [
                     "menu",
                     "dishes",
-                    ":dish_id"
+                    ":dish_slug"
                   ],
                   "variable": [
                     {
-                      "key": "dish_id",
-                      "value": "x"
+                      "key": "dish_slug",
+                      "value": ""
                     }
                   ]
                 },
-                "description": "Cập nhật món ăn. Có thể restore bằng `is_active = true`. Có thể gửi `image` mới để thay ảnh cũ."
+                "description": "Cập nhật món ăn. Có thể gửi `image` mới để thay ảnh cũ."
               },
               "response": []
             },
@@ -1001,19 +894,19 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{base_url}}/menu/dishes/:dish_id",
+                  "raw": "{{base_url}}/menu/dishes/:dish_slug",
                   "host": [
                     "{{base_url}}"
                   ],
                   "path": [
                     "menu",
                     "dishes",
-                    ":dish_id"
+                    ":dish_slug"
                   ],
                   "variable": [
                     {
-                      "key": "dish_id",
-                      "value": "x"
+                      "key": "dish_slug",
+                      "value": ""
                     }
                   ]
                 },
@@ -1021,11 +914,9 @@
               },
               "response": []
             }
-          ],
-          "description": "API món ăn. `code` tự sinh từ `name`. Nếu có ảnh, backend convert sang `.webp`."
+          ]
         }
-      ],
-      "description": "API thực đơn mới gồm `categories` và `dishes`."
+      ]
     }
   ],
   "auth": {
@@ -1064,7 +955,11 @@
   ],
   "variable": [
     {
-      "key": "categoryId",
+      "key": "role_id",
+      "value": ""
+    },
+    {
+      "key": "category_id",
       "value": ""
     }
   ]
