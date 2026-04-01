@@ -36,6 +36,7 @@ class DishController extends Controller
     {
         $data = $request->validated();
         $data['slug'] = $this->generateUniqueSlug($data['name']);
+        $data['published_at'] = null;
 
         if ($request->hasFile('image')) {
             $data['image_url'] = $this->storeWebpImage($request->file('image'), $data['slug']);
@@ -61,6 +62,11 @@ class DishController extends Controller
         if (array_key_exists('name', $data)) {
             $data['slug'] = $this->generateUniqueSlug($data['name'], $dish->id);
             $currentSlug = $data['slug'];
+        }
+
+        if (array_key_exists('is_new', $data)) {
+            $data['published_at'] = $data['is_new'] ? now()->toDateString() : null;
+            unset($data['is_new']);
         }
 
         if ($request->hasFile('image')) {

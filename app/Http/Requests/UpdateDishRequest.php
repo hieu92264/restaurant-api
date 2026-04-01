@@ -29,6 +29,7 @@ class UpdateDishRequest extends FormRequest
             'kitchen_name' => ['sometimes', 'nullable', 'string', 'max:100'],
             'is_featured' => ['sometimes', 'boolean'],
             'is_new' => ['sometimes', 'boolean'],
+            'published_at' => ['sometimes', 'nullable', 'date'],
             'status' => ['sometimes', 'string', 'max:30'],
             'available_from' => ['sometimes', 'nullable', 'date_format:H:i'],
             'available_to' => ['sometimes', 'nullable', 'date_format:H:i'],

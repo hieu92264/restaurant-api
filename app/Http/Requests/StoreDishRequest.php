@@ -28,7 +28,6 @@ class StoreDishRequest extends FormRequest
             'unit' => ['nullable', 'string', 'max:50'],
             'kitchen_name' => ['nullable', 'string', 'max:100'],
             'is_featured' => ['nullable', 'boolean'],
-            'is_new' => ['nullable', 'boolean'],
             'status' => ['nullable', 'string', 'max:30'],
             'available_from' => ['nullable', 'date_format:H:i'],
             'available_to' => ['nullable', 'date_format:H:i'],

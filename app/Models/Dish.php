@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,7 +21,7 @@ class Dish extends BaseModel
         'unit',
         'kitchen_name',
         'is_featured',
-        'is_new',
+        'published_at',
         'status',
         'available_from',
         'available_to',
@@ -28,6 +29,10 @@ class Dish extends BaseModel
         'options_json',
         'tags_json',
         'is_active',
+    ];
+
+    protected $appends = [
+        'is_new',
     ];
 
     protected function casts(): array
@@ -38,7 +43,7 @@ class Dish extends BaseModel
             'original_price' => 'decimal:2',
             'cost_price' => 'decimal:2',
             'is_featured' => 'boolean',
-            'is_new' => 'boolean',
+            'published_at' => 'date',
             'available_from' => 'string',
             'available_to' => 'string',
             'sort_order' => 'integer',
@@ -46,6 +51,14 @@ class Dish extends BaseModel
             'tags_json' => 'array',
             'is_active' => 'boolean',
         ];
+    }
+
+    protected function isNew(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->published_at !== null
+                && $this->published_at->greaterThanOrEqualTo(now()->startOfDay()->subDays(30))
+        );
     }
 
     public function category(): BelongsTo

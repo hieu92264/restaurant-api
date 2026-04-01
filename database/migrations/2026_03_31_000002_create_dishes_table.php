@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('unit', 50)->nullable();
             $table->string('kitchen_name', 100)->nullable();
             $table->boolean('is_featured')->default(false);
-            $table->boolean('is_new')->default(false);
+            $table->date('published_at')->nullable();
             $table->string('status', 30)->default('active');
             $table->time('available_from')->nullable();
             $table->time('available_to')->nullable();
