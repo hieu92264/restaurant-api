@@ -56,7 +56,7 @@ class Dish extends BaseModel
     protected function isNew(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->published_at !== null
+            get: fn() => $this->published_at !== null
                 && $this->published_at->greaterThanOrEqualTo(now()->startOfDay()->subDays(30))
         );
     }
@@ -81,5 +81,10 @@ class Dish extends BaseModel
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function discounts(): BelongsToMany
+    {
+        return $this->belongsToMany(Discount::class, 'dish_discount');
     }
 }

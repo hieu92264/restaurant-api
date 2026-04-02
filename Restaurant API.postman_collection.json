@@ -1,1026 +1,1138 @@
-﻿{
-    "info":  {
-                 "_postman_id":  "68488c30-1c63-4fd3-9947-9cc34dab894c",
-                 "name":  "Restaurant API",
-                 "description":  "# Restaurant API\n\nCollection khớp với route hiện tại của project.\n\n## Cấu hình\n- `{{base_url}}`: ví dụ `http://127.0.0.1:8000/api/v1`\n- Bearer token dùng biến `{{access_token}}`\n\n## Ghi chú\n- Chạy `Auth / Login` trước để lấy token.\n- `DELETE` hiện là soft delete qua `is_active = false`.\n- Có thể restore bằng `PATCH` với `{\"is_active\": true}`.\n- `roles` dùng `code` cho các API detail/update/delete.\n- `categories`, `dishes` dùng `slug` cho các API detail/update/delete.\n- `users` hiện vẫn dùng `id` cho detail/update/delete.\n- `dishes.image` upload file và backend sẽ convert sang `.webp`.\n",
-                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-                 "_exporter_id":  "38705991",
-                 "_collection_link":  "https://go.postman.co/collection/38705991-68488c30-1c63-4fd3-9947-9cc34dab894c?source=collection_link"
-             },
-    "item":  [
-                 {
-                     "name":  "Auth",
-                     "description":  "API xÃ¡c thá»±c: login, refresh, me, logout.",
-                     "item":  [
-                                  {
-                                      "name":  "Login",
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "packages":  {
-
-                                                                                    },
-                                                                       "requests":  {
-
-                                                                                    },
-                                                                       "exec":  [
-                                                                                    "const json = pm.response.json();",
-                                                                                    "const token = json?.metadata?.access_token;",
-                                                                                    "if (token) pm.environment.set(\u0027access_token\u0027, token); // Set access token base on current environment"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ],
-                                      "request":  {
-                                                      "auth":  {
-                                                                   "type":  "noauth"
-                                                               },
-                                                      "method":  "POST",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     },
-                                                                     {
-                                                                         "key":  "Content-Type",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "body":  {
-                                                                   "mode":  "raw",
-                                                                   "raw":  "{\n  \"username\": \"owner\",\n  \"password\": \"12345678\"\n}",
-                                                                   "options":  {
-                                                                                   "raw":  {
-                                                                                               "language":  "json"
-                                                                                           }
-                                                                               }
-                                                               },
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/auth/login",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "auth",
-                                                                               "login"
-                                                                           ]
-                                                              },
-                                                      "description":  "ÄÄƒng nháº­p báº±ng `username` hoáº·c `email`."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  },
-                                  {
-                                      "name":  "Refresh Token",
-                                      "request":  {
-                                                      "method":  "GET",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/auth/refresh",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "auth",
-                                                                               "refresh"
-                                                                           ]
-                                                              },
-                                                      "description":  "LÃ m má»›i token. CÃ³ thá»ƒ gá»­i kÃ¨m Bearer token hiá»‡n táº¡i."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  },
-                                  {
-                                      "name":  "Me",
-                                      "request":  {
-                                                      "method":  "GET",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/auth/me",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "auth",
-                                                                               "me"
-                                                                           ]
-                                                              },
-                                                      "description":  "Láº¥y thÃ´ng tin tÃ i khoáº£n Ä‘ang Ä‘Äƒng nháº­p."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  },
-                                  {
-                                      "name":  "Logout",
-                                      "request":  {
-                                                      "method":  "POST",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/auth/logout",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "auth",
-                                                                               "logout"
-                                                                           ]
-                                                              },
-                                                      "description":  "ÄÄƒng xuáº¥t tÃ i khoáº£n hiá»‡n táº¡i."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  }
-                              ]
-                 },
-                 {
-                     "name":  "Users",
-                     "description":  "API ngÆ°á»i dÃ¹ng. XÃ³a lÃ  soft delete.\n\n## Cáº¥u trÃºc dá»¯ liá»‡u báº£ng `users`\n\n| TÃªn cá»™t | Kiá»ƒu dá»¯ liá»‡u | Ghi chÃº |\n| --- | --- | --- |\n| `id` | bigint | KhÃ³a chÃ­nh cá»§a ngÆ°á»i dÃ¹ng. |\n| `role_id` | bigint | KhÃ³a ngoáº¡i liÃªn káº¿t tá»›i báº£ng `roles`, xÃ¡c Ä‘á»‹nh vai trÃ² cá»§a user. |\n| `user_name` | varchar(255) | TÃªn Ä‘Äƒng nháº­p duy nháº¥t, cÃ³ thá»ƒ dÃ¹ng Ä‘á»ƒ login. |\n| `full_name` | varchar(255) | Há» tÃªn hiá»ƒn thá»‹ cá»§a ngÆ°á»i dÃ¹ng. |\n| `email` | varchar(255) | Email Ä‘Äƒng nháº­p/liÃªn há»‡, duy nháº¥t trong há»‡ thá»‘ng. |\n| `password` | varchar(255) | Máº­t kháº©u Ä‘Ã£ Ä‘Æ°á»£c hash. |\n| `is_active` | boolean | Tráº¡ng thÃ¡i hoáº¡t Ä‘á»™ng; `false` nghÄ©a lÃ  Ä‘Ã£ bá»‹ áº©n/khÃ³a má»m. |\n| `created_at` | timestamp | Thá»i Ä‘iá»ƒm táº¡o báº£n ghi. |\n| `updated_at` | timestamp | Thá»i Ä‘iá»ƒm cáº­p nháº­t gáº§n nháº¥t. |",
-                     "item":  [
-                                  {
-                                      "name":  "List Users",
-                                      "request":  {
-                                                      "method":  "GET",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/users",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "users"
-                                                                           ]
-                                                              },
-                                                      "description":  "Láº¥y danh sÃ¡ch user. Route hiá»‡n yÃªu cáº§u role `MANAGER`."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  },
-                                  {
-                                      "name":  "Show User",
-                                      "request":  {
-                                                      "method":  "GET",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/users/:user_id",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "users",
-                                                                               ":user_id"
-                                                                           ],
-                                                                  "variable":  [
-                                                                                   {
-                                                                                       "key":  "user_id",
-                                                                                       "value":  ""
-                                                                                   }
-                                                                               ]
-                                                              },
-                                                      "description":  "Láº¥y chi tiáº¿t user theo id."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  },
-                                  {
-                                      "name":  "Create User",
-                                      "request":  {
-                                                      "method":  "POST",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     },
-                                                                     {
-                                                                         "key":  "Content-Type",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "body":  {
-                                                                   "mode":  "raw",
-                                                                   "raw":  "{\n  \"user_name\": \"manager_02\",\n  \"full_name\": \"Quáº£n lÃ½ ca tá»‘i\",\n  \"email\": \"manager02@example.com\",\n  \"password\": \"12345678\",\n  \"role_id\": {{role_id}}\n}",
-                                                                   "options":  {
-                                                                                   "raw":  {
-                                                                                               "language":  "json"
-                                                                                           }
-                                                                               }
-                                                               },
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/users",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "users"
-                                                                           ]
-                                                              },
-                                                      "description":  "Táº¡o user má»›i."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  },
-                                  {
-                                      "name":  "Update User",
-                                      "request":  {
-                                                      "method":  "PATCH",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     },
-                                                                     {
-                                                                         "key":  "Content-Type",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "body":  {
-                                                                   "mode":  "raw",
-                                                                   "raw":  "{\n  \"full_name\": \"Quáº£n lÃ½ ca tá»‘i - cáº­p nháº­t\",\n  \"email\": \"manager02.updated@example.com\",\n  \"is_active\": true\n}",
-                                                                   "options":  {
-                                                                                   "raw":  {
-                                                                                               "language":  "json"
-                                                                                           }
-                                                                               }
-                                                               },
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/users/:user_id",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "users",
-                                                                               ":user_id"
-                                                                           ],
-                                                                  "variable":  [
-                                                                                   {
-                                                                                       "key":  "user_id",
-                                                                                       "value":  ""
-                                                                                   }
-                                                                               ]
-                                                              },
-                                                      "description":  "Cáº­p nháº­t user. CÃ³ thá»ƒ restore báº±ng `{\"is_active\": true}`."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  },
-                                  {
-                                      "name":  "Delete User",
-                                      "request":  {
-                                                      "method":  "DELETE",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/users/:user_id",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "users",
-                                                                               ":user_id"
-                                                                           ],
-                                                                  "variable":  [
-                                                                                   {
-                                                                                       "key":  "user_id",
-                                                                                       "value":  ""
-                                                                                   }
-                                                                               ]
-                                                              },
-                                                      "description":  "áº¨n user báº±ng `is_active = false`."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  }
-                              ]
-                 },
-                 {
-                     "name":  "Roles",
-                     "description":  "API vai trò. Xóa là soft delete. Detail/update/delete dùng code.\n\n## Cấu trúc dữ liệu bảng `roles`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của vai trò. |\n| `name` | varchar(255) | Tên hiển thị của vai trò, ví dụ Quản lý, Thu ngân. |\n| `code` | varchar(255) | Mã vai trò duy nhất dùng trong API detail/update/delete. |\n| `remark` | varchar(255), nullable | Ghi chú mô tả trách nhiệm hoặc phạm vi vai trò. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
-                     "item":  [
-                                  {
-                                      "name":  "List Roles",
-                                      "request":  {
-                                                      "method":  "GET",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/roles",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "roles"
-                                                                           ]
-                                                              },
-                                                      "description":  "Láº¥y danh sÃ¡ch vai trÃ²."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  },
-                                  {
-                                      "name":  "Show Role",
-                                      "request":  {
-                                                      "method":  "GET",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/roles/:role_code",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "roles",
-                                                                               ":role_code"
-                                                                           ],
-                                                                  "variable":  [
-                                                                                   {
-                                                                                       "key":  "role_code",
-                                                                                       "value":  ""
-                                                                                   }
-                                                                               ]
-                                                              },
-                                                      "description":  "Lấy chi tiết role theo code."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  },
-                                  {
-                                      "name":  "Create Role",
-                                      "request":  {
-                                                      "method":  "POST",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     },
-                                                                     {
-                                                                         "key":  "Content-Type",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "body":  {
-                                                                   "mode":  "raw",
-                                                                   "raw":  "{\n  \"name\": \"Giám sát\",\n  \"code\": \"SUPERVISOR\",\n  \"remark\": \"Giám sát vận hành trong ca\"\n}",
-                                                                   "options":  {
-                                                                                   "raw":  {
-                                                                                               "language":  "json"
-                                                                                           }
-                                                                               }
-                                                               },
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/roles",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "roles"
-                                                                           ]
-                                                              },
-                                                      "description":  "Táº¡o role má»›i."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  },
-                                  {
-                                      "name":  "Update Role",
-                                      "request":  {
-                                                      "method":  "PATCH",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     },
-                                                                     {
-                                                                         "key":  "Content-Type",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "body":  {
-                                                                   "mode":  "raw",
-                                                                   "raw":  "{\n  \"name\": \"GiÃ¡m sÃ¡t ca\",\n  \"remark\": \"Vai trÃ² giÃ¡m sÃ¡t ca lÃ m viá»‡c\",\n  \"is_active\": true\n}",
-                                                                   "options":  {
-                                                                                   "raw":  {
-                                                                                               "language":  "json"
-                                                                                           }
-                                                                               }
-                                                               },
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/roles/:role_code",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "roles",
-                                                                               ":role_code"
-                                                                           ],
-                                                                  "variable":  [
-                                                                                   {
-                                                                                       "key":  "role_code",
-                                                                                       "value":  ""
-                                                                                   }
-                                                                               ]
-                                                              },
-                                                      "description":  "Cáº­p nháº­t role. CÃ³ thá»ƒ restore vá»›i `is_active = true`."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  },
-                                  {
-                                      "name":  "Delete Role",
-                                      "request":  {
-                                                      "method":  "DELETE",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Accept",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "url":  {
-                                                                  "raw":  "{{base_url}}/roles/:role_code",
-                                                                  "host":  [
-                                                                               "{{base_url}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "roles",
-                                                                               ":role_code"
-                                                                           ],
-                                                                  "variable":  [
-                                                                                   {
-                                                                                       "key":  "role_code",
-                                                                                       "value":  ""
-                                                                                   }
-                                                                               ]
-                                                              },
-                                                      "description":  "áº¨n role báº±ng `is_active = false`."
-                                                  },
-                                      "response":  [
-
-                                                   ]
-                                  }
-                              ]
-                 },
-                 {
-                     "name":  "Menu",
-                     "description":  "API thá»±c Ä‘Æ¡n gá»“m `categories` vÃ  `dishes`.",
-                     "item":  [
-                                  {
-                                      "name":  "Categories",
-                                      "description":  "API danh má»¥c mÃ³n Äƒn. Detail/update/delete dÃ¹ng slug.\n\n## Cáº¥u trÃºc dá»¯ liá»‡u báº£ng `categories`\n\n| TÃªn cá»™t | Kiá»ƒu dá»¯ liá»‡u | Ghi chÃº |\n| --- | --- | --- |\n| `id` | bigint | KhÃ³a chÃ­nh cá»§a danh má»¥c. |\n| `parent_id` | bigint, nullable | KhÃ³a ngoáº¡i tá»± tham chiáº¿u Ä‘áº¿n `categories.id`, dÃ¹ng cho danh má»¥c cha/con. |\n| `name` | varchar(150) | TÃªn danh má»¥c hiá»ƒn thá»‹ trÃªn menu. |\n| `slug` | varchar(50) | MÃ£ Ä‘á»‹nh danh duy nháº¥t dÃ¹ng trong API detail/update/delete. |\n| `description` | text, nullable | MÃ´ táº£ Ã½ nghÄ©a hoáº·c pháº¡m vi cá»§a danh má»¥c. |\n| `sort_order` | integer | Thá»© tá»± sáº¯p xáº¿p danh má»¥c trÃªn giao diá»‡n hoáº·c trong danh sÃ¡ch. |\n| `is_active` | boolean | Tráº¡ng thÃ¡i hoáº¡t Ä‘á»™ng; `false` lÃ  áº©n má»m khá»i luá»“ng sá»­ dá»¥ng. |\n| `created_at` | timestamp | Thá»i Ä‘iá»ƒm táº¡o báº£n ghi. |\n| `updated_at` | timestamp | Thá»i Ä‘iá»ƒm cáº­p nháº­t gáº§n nháº¥t. |",
-                                      "item":  [
-                                                   {
-                                                       "name":  "List Categories",
-                                                       "request":  {
-                                                                       "method":  "GET",
-                                                                       "header":  [
-                                                                                      {
-                                                                                          "key":  "Accept",
-                                                                                          "value":  "application/json"
-                                                                                      }
-                                                                                  ],
-                                                                       "url":  {
-                                                                                   "raw":  "{{base_url}}/menu/categories",
-                                                                                   "host":  [
-                                                                                                "{{base_url}}"
-                                                                                            ],
-                                                                                   "path":  [
-                                                                                                "menu",
-                                                                                                "categories"
-                                                                                            ]
-                                                                               },
-                                                                       "description":  "Láº¥y danh sÃ¡ch category."
-                                                                   },
-                                                       "response":  [
-
-                                                                    ]
-                                                   },
-                                                   {
-                                                       "name":  "Show Category",
-                                                       "request":  {
-                                                                       "method":  "GET",
-                                                                       "header":  [
-                                                                                      {
-                                                                                          "key":  "Accept",
-                                                                                          "value":  "application/json"
-                                                                                      }
-                                                                                  ],
-                                                                       "url":  {
-                                                                                   "raw":  "{{base_url}}/menu/categories/:category_slug",
-                                                                                   "host":  [
-                                                                                                "{{base_url}}"
-                                                                                            ],
-                                                                                   "path":  [
-                                                                                                "menu",
-                                                                                                "categories",
-                                                                                                ":category_slug"
-                                                                                            ],
-                                                                                   "variable":  [
-                                                                                                    {
-                                                                                                        "key":  "category_slug",
-                                                                                                        "value":  ""
-                                                                                                    }
-                                                                                                ]
-                                                                               },
-                                                                       "description":  "Láº¥y chi tiáº¿t category theo slug."
-                                                                   },
-                                                       "response":  [
-
-                                                                    ]
-                                                   },
-                                                   {
-                                                       "name":  "Create Category",
-                                                       "request":  {
-                                                                       "method":  "POST",
-                                                                       "header":  [
-                                                                                      {
-                                                                                          "key":  "Accept",
-                                                                                          "value":  "application/json"
-                                                                                      },
-                                                                                      {
-                                                                                          "key":  "Content-Type",
-                                                                                          "value":  "application/json"
-                                                                                      }
-                                                                                  ],
-                                                                       "body":  {
-                                                                                    "mode":  "raw",
-                                                                                    "raw":  "{\n  \"name\": \"MÃ³n má»›i test 2\",\n  \"description\": \"Danh má»¥c mÃ³n má»›i thÃªm vÃ o menu\"\n}",
-                                                                                    "options":  {
-                                                                                                    "raw":  {
-                                                                                                                "language":  "json"
-                                                                                                            }
-                                                                                                }
-                                                                                },
-                                                                       "url":  {
-                                                                                   "raw":  "{{base_url}}/menu/categories",
-                                                                                   "host":  [
-                                                                                                "{{base_url}}"
-                                                                                            ],
-                                                                                   "path":  [
-                                                                                                "menu",
-                                                                                                "categories"
-                                                                                            ]
-                                                                               },
-                                                                       "description":  "Táº¡o category má»›i. Backend tá»± sinh slug tá»« name náº¿u báº¡n Ä‘ang xá»­ lÃ½ nhÆ° hiá»‡n táº¡i."
-                                                                   },
-                                                       "response":  [
-
-                                                                    ]
-                                                   },
-                                                   {
-                                                       "name":  "Update Category",
-                                                       "request":  {
-                                                                       "method":  "PATCH",
-                                                                       "header":  [
-                                                                                      {
-                                                                                          "key":  "Accept",
-                                                                                          "value":  "application/json"
-                                                                                      },
-                                                                                      {
-                                                                                          "key":  "Content-Type",
-                                                                                          "value":  "application/json"
-                                                                                      }
-                                                                                  ],
-                                                                       "body":  {
-                                                                                    "mode":  "raw",
-                                                                                    "raw":  "{\n  \"name\": \"MÃ³n má»›i cáº­p nháº­t\",\n  \"description\": \"Danh má»¥c sau khi cáº­p nháº­t\",\n  \"sort_order\": 11,\n  \"is_active\": true\n}",
-                                                                                    "options":  {
-                                                                                                    "raw":  {
-                                                                                                                "language":  "json"
-                                                                                                            }
-                                                                                                }
-                                                                                },
-                                                                       "url":  {
-                                                                                   "raw":  "{{base_url}}/menu/categories/:category_slug",
-                                                                                   "host":  [
-                                                                                                "{{base_url}}"
-                                                                                            ],
-                                                                                   "path":  [
-                                                                                                "menu",
-                                                                                                "categories",
-                                                                                                ":category_slug"
-                                                                                            ],
-                                                                                   "variable":  [
-                                                                                                    {
-                                                                                                        "key":  "category_slug",
-                                                                                                        "value":  ""
-                                                                                                    }
-                                                                                                ]
-                                                                               },
-                                                                       "description":  "Cáº­p nháº­t category. CÃ³ thá»ƒ restore báº±ng `{\"is_active\": true}`."
-                                                                   },
-                                                       "response":  [
-
-                                                                    ]
-                                                   },
-                                                   {
-                                                       "name":  "Delete Category",
-                                                       "request":  {
-                                                                       "method":  "DELETE",
-                                                                       "header":  [
-                                                                                      {
-                                                                                          "key":  "Accept",
-                                                                                          "value":  "application/json"
-                                                                                      }
-                                                                                  ],
-                                                                       "url":  {
-                                                                                   "raw":  "{{base_url}}/menu/categories/:category_slug",
-                                                                                   "host":  [
-                                                                                                "{{base_url}}"
-                                                                                            ],
-                                                                                   "path":  [
-                                                                                                "menu",
-                                                                                                "categories",
-                                                                                                ":category_slug"
-                                                                                            ],
-                                                                                   "variable":  [
-                                                                                                    {
-                                                                                                        "key":  "category_slug",
-                                                                                                        "value":  ""
-                                                                                                    }
-                                                                                                ]
-                                                                               },
-                                                                       "description":  "áº¨n category. Backend sáº½ cháº·n náº¿u category cÃ²n danh má»¥c con hoáº·c cÃ²n mÃ³n Äƒn."
-                                                                   },
-                                                       "response":  [
-
-                                                                    ]
-                                                   }
-                                               ]
-                                  },
-                                  {
-                                      "name":  "Dishes",
-                                      "description":  "API món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `dishes`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của món ăn. |\n| `category_id` | bigint | Khóa ngoại liên kết tới `categories`, xác định món thuộc danh mục nào. |\n| `name` | varchar(150) | Tên món ăn hiển thị cho người dùng. |\n| `slug` | varchar(50) | Mã định danh duy nhất dùng trong API detail/update/delete. |\n| `description` | text, nullable | Mô tả ngắn về món ăn, thành phần hoặc cách phục vụ. |\n| `price` | decimal(12,2) | Giá bán hiện tại của món. |\n| `original_price` | decimal(12,2), nullable | Giá gốc/tham chiếu trước khuyến mãi để phục vụ hiển thị hoặc so sánh. |\n| `cost_price` | decimal(12,2), nullable | Giá vốn nội bộ để theo dõi kinh doanh, không phải giá bán cho khách. |\n| `image_url` | varchar(255), nullable | Đường dẫn ảnh món ăn đã upload/lưu trữ. |\n| `unit` | varchar(50), nullable | Đơn vị bán, ví dụ `phần`, `ly`, `tô`. |\n| `kitchen_name` | varchar(100), nullable | Tên rút gọn/in bếp để nhân sự bếp dễ nhận biết. |\n| `is_featured` | boolean | Đánh dấu món nổi bật để ưu tiên hiển thị. |\n| `published_at` | date, nullable | Ngày công bố món để hệ thống tự tính `is_new` trong 30 ngày đầu. |\n| `status` | varchar(30) | Trạng thái nghiệp vụ của món, ví dụ `active`. |\n| `available_from` | time, nullable | Giờ bắt đầu phục vụ món trong ngày. |\n| `available_to` | time, nullable | Giờ kết thúc phục vụ món trong ngày. |\n| `sort_order` | integer | Thứ tự sắp xếp món trong danh mục hoặc danh sách. |\n| `options_json` | json, nullable | Danh sách tùy chọn đi kèm món như size, topping, mức giá cộng thêm. |\n| `tags_json` | json, nullable | Danh sách tag phục vụ lọc, hiển thị hoặc phân loại. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm khỏi menu. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
-                                      "item":  [
-                                                   {
-                                                       "name":  "List Dishes",
-                                                       "request":  {
-                                                                       "method":  "GET",
-                                                                       "header":  [
-                                                                                      {
-                                                                                          "key":  "Accept",
-                                                                                          "value":  "application/json"
-                                                                                      }
-                                                                                  ],
-                                                                       "url":  {
-                                                                                   "raw":  "{{base_url}}/menu/dishes",
-                                                                                   "host":  [
-                                                                                                "{{base_url}}"
-                                                                                            ],
-                                                                                   "path":  [
-                                                                                                "menu",
-                                                                                                "dishes"
-                                                                                            ]
-                                                                               },
-                                                                       "description":  "Láº¥y danh sÃ¡ch mÃ³n Äƒn."
-                                                                   },
-                                                       "response":  [
-
-                                                                    ]
-                                                   },
-                                                   {
-                                                       "name":  "Show Dish",
-                                                       "request":  {
-                                                                       "method":  "GET",
-                                                                       "header":  [
-                                                                                      {
-                                                                                          "key":  "Accept",
-                                                                                          "value":  "application/json"
-                                                                                      }
-                                                                                  ],
-                                                                       "url":  {
-                                                                                   "raw":  "{{base_url}}/menu/dishes/:dish_slug",
-                                                                                   "host":  [
-                                                                                                "{{base_url}}"
-                                                                                            ],
-                                                                                   "path":  [
-                                                                                                "menu",
-                                                                                                "dishes",
-                                                                                                ":dish_slug"
-                                                                                            ],
-                                                                                   "variable":  [
-                                                                                                    {
-                                                                                                        "key":  "dish_slug",
-                                                                                                        "value":  ""
-                                                                                                    }
-                                                                                                ]
-                                                                               },
-                                                                       "description":  "Láº¥y chi tiáº¿t mÃ³n Äƒn theo slug."
-                                                                   },
-                                                       "response":  [
-
-                                                                    ]
-                                                   },
-                                                   {
-                                                       "name":  "Create Dish",
-                                                       "request":  {
-                                                                       "method":  "POST",
-                                                                       "header":  [
-                                                                                      {
-                                                                                          "key":  "Accept",
-                                                                                          "value":  "application/json"
-                                                                                      }
-                                                                                  ],
-                                                                       "body":  {
-                                                                                    "mode":  "formdata",
-                                                                                    "formdata":  [
-                                                                                                     {
-                                                                                                         "key":  "category_id",
-                                                                                                         "value":  "{{category_id}}",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "name",
-                                                                                                         "value":  "CÆ¡m gÃ  xá»‘i má»¡",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "description",
-                                                                                                         "value":  "CÆ¡m gÃ  giÃ²n, Äƒn kÃ¨m dÆ°a leo vÃ  nÆ°á»›c máº¯m gá»«ng",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "price",
-                                                                                                         "value":  "58000",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "original_price",
-                                                                                                         "value":  "65000",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "cost_price",
-                                                                                                         "value":  "28000",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "unit",
-                                                                                                         "value":  "pháº§n",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "kitchen_name",
-                                                                                                         "value":  "CÆ¡m gÃ ",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "is_featured",
-                                                                                                         "value":  "true",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "is_new",
-                                                                                                         "value":  "true",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "status",
-                                                                                                         "value":  "active",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "available_from",
-                                                                                                         "value":  "06:00",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "available_to",
-                                                                                                         "value":  "21:30",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "sort_order",
-                                                                                                         "value":  "1",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "options_json[]",
-                                                                                                         "value":  "{\"name\":\"Size\",\"type\":\"single\",\"options\":[{\"label\":\"ThÆ°á»ng\",\"price_delta\":0},{\"label\":\"Lá»›n\",\"price_delta\":10000}]}",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "tags_json[]",
-                                                                                                         "value":  "best_seller",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "tags_json[]",
-                                                                                                         "value":  "new",
-                                                                                                         "type":  "text"
-                                                                                                     }
-                                                                                                 ]
-                                                                                },
-                                                                       "url":  {
-                                                                                   "raw":  "{{base_url}}/menu/dishes",
-                                                                                   "host":  [
-                                                                                                "{{base_url}}"
-                                                                                            ],
-                                                                                   "path":  [
-                                                                                                "menu",
-                                                                                                "dishes"
-                                                                                            ]
-                                                                               },
-                                                                       "description":  "Táº¡o mÃ³n Äƒn má»›i báº±ng `form-data`. Náº¿u thÃªm `image`, backend sáº½ convert sang `.webp`."
-                                                                   },
-                                                       "response":  [
-
-                                                                    ]
-                                                   },
-                                                   {
-                                                       "name":  "Update Dish",
-                                                       "request":  {
-                                                                       "method":  "PATCH",
-                                                                       "header":  [
-                                                                                      {
-                                                                                          "key":  "Accept",
-                                                                                          "value":  "application/json"
-                                                                                      }
-                                                                                  ],
-                                                                       "body":  {
-                                                                                    "mode":  "formdata",
-                                                                                    "formdata":  [
-                                                                                                     {
-                                                                                                         "key":  "name",
-                                                                                                         "value":  "CÆ¡m gÃ  xá»‘i má»¡ Ä‘áº·c biá»‡t",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "price",
-                                                                                                         "value":  "62000",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "is_featured",
-                                                                                                         "value":  "true",
-                                                                                                         "type":  "text"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "key":  "is_active",
-                                                                                                         "value":  "true",
-                                                                                                         "type":  "text"
-                                                                                                     }
-                                                                                                 ]
-                                                                                },
-                                                                       "url":  {
-                                                                                   "raw":  "{{base_url}}/menu/dishes/:dish_slug",
-                                                                                   "host":  [
-                                                                                                "{{base_url}}"
-                                                                                            ],
-                                                                                   "path":  [
-                                                                                                "menu",
-                                                                                                "dishes",
-                                                                                                ":dish_slug"
-                                                                                            ],
-                                                                                   "variable":  [
-                                                                                                    {
-                                                                                                        "key":  "dish_slug",
-                                                                                                        "value":  ""
-                                                                                                    }
-                                                                                                ]
-                                                                               },
-                                                                       "description":  "Cáº­p nháº­t mÃ³n Äƒn. CÃ³ thá»ƒ gá»­i `image` má»›i Ä‘á»ƒ thay áº£nh cÅ©."
-                                                                   },
-                                                       "response":  [
-
-                                                                    ]
-                                                   },
-                                                   {
-                                                       "name":  "Delete Dish",
-                                                       "request":  {
-                                                                       "method":  "DELETE",
-                                                                       "header":  [
-                                                                                      {
-                                                                                          "key":  "Accept",
-                                                                                          "value":  "application/json"
-                                                                                      }
-                                                                                  ],
-                                                                       "url":  {
-                                                                                   "raw":  "{{base_url}}/menu/dishes/:dish_slug",
-                                                                                   "host":  [
-                                                                                                "{{base_url}}"
-                                                                                            ],
-                                                                                   "path":  [
-                                                                                                "menu",
-                                                                                                "dishes",
-                                                                                                ":dish_slug"
-                                                                                            ],
-                                                                                   "variable":  [
-                                                                                                    {
-                                                                                                        "key":  "dish_slug",
-                                                                                                        "value":  ""
-                                                                                                    }
-                                                                                                ]
-                                                                               },
-                                                                       "description":  "áº¨n mÃ³n Äƒn báº±ng `is_active = false`."
-                                                                   },
-                                                       "response":  [
-
-                                                                    ]
-                                                   }
-                                               ]
-                                  }
-                              ]
-                 }
-             ],
-    "auth":  {
-                 "type":  "bearer",
-                 "bearer":  [
+{
+    "info": {
+        "_postman_id": "3d19480e-fb5c-4ec9-aafd-bd076aa2ea15",
+        "name": "Restaurant API",
+        "description": "# Restaurant API\n\nCollection khớp với route hiện tại của project.\n\n## Cấu hình\n- `{{base_url}}`: ví dụ `http://127.0.0.1:8000/api/v1`\n- Bearer token dùng biến `{{access_token}}`\n\n## Ghi chú\n- Chạy `Auth / Login` trước để lấy token.\n- `DELETE` hiện là soft delete qua `is_active = false`.\n- Có thể restore bằng `PATCH` với `{\"is_active\": true}`.\n- `roles`, `categories`, `dishes` dùng `slug` cho các API detail/update/delete.\n- `users` hiện vẫn dùng `id` cho detail/update/delete.\n- `dishes.image` upload file và backend sẽ convert sang `.webp`.\n",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "38705991",
+        "_collection_link": "https://go.postman.co/collection/38705991-3d19480e-fb5c-4ec9-aafd-bd076aa2ea15?source=collection_link"
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "packages": [],
+                                "requests": [],
+                                "exec": [
+                                    "const json = pm.response.json();",
+                                    "const token = json?.metadata?.access_token;",
+                                    "if (token) pm.environment.set('access_token', token); // Set access token base on current environment"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"username\": \"owner\",\n  \"password\": \"12345678\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "Đăng nhập bằng `username` hoặc `email`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Refresh Token",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/refresh",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "refresh"
+                            ]
+                        },
+                        "description": "Làm mới token. Có thể gửi kèm Bearer token hiện tại."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Me",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "me"
+                            ]
+                        },
+                        "description": "Lấy thông tin tài khoản đang đăng nhập."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/logout",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "logout"
+                            ]
+                        },
+                        "description": "Đăng xuất tài khoản hiện tại."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "API xác thực: login, refresh, me, logout."
+        },
+        {
+            "name": "Users",
+            "item": [
+                {
+                    "name": "List Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/users",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users"
+                            ]
+                        },
+                        "description": "Lấy danh sách user. Route hiện yêu cầu role `MANAGER`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show User",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/users/:user_id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":user_id"
+                            ],
+                            "variable": [
                                 {
-                                    "key":  "token",
-                                    "value":  "{{access_token}}",
-                                    "type":  "string"
+                                    "key": "user_id",
+                                    "value": ""
                                 }
                             ]
-             },
-    "event":  [
-                  {
-                      "listen":  "prerequest",
-                      "script":  {
-                                     "type":  "text/javascript",
-                                     "packages":  {
-
-                                                  },
-                                     "requests":  {
-
-                                                  },
-                                     "exec":  [
-                                                  ""
-                                              ]
-                                 }
-                  },
-                  {
-                      "listen":  "test",
-                      "script":  {
-                                     "type":  "text/javascript",
-                                     "packages":  {
-
-                                                  },
-                                     "requests":  {
-
-                                                  },
-                                     "exec":  [
-                                                  ""
-                                              ]
-                                 }
-                  }
-              ],
-    "variable":  [
-                     {
-                         "key":  "role_id",
-                         "value":  ""
-                     },
-                     {
-                         "key":  "category_id",
-                         "value":  ""
-                     }
-                 ]
+                        },
+                        "description": "Lấy chi tiết user theo id."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"user_name\": \"manager_02\",\n  \"full_name\": \"Quản lý ca tối\",\n  \"email\": \"manager02@example.com\",\n  \"password\": \"12345678\",\n  \"role_id\": {{role_id}}\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/users",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users"
+                            ]
+                        },
+                        "description": "Tạo user mới."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update User",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"full_name\": \"Quản lý ca tối - cập nhật\",\n  \"email\": \"manager02.updated@example.com\",\n  \"is_active\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/users/:user_id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":user_id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "user_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Cập nhật user. Có thể restore bằng `{\"is_active\": true}`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete User",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/users/:user_id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":user_id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "user_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Ẩn user bằng `is_active = false`."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "API người dùng. Xóa là soft delete.\n\n## Cấu trúc dữ liệu bảng `users`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của người dùng. |\n| `role_id` | bigint | Khóa ngoại liên kết tới bảng `roles`, xác định vai trò của user. |\n| `user_name` | varchar(255) | Tên đăng nhập duy nhất, có thể dùng để login. |\n| `full_name` | varchar(255) | Họ tên hiển thị của người dùng. |\n| `email` | varchar(255) | Email đăng nhập/liên hệ, duy nhất trong hệ thống. |\n| `password` | varchar(255) | Mật khẩu đã được hash. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` nghĩa là đã bị ẩn/khóa mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |"
+        },
+        {
+            "name": "Roles",
+            "item": [
+                {
+                    "name": "List Roles",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/roles",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "roles"
+                            ]
+                        },
+                        "description": "Lấy danh sách vai trò."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show Role",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/roles/:role_slug",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "roles",
+                                ":role_slug"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "role_slug",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Lấy chi tiết role theo slug."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Role",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Giám sát\",\n  \"slug\": \"SUPERVISOR\",\n  \"remark\": \"Giám sát vận hành trong ca\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/roles",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "roles"
+                            ]
+                        },
+                        "description": "Tạo role mới."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Role",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Giám sát ca\",\n  \"remark\": \"Vai trò giám sát ca làm việc\",\n  \"is_active\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/roles/:role_slug",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "roles",
+                                ":role_slug"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "role_slug",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Cập nhật role. Có thể restore với `is_active = true`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Role",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/roles/:role_slug",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "roles",
+                                ":role_slug"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "role_slug",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Ẩn role bằng `is_active = false`."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "API vai trò. Xóa là soft delete. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `roles`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của vai trò. |\n| `name` | varchar(255) | Tên hiển thị của vai trò, ví dụ Quản lý, Thu ngân. |\n| `slug` | varchar(255) | Mã định danh duy nhất dùng trong API detail/update/delete. |\n| `remark` | varchar(255), nullable | Ghi chú mô tả trách nhiệm hoặc phạm vi vai trò. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |"
+        },
+        {
+            "name": "Menu",
+            "item": [
+                {
+                    "name": "Categories",
+                    "item": [
+                        {
+                            "name": "List Categories",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/menu/categories",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "categories"
+                                    ]
+                                },
+                                "description": "Lấy danh sách category."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Show Category",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/menu/categories/:category_slug",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "categories",
+                                        ":category_slug"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "category_slug",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Lấy chi tiết category theo slug."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Category",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"Món mới test 2\",\n  \"description\": \"Danh mục món mới thêm vào menu\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/menu/categories",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "categories"
+                                    ]
+                                },
+                                "description": "Tạo category mới. Backend tự sinh slug từ name nếu bạn đang xử lý như hiện tại."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Category",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"Món mới cập nhật\",\n  \"description\": \"Danh mục sau khi cập nhật\",\n  \"sort_order\": 11,\n  \"is_active\": true\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/menu/categories/:category_slug",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "categories",
+                                        ":category_slug"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "category_slug",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Cập nhật category. Có thể restore bằng `{\"is_active\": true}`."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete Category",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/menu/categories/:category_slug",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "categories",
+                                        ":category_slug"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "category_slug",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Ẩn category. Backend sẽ chặn nếu category còn danh mục con hoặc còn món ăn."
+                            },
+                            "response": []
+                        }
+                    ],
+                    "description": "API danh mục món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `categories`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của danh mục. |\n| `parent_id` | bigint, nullable | Khóa ngoại tự tham chiếu đến `categories.id`, dùng cho danh mục cha/con. |\n| `name` | varchar(150) | Tên danh mục hiển thị trên menu. |\n| `slug` | varchar(50) | Mã định danh duy nhất dùng trong API detail/update/delete. |\n| `description` | text, nullable | Mô tả ý nghĩa hoặc phạm vi của danh mục. |\n| `sort_order` | integer | Thứ tự sắp xếp danh mục trên giao diện hoặc trong danh sách. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm khỏi luồng sử dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |"
+                },
+                {
+                    "name": "Dishes",
+                    "item": [
+                        {
+                            "name": "List Dishes",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/menu/dishes",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "dishes"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Show Dish",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/menu/dishes/:dish_slug",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "dishes",
+                                        ":dish_slug"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "dish_slug",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Lấy chi tiết món ăn theo slug."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Dish",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "category_id",
+                                            "value": "{{category_id}}",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "name",
+                                            "value": "Cơm gà xối mỡ",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "description",
+                                            "value": "Cơm gà giòn, ăn kèm dưa leo và nước mắm gừng",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "price",
+                                            "value": "58000",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "original_price",
+                                            "value": "65000",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "cost_price",
+                                            "value": "28000",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "unit",
+                                            "value": "phần",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "kitchen_name",
+                                            "value": "Cơm gà",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "is_featured",
+                                            "value": "true",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "is_new",
+                                            "value": "true",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "status",
+                                            "value": "active",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "available_from",
+                                            "value": "06:00",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "available_to",
+                                            "value": "21:30",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "sort_order",
+                                            "value": "1",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "options_json[]",
+                                            "value": "{\"name\":\"Size\",\"type\":\"single\",\"options\":[{\"label\":\"Thường\",\"price_delta\":0},{\"label\":\"Lớn\",\"price_delta\":10000}]}",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "tags_json[]",
+                                            "value": "best_seller",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "tags_json[]",
+                                            "value": "new",
+                                            "type": "text"
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/menu/dishes",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "dishes"
+                                    ]
+                                },
+                                "description": "Tạo món ăn mới bằng `form-data`. Nếu thêm `image`, backend sẽ convert sang `.webp`."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Dish",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "name",
+                                            "value": "Cơm gà xối mỡ đặc biệt",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "price",
+                                            "value": "62000",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "is_featured",
+                                            "value": "true",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "is_active",
+                                            "value": "true",
+                                            "type": "text"
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/menu/dishes/:dish_slug",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "dishes",
+                                        ":dish_slug"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "dish_slug",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Cập nhật món ăn. Có thể gửi `image` mới để thay ảnh cũ."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete Dish",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/menu/dishes/:dish_slug",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "dishes",
+                                        ":dish_slug"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "dish_slug",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Ẩn món ăn bằng `is_active = false`."
+                            },
+                            "response": []
+                        }
+                    ],
+                    "description": "API món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `dishes`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của món ăn. |\n| `category_id` | bigint | Khóa ngoại liên kết tới `categories`, xác định món thuộc danh mục nào. |\n| `name` | varchar(150) | Tên món ăn hiển thị cho người dùng. |\n| `slug` | varchar(50) | Mã định danh duy nhất dùng trong API detail/update/delete. |\n| `description` | text, nullable | Mô tả ngắn về món ăn, thành phần hoặc cách phục vụ. |\n| `price` | decimal(12,2) | Giá bán hiện tại của món. |\n| `original_price` | decimal(12,2), nullable | Giá gốc/tham chiếu trước khuyến mãi để phục vụ hiển thị hoặc so sánh. |\n| `cost_price` | decimal(12,2), nullable | Giá vốn nội bộ để theo dõi kinh doanh, không phải giá bán cho khách. |\n| `image_url` | varchar(255), nullable | Đường dẫn ảnh món ăn đã upload/lưu trữ. |\n| `unit` | varchar(50), nullable | Đơn vị bán, ví dụ `phần`, `ly`, `tô`. |\n| `kitchen_name` | varchar(100), nullable | Tên rút gọn/in bếp để nhân sự bếp dễ nhận biết. |\n| `is_featured` | boolean | Đánh dấu món nổi bật để ưu tiên hiển thị. |\n| `is_new` | boolean | Đánh dấu món mới để gắn nhãn trên giao diện. |\n| `status` | varchar(30) | Trạng thái nghiệp vụ của món, ví dụ `active`. |\n| `available_from` | time, nullable | Giờ bắt đầu phục vụ món trong ngày. |\n| `available_to` | time, nullable | Giờ kết thúc phục vụ món trong ngày. |\n| `sort_order` | integer | Thứ tự sắp xếp món trong danh mục hoặc danh sách. |\n| `options_json` | json, nullable | Danh sách tùy chọn đi kèm món như size, topping, mức giá cộng thêm. |\n| `tags_json` | json, nullable | Danh sách tag phục vụ lọc, hiển thị hoặc phân loại. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm khỏi menu. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |"
+                },
+                {
+                    "name": "Discounts",
+                    "item": [
+                        {
+                            "name": "List Discounts",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/menu/discounts",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "discounts"
+                                    ]
+                                },
+                                "description": "Lấy danh sách discount và các món ăn đang được gán."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Show Discount",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/menu/discounts/:discount_slug",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "discounts",
+                                        ":discount_slug"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "discount_slug",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Lấy chi tiết discount theo slug."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Discount",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"Giảm trưa 15%\",\n    \"description\": \"Áp dụng cho món chính trong khung giờ trưa\",\n    \"scope\": \"dish\",\n    \"discount_type\": \"percentage\",\n    \"starts_at\": \"2026-04-02 10:00:00\",\n    \"ends_at\": \"2026-04-30 14:00:00\",\n    \"quantity\": 100,\n    \"max_use_times\": 1,\n    \"discount_value\": 15,\n    \"min_order_value\": 50000,\n    \"sort_order\": 1,\n    \"dish_slugs\": [\n        \"com-suon-nuong\",\n        \"bun-bo-hue\"\n    ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/menu/discounts",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "discounts"
+                                    ]
+                                },
+                                "description": "Tạo discount cho món ăn. Hiện tại nên dùng `scope = dish` và gửi `dish_slugs`."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Discount",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"Giảm trưa 20%\",\n    \"discount_type\": \"percentage\",\n    \"discount_value\": 20,\n    \"is_active\": true,\n    \"dish_slugs\": [\n        \"mi-xao-hai-san\",\n        \"che-khuc-bach\"\n    ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/menu/discounts/:discount_slug",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "discounts",
+                                        ":discount_slug"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "discount_slug",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Cập nhật discount và gắn lại danh sách món qua `dish_slugs`."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete Discount",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/menu/discounts/:discount_slug",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "discounts",
+                                        ":discount_slug"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "discount_slug",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Ẩn discount bằng cách cập nhật `is_active = false`."
+                            },
+                            "response": []
+                        }
+                    ],
+                    "description": "API khuyến mãi cho món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `discounts`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của discount. |\n| `is_active` | boolean | Trạng thái hoạt động của discount. |\n| `slug` | varchar(255) | Mã định danh duy nhất dùng cho detail/update/delete. |\n| `name` | varchar(255) | Tên hiển thị của chương trình giảm giá. |\n| `description` | text, nullable | Mô tả ngắn cho khuyến mãi. |\n| `scope` | enum | Hiện hướng tới `dish`, sau này có thể mở rộng `invoice`. |\n| `discount_type` | enum | Kiểu giảm giá: `percentage` hoặc `fixed`. |\n| `starts_at` | datetime, nullable | Thời điểm bắt đầu áp dụng. |\n| `ends_at` | datetime, nullable | Thời điểm kết thúc áp dụng. |\n| `quantity` | integer, nullable | Số lượng/giới hạn phát hành nếu cần. |\n| `max_use_times` | integer, nullable | Số lần sử dụng tối đa. |\n| `discount_value` | integer | Giá trị giảm giá. |\n| `min_order_value` | decimal(8,2), nullable | Giá trị đơn tối thiểu để được áp dụng. |\n| `sort_order` | decimal(8,2), nullable | Thứ tự ưu tiên hiển thị/áp dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n\n## Pivot `dish_discount`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `dish_id` | bigint | Khóa ngoại tới `dishes`. |\n| `discount_id` | bigint | Khóa ngoại tới `discounts`. |\n| `created_at` | timestamp | Thời điểm gắn discount vào món. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |"
+                }
+            ],
+            "description": "API thực đơn gồm `categories`, `dishes` và `discounts`."
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{access_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "packages": [],
+                "requests": [],
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "packages": [],
+                "requests": [],
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "role_id",
+            "value": ""
+        },
+        {
+            "key": "category_id",
+            "value": ""
+        }
+    ]
 }

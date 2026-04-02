@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             TableSessionSeeder::class,
             CategorySeeder::class,
             DishSeeder::class,
+            DiscountSeeder::class,
             ComboSeeder::class,
             ComboDishSeeder::class,
             CartOrderSeeder::class,
