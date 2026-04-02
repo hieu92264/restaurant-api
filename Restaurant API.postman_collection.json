@@ -1086,9 +1086,182 @@
                         }
                     ],
                     "description": "API khuyến mãi cho món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `discounts`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của discount. |\n| `is_active` | boolean | Trạng thái hoạt động của discount. |\n| `slug` | varchar(255) | Mã định danh duy nhất dùng cho detail/update/delete. |\n| `name` | varchar(255) | Tên hiển thị của chương trình giảm giá. |\n| `description` | text, nullable | Mô tả ngắn cho khuyến mãi. |\n| `scope` | enum | Hiện hướng tới `dish`, sau này có thể mở rộng `invoice`. |\n| `discount_type` | enum | Kiểu giảm giá: `percentage` hoặc `fixed`. |\n| `starts_at` | datetime, nullable | Thời điểm bắt đầu áp dụng. |\n| `ends_at` | datetime, nullable | Thời điểm kết thúc áp dụng. |\n| `quantity` | integer, nullable | Số lượng/giới hạn phát hành nếu cần. |\n| `max_use_times` | integer, nullable | Số lần sử dụng tối đa. |\n| `discount_value` | integer | Giá trị giảm giá. |\n| `min_order_value` | decimal(8,2), nullable | Giá trị đơn tối thiểu để được áp dụng. |\n| `sort_order` | decimal(8,2), nullable | Thứ tự ưu tiên hiển thị/áp dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n\n## Pivot `dish_discount`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `dish_id` | bigint | Khóa ngoại tới `dishes`. |\n| `discount_id` | bigint | Khóa ngoại tới `discounts`. |\n| `created_at` | timestamp | Thời điểm gắn discount vào món. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |"
+                },
+                {
+                    "name": "Combos",
+                    "item": [
+                        {
+                            "name": "List Combos",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/menu/combos",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "combos"
+                                    ]
+                                },
+                                "description": "Lấy danh sách combo và các món đi kèm."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Show Combo",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/menu/combos/:combo_slug",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "combos",
+                                        ":combo_slug"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "combo_slug",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Lấy chi tiết combo theo slug."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Combo",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"Combo trưa văn phòng\",\n    \"remark\": \"Combo cơ bản cho 2 người\",\n    \"base_price\": 129000,\n    \"is_active\": true,\n    \"start_at\": \"2026-04-02 10:00:00\",\n    \"end_at\": \"2026-04-30 14:00:00\",\n    \"max_use_times\": 50,\n    \"dishes\": [\n        {\n            \"dish_slug\": \"com-suon-nuong\",\n            \"quantity\": 1,\n            \"sort_order\": 1,\n            \"is_active\": true\n        },\n        {\n            \"dish_slug\": \"bun-bo-hue\",\n            \"quantity\": 1,\n            \"sort_order\": 2,\n            \"is_active\": true\n        }\n    ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/menu/combos",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "combos"
+                                    ]
+                                },
+                                "description": "Tạo combo và gắn danh sách món qua mảng `dishes`."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Combo",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"Combo trưa đặc biệt\",\n    \"base_price\": 149000,\n    \"max_use_times\": 100,\n    \"is_active\": true,\n    \"dishes\": [\n        {\n            \"dish_slug\": \"mi-xao-hai-san\",\n            \"quantity\": 1,\n            \"sort_order\": 1,\n            \"is_active\": true\n        },\n        {\n            \"dish_slug\": \"che-khuc-bach\",\n            \"quantity\": 2,\n            \"sort_order\": 2,\n            \"is_active\": true\n        }\n    ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/menu/combos/:combo_slug",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "combos",
+                                        ":combo_slug"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "combo_slug",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Cập nhật combo và sync lại danh sách món nếu có gửi `dishes`."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete Combo",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/menu/combos/:combo_slug",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "combos",
+                                        ":combo_slug"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "combo_slug",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Ẩn combo bằng cách cập nhật `is_active = false`."
+                            },
+                            "response": []
+                        }
+                    ],
+                    "description": "API combo món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `combos`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của combo. |\n| `slug` | varchar(30) | Mã định danh duy nhất dùng cho detail/update/delete. |\n| `name` | varchar(150) | Tên combo hiển thị trên menu. |\n| `remark` | text, nullable | Ghi chú hoặc mô tả ngắn cho combo. |\n| `base_price` | decimal(12,2) | Giá bán của combo. |\n| `is_active` | boolean | Trạng thái hoạt động của combo. |\n| `start_at` | datetime, nullable | Thời điểm bắt đầu bán combo. |\n| `end_at` | datetime, nullable | Thời điểm kết thúc bán combo. |\n| `max_use_times` | integer | Giới hạn số lần sử dụng nếu cần. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n\n## Pivot `combo_dishes`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `combo_id` | bigint | Khóa ngoại tới `combos`. |\n| `dish_id` | bigint | Khóa ngoại tới `dishes`. |\n| `quantity` | decimal(10,2) | Số lượng món trong combo. |\n| `sort_order` | integer | Thứ tự hiển thị món trong combo. |\n| `is_active` | boolean | Trạng thái áp dụng của món trong combo. |\n| `created_at` | timestamp | Thời điểm thêm món vào combo. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |"
                 }
             ],
-            "description": "API thực đơn gồm `categories`, `dishes` và `discounts`."
+            "description": "API thực đơn gồm `categories`, `dishes`, `discounts` và `combos`."
         }
     ],
     "auth": {

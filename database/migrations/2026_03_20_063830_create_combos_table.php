@@ -19,6 +19,9 @@ return new class extends Migration
             $table->text('remark')->nullable();
             $table->decimal('base_price', 12, 2);
             $table->boolean('is_active')->default(true);
+            $table->dateTime('start_at')->nullable();
+            $table->dateTime('end_at')->nullable();
+            $table->integer('max_use_times')->default(0);
             $table->timestamps();
         });
     }

@@ -43,6 +43,9 @@ class Combo extends BaseModel
         'remark',
         'base_price',
         'is_active',
+        'start_at',
+        'end_at',
+        'max_use_times',
     ];
 
     protected function casts(): array
@@ -50,6 +53,9 @@ class Combo extends BaseModel
         return [
             'base_price' => 'decimal:2',
             'is_active' => 'boolean',
+            'start_at' => 'datetime',
+            'end_at' => 'datetime',
+            'max_use_times' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
