@@ -26,7 +26,6 @@ class StoreDishRequest extends FormRequest
             'cost_price' => ['nullable', 'numeric', 'min:0'],
             'image' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'unit' => ['nullable', 'string', 'max:50'],
-            'kitchen_name' => ['nullable', 'string', 'max:100'],
             'is_featured' => ['nullable', 'boolean'],
             'status' => ['nullable', 'string', 'max:30'],
             'available_from' => ['nullable', 'date_format:H:i'],

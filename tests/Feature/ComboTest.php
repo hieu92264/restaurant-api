@@ -227,7 +227,6 @@ class ComboTest extends TestCase
                 'original_price' => 52000 + ($index * 5000),
                 'cost_price' => 22000 + ($index * 2000),
                 'unit' => 'phần',
-                'kitchen_name' => $definition['name'],
                 'is_featured' => false,
                 'published_at' => null,
                 'status' => 'active',

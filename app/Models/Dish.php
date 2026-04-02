@@ -19,7 +19,6 @@ class Dish extends BaseModel
         'cost_price',
         'image_url',
         'unit',
-        'kitchen_name',
         'is_featured',
         'published_at',
         'status',
@@ -33,6 +32,7 @@ class Dish extends BaseModel
 
     protected $appends = [
         'is_new',
+        'discounted_price'
     ];
 
     protected function casts(): array
@@ -58,6 +58,33 @@ class Dish extends BaseModel
         return Attribute::make(
             get: fn() => $this->published_at !== null
                 && $this->published_at->greaterThanOrEqualTo(now()->startOfDay()->subDays(30))
+        );
+    }
+
+    protected function discountedPrice(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $activeDiscounts = $this->discounts()
+                    ->where('is_active', true)
+                    ->where(function ($query) {
+                        $query->whereNull('starts_at')
+                            ->orWhere('starts_at', '<=', now());
+                    })
+                    ->where(function ($query) {
+                        $query->whereNull('ends_at')
+                            ->orWhere('ends_at', '>=', now());
+                    })
+                    ->get();
+
+                $maxDiscount = $activeDiscounts->max(function ($discount) {
+                    return $discount->discount_type === 'percentage'
+                        ? ($this->price * ($discount->discount_value / 100))
+                        : $discount->discount_value;
+                });
+
+                return max($this->price - $maxDiscount, 0);
+            }
         );
     }
 

@@ -26,7 +26,6 @@ class UpdateDishRequest extends FormRequest
             'cost_price' => ['sometimes', 'nullable', 'numeric', 'min:0'],
             'image' => ['sometimes', 'nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'unit' => ['sometimes', 'nullable', 'string', 'max:50'],
-            'kitchen_name' => ['sometimes', 'nullable', 'string', 'max:100'],
             'is_featured' => ['sometimes', 'boolean'],
             'is_new' => ['sometimes', 'boolean'],
             'published_at' => ['sometimes', 'nullable', 'date'],
