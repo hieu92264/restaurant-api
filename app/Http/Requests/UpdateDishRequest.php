@@ -51,6 +51,7 @@ class UpdateDishRequest extends FormRequest
         $payload = $this->input('data');
 
         if (is_string($payload) && $payload !== '') {
+            
             $decodedPayload = json_decode($payload, true);
 
             if (json_last_error() !== JSON_ERROR_NONE || !is_array($decodedPayload)) {

@@ -108,9 +108,9 @@ class DishController extends Controller
 
         while (
             Dish::withoutGlobalScopes()
-                ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
-                ->where('slug', $slug)
-                ->exists()
+            ->when($ignoreId, fn($query) => $query->where('id', '!=', $ignoreId))
+            ->where('slug', $slug)
+            ->exists()
         ) {
             $slug = $baseSlug . '-' . $counter;
             $counter++;
