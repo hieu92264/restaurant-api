@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "3d19480e-fb5c-4ec9-aafd-bd076aa2ea15",
         "name": "Restaurant API",
-        "description": "# Restaurant API\n\nCollection kh?p v?i route hi?n t?i c?a project.\n\n## C?u h?nh\n- `{{base_url}}`: v? d? `http://127.0.0.1:8000/api/v1`\n- Bearer token d?ng bi?n `{{access_token}}`\n\n## Ghi ch?\n- Ch?y `Auth / Login` tr??c ?? l?y token.\n- `DELETE` hi?n l? soft delete qua `is_active = false`.\n- C? th? restore b?ng `PATCH` v?i `{\"is_active\": true}`.\n- `roles`, `categories`, `dishes` d?ng `slug` cho c?c API detail/update/delete.\n- `users` hi?n v?n d?ng `id` cho detail/update/delete.\n- `dishes` t?o/c?p nh?t b?ng `multipart/form-data` v?i `image_url` l? file v? `data` l? JSON string; backend s? convert ?nh sang `.webp`.\n",
+        "description": "# Restaurant API\n\nCollection matches the current routes in this project.\n\n## Configuration\n- `{{base_url}}`: for example `http://127.0.0.1:8000/api/v1`\n- Bearer token uses `{{access_token}}`\n\n## Notes\n- Run `Auth / Login` first to get a token.\n- `DELETE` currently performs a soft delete by setting `is_active = false`.\n- You can restore a record with `PATCH` and `{\"is_active\": true}`.\n- `roles`, `categories`, and `dishes` use `slug` for detail/update/delete APIs.\n- `users` still use `id` for detail/update/delete APIs.\n- `dishes` create/update uses `multipart/form-data` with `image_url` as the uploaded file and `data` as a JSON string. The backend converts the image to `.webp`.\n",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         "_exporter_id": "38705991",
         "_collection_link": "https://go.postman.co/collection/38705991-3d19480e-fb5c-4ec9-aafd-bd076aa2ea15?source=collection_link"
@@ -745,7 +745,7 @@
                                         "dishes"
                                     ]
                                 },
-                                "description": "T?o m?n ?n b?ng `multipart/form-data`. G?i file ?nh ? `image_url` v? to?n b? field c?n l?i trong `data` d??i d?ng JSON string."
+                                "description": "Create a dish with `multipart/form-data`. Send the uploaded image in `image_url` and send all remaining fields inside `data` as a JSON string."
                             },
                             "response": []
                         },
@@ -791,7 +791,7 @@
                                         }
                                     ]
                                 },
-                                "description": "C?p nh?t m?n ?n b?ng `multipart/form-data`. C? th? g?i `image_url` l? file m?i v? `data` l? JSON string ch?a c?c field c?n ??i."
+                                "description": "Update a dish with `multipart/form-data`. You may send a new uploaded image in `image_url` and the changed fields inside `data` as a JSON string."
                             },
                             "response": []
                         },
@@ -827,7 +827,7 @@
                             "response": []
                         }
                     ],
-                    "description": "API m?n ?n. Detail/update/delete d?ng slug.\n\nCreate/Update d?ng `multipart/form-data` v?i 2 part:\n- `image_url`: file ?nh, tu? ch?n.\n- `data`: JSON string ch?a c?c field nh? `category_id`, `name`, `price`, `options_json`, `tags_json`, ..."
+                    "description": "Dish APIs. Detail/update/delete use slug.\n\nCreate/Update uses `multipart/form-data` with 2 parts:\n- `image_url`: image file, optional.\n- `data`: JSON string containing fields such as `category_id`, `name`, `price`, `options_json`, `tags_json`, and more."
                 },
                 {
                     "name": "Discounts",
