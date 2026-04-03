@@ -87,12 +87,25 @@ class DishTest extends TestCase
         ]);
 
         $response = $this->actingAs($user, 'api')->post('/api/v1/menu/dishes/bun-bo-hue', [
+            '_method' => 'PUT',
             'image' => UploadedFile::fake()->image('bun-bo.png'),
             'data' => json_encode([
+                'category_id' => $category->id,
                 'name' => 'Bun bo Hue dac biet',
+                'description' => 'Mo ta moi',
                 'price' => 69000,
+                'original_price' => 76000,
+                'cost_price' => 32000,
+                'unit' => 'to',
+                'is_featured' => true,
                 'is_new' => true,
+                'status' => 'active',
+                'available_from' => '07:00',
+                'available_to' => '21:00',
+                'sort_order' => 2,
+                'options_json' => [['name' => 'Them cha', 'price' => 12000]],
                 'tags_json' => ['signature'],
+                'is_active' => true,
             ], JSON_THROW_ON_ERROR),
         ]);
 
@@ -106,53 +119,16 @@ class DishTest extends TestCase
 
         $this->assertSame('bun-bo-hue-dac-biet', $dish->slug);
         $this->assertSame(69000, $dish->price);
+        $this->assertSame(76000, $dish->original_price);
+        $this->assertSame(32000, $dish->cost_price);
+        $this->assertSame('Mo ta moi', $dish->description);
+        $this->assertSame('07:00', $dish->available_from);
+        $this->assertSame('21:00', $dish->available_to);
+        $this->assertSame(2, $dish->sort_order);
+        $this->assertTrue($dish->is_featured);
         $this->assertNotNull($dish->published_at);
         $this->assertNotNull($dish->image);
         Storage::disk('public')->assertExists(str_replace('storage/', '', $dish->image['url']));
-    }
-
-    public function test_authenticated_user_can_update_dish_with_patch_json_payload(): void
-    {
-        $user = $this->createAuthenticatedUser();
-        $category = $this->createCategory();
-
-        $dish = Dish::query()->create([
-            'category_id' => $category->id,
-            'slug' => 'com-tam',
-            'name' => 'Com tam',
-            'description' => 'Mon cu',
-            'price' => 45000,
-            'original_price' => 50000,
-            'cost_price' => 22000,
-            'image' => null,
-            'unit' => 'phan',
-            'is_featured' => false,
-            'published_at' => null,
-            'status' => 'active',
-            'available_from' => '06:00',
-            'available_to' => '22:00',
-            'sort_order' => 1,
-            'options_json' => null,
-            'tags_json' => null,
-            'is_active' => true,
-        ]);
-
-        $response = $this->actingAs($user, 'api')->patchJson('/api/v1/menu/dishes/com-tam', [
-            'name' => 'Com tam suon',
-            'price' => 49000,
-            'is_featured' => true,
-        ]);
-
-        $response->assertOk()
-            ->assertJsonPath('metadata.name', 'Com tam suon')
-            ->assertJsonPath('metadata.slug', 'com-tam-suon')
-            ->assertJsonPath('metadata.price', 49000);
-
-        $dish->refresh();
-
-        $this->assertSame('com-tam-suon', $dish->slug);
-        $this->assertSame(49000, $dish->price);
-        $this->assertTrue($dish->is_featured);
     }
 
     public function test_store_dish_request_rejects_invalid_json_data_field(): void

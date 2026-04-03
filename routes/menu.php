@@ -25,8 +25,7 @@ Route::prefix('menu')
                 Route::get('/', 'index');
                 Route::get('/{slug}', 'show');
                 Route::post('/', 'store');
-                Route::post('/{slug}', 'update');
-                Route::patch('/{slug}', 'update');
+                Route::put('/{slug}', 'update');
                 Route::delete('/{slug}', 'destroy');
             });
 

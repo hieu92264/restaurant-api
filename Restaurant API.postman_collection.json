@@ -763,14 +763,19 @@
                                     "mode": "formdata",
                                     "formdata": [
                                         {
+                                            "key": "_method",
+                                            "value": "PUT",
+                                            "type": "text"
+                                        },
+                                        {
                                             "key": "image",
                                             "type": "file",
                                             "src": ""
                                         },
                                         {
                                             "key": "data",
-                                            "value": "{\n  \"name\": \"Com ga xoi mo dac biet\",\n  \"price\": 62000,\n  \"is_featured\": true,\n  \"is_active\": true\n}",
-                                            "type": "text"
+                                            "type": "text",
+                                            "value": "{\n  \"category_id\": {{category_id}},\n  \"name\": \"Cơm gà xối mỡ đặc biệt\",\n  \"description\": \"Cơm gà giòn, ăn kèm dưa leo và nước mắm gừng\",\n  \"price\": 62000,\n  \"original_price\": 70000,\n  \"cost_price\": 30000,\n  \"unit\": \"phần\",\n  \"is_featured\": true,\n  \"is_new\": true,\n  \"status\": \"active\",\n  \"available_from\": \"06:00\",\n  \"available_to\": \"21:30\",\n  \"sort_order\": 2,\n  \"options_json\": [\n    {\n      \"name\": \"Size\",\n      \"type\": \"single\",\n      \"options\": [\n        {\n          \"label\": \"Thường\",\n          \"price_delta\": 0\n        },\n        {\n          \"label\": \"Lớn\",\n          \"price_delta\": 10000\n        }\n      ]\n    }\n  ],\n  \"tags_json\": [\"best_seller\", \"signature\"],\n  \"is_active\": true\n}"
                                         }
                                     ]
                                 },
@@ -791,7 +796,7 @@
                                         }
                                     ]
                                 },
-                                "description": "Cập nhật món ăn có upload file bằng `POST` + `multipart/form-data`. Nếu chỉ update JSON không có file, bạn vẫn có thể gọi `PATCH` tới cùng URL."
+                                "description": "Cập nhật món ăn theo kiểu `PUT` với đầu vào giống create. Khi gửi file qua `multipart/form-data`, dùng `POST` và thêm field `_method=PUT` để backend xử lý đúng route `PUT`."
                             },
                             "response": []
                         },
@@ -827,7 +832,7 @@
                             "response": []
                         }
                     ],
-                    "description": "Dish APIs. Detail/update/delete dùng slug.\n\nCreate/Update dùng `multipart/form-data` với 2 field:\n- `image`: file ảnh, không bắt buộc.\n- `data`: JSON string chứa các field như `category_id`, `name`, `price`, `original_price`, `cost_price`, `options_json`, `tags_json`, và hơn thế nữa.\n\nẢnh sau khi upload sẽ được backend convert sang `.webp` và response trả về metadata trong `image` theo dạng:\n`{\"size\":12345,\"name\":\"dish_xxxx.webp\",\"url\":\"storage/dishes/dish_xxxx.webp\"}`\n"
+                    "description": "Dish APIs. Detail/update/delete d?ng slug.\n\nCreate d?ng `multipart/form-data` v?i 2 field:\n- `image`: file ?nh, kh?ng b?t bu?c.\n- `data`: JSON string ch?a c?c field nh? `category_id`, `name`, `price`, `original_price`, `cost_price`, `options_json`, `tags_json`, v? h?n th? n?a.\n\nUpdate d?ng c?ng ??u v?o nh? create, nh?ng theo ng? ngh?a `PUT`. V?i upload file, g?i `POST multipart/form-data` v? th?m `_method=PUT`.\n\n?nh sau khi upload s? ???c backend convert sang `.webp` v? response tr? v? metadata trong `image` theo d?ng:\n`{\"size\":12345,\"name\":\"dish_xxxx.webp\",\"url\":\"storage/dishes/dish_xxxx.webp\"}`\n"
                 },
                 {
                     "name": "Discounts",
