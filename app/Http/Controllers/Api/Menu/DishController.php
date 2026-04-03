@@ -38,11 +38,12 @@ class DishController extends Controller
         $data['slug'] = $this->generateUniqueSlug($data['name']);
         $data['published_at'] = null;
 
-        if ($request->hasFile('image')) {
-            $data['image_url'] = $this->storeWebpImage($request->file('image'), $data['slug']);
+        if ($image = $this->resolveUploadedImage($request)) {
+            $data['image_url'] = $this->storeWebpImage($image, $data['slug']);
         }
 
         unset($data['image']);
+        unset($data['data']);
 
         $dish = Dish::create($data);
 
@@ -69,12 +70,13 @@ class DishController extends Controller
             unset($data['is_new']);
         }
 
-        if ($request->hasFile('image')) {
+        if ($image = $this->resolveUploadedImage($request)) {
             $this->deleteStoredImage($dish->image_url);
-            $data['image_url'] = $this->storeWebpImage($request->file('image'), $currentSlug);
+            $data['image_url'] = $this->storeWebpImage($image, $currentSlug);
         }
 
         unset($data['image']);
+        unset($data['data']);
 
         $dish->update($data);
 
@@ -114,6 +116,19 @@ class DishController extends Controller
         }
 
         return $slug;
+    }
+
+    private function resolveUploadedImage(StoreDishRequest|UpdateDishRequest $request): ?UploadedFile
+    {
+        if ($request->hasFile('image_url')) {
+            return $request->file('image_url');
+        }
+
+        if ($request->hasFile('image')) {
+            return $request->file('image');
+        }
+
+        return null;
     }
 
     private function storeWebpImage(UploadedFile $file, string $slug): string
