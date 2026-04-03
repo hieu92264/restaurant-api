@@ -15,15 +15,17 @@ class DiscountController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $data = Discount::with(['dishes:slug,name,image_url,unit,cost_price,original_price,price'])->get();
+        $data = Discount::with(['dishes:slug,name,image,unit,cost_price,original_price,price'])->get();
+
         return $this->success($data);
     }
 
     public function show(Request $request, $slug): JsonResponse
     {
-        $discount = Discount::with(['dishes:slug,name,image_url,unit,cost_price,original_price,price'])
+        $discount = Discount::with(['dishes:slug,name,image,unit,cost_price,original_price,price'])
             ->where('slug', $slug)
             ->firstOrFail();
+
         return $this->success($discount);
     }
 
@@ -39,7 +41,7 @@ class DiscountController extends Controller
         }
 
         return $this->success(
-            $discount->fresh()->load(['dishes:slug,name,image_url,unit,cost_price,original_price,price']),
+            $discount->fresh()->load(['dishes:slug,name,image,unit,cost_price,original_price,price']),
             'Tạo mã giảm giá thành công.'
         );
     }
@@ -61,7 +63,7 @@ class DiscountController extends Controller
         }
 
         return $this->success(
-            $discount->fresh()->load(['dishes:slug,name,image_url,unit,cost_price,original_price,price']),
+            $discount->fresh()->load(['dishes:slug,name,image,unit,cost_price,original_price,price']),
             'Cập nhật mã giảm giá thành công.'
         );
     }
@@ -79,8 +81,8 @@ class DiscountController extends Controller
 
         while (
             Discount::where('slug', $slug)
-            ->when($ignoreId, fn($query) => $query->where('id', '!=', $ignoreId))
-            ->exists()
+                ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
+                ->exists()
         ) {
             $slug = $baseSlug . '-' . $counter++;
         }

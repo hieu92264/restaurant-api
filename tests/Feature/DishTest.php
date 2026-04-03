@@ -15,7 +15,7 @@ class DishTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_authenticated_user_can_store_dish_with_multipart_data_and_image_url_file(): void
+    public function test_authenticated_user_can_store_dish_with_multipart_data_and_image_file(): void
     {
         Storage::fake('public');
 
@@ -23,7 +23,7 @@ class DishTest extends TestCase
         $category = $this->createCategory();
 
         $response = $this->actingAs($user, 'api')->post('/api/v1/menu/dishes', [
-            'image_url' => UploadedFile::fake()->image('pho.png'),
+            'image' => UploadedFile::fake()->image('pho.png'),
             'data' => json_encode([
                 'category_id' => $category->id,
                 'name' => 'Pho bo dac biet',
@@ -45,18 +45,20 @@ class DishTest extends TestCase
 
         $response->assertCreated()
             ->assertJsonPath('metadata.name', 'Pho bo dac biet')
-            ->assertJsonPath('metadata.image_url', fn (?string $value) => is_string($value) && str_starts_with($value, 'storage/dishes/'))
+            ->assertJsonPath('metadata.image.name', fn (?string $value) => is_string($value) && str_ends_with($value, '.webp'))
+            ->assertJsonPath('metadata.image.url', fn (?string $value) => is_string($value) && str_starts_with($value, 'storage/dishes/'))
+            ->assertJsonPath('metadata.image.size', fn ($value) => is_int($value) && $value > 0)
             ->assertJsonPath('metadata.options_json.0.name', 'Them trung')
             ->assertJsonPath('metadata.tags_json.0', 'best-seller');
 
         $dish = Dish::query()->where('slug', 'pho-bo-dac-biet')->first();
 
         $this->assertNotNull($dish);
-        $this->assertNotNull($dish->image_url);
-        Storage::disk('public')->assertExists(str_replace('storage/', '', $dish->image_url));
+        $this->assertNotNull($dish->image);
+        Storage::disk('public')->assertExists(str_replace('storage/', '', $dish->image['url']));
     }
 
-    public function test_authenticated_user_can_update_dish_with_multipart_data_and_image_url_file(): void
+    public function test_authenticated_user_can_update_dish_with_multipart_data_and_image_file(): void
     {
         Storage::fake('public');
 
@@ -71,7 +73,7 @@ class DishTest extends TestCase
             'price' => 55000,
             'original_price' => 60000,
             'cost_price' => 28000,
-            'image_url' => null,
+            'image' => null,
             'unit' => 'to',
             'is_featured' => false,
             'published_at' => null,
@@ -84,8 +86,8 @@ class DishTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->actingAs($user, 'api')->patch('/api/v1/menu/dishes/bun-bo-hue', [
-            'image_url' => UploadedFile::fake()->image('bun-bo.png'),
+        $response = $this->actingAs($user, 'api')->post('/api/v1/menu/dishes/bun-bo-hue', [
+            'image' => UploadedFile::fake()->image('bun-bo.png'),
             'data' => json_encode([
                 'name' => 'Bun bo Hue dac biet',
                 'price' => 69000,
@@ -98,15 +100,59 @@ class DishTest extends TestCase
             ->assertJsonPath('metadata.name', 'Bun bo Hue dac biet')
             ->assertJsonPath('metadata.slug', 'bun-bo-hue-dac-biet')
             ->assertJsonPath('metadata.tags_json.0', 'signature')
-            ->assertJsonPath('metadata.image_url', fn (?string $value) => is_string($value) && str_starts_with($value, 'storage/dishes/'));
+            ->assertJsonPath('metadata.image.url', fn (?string $value) => is_string($value) && str_starts_with($value, 'storage/dishes/'));
 
         $dish->refresh();
 
         $this->assertSame('bun-bo-hue-dac-biet', $dish->slug);
-        $this->assertSame('69000.00', $dish->price);
+        $this->assertSame(69000, $dish->price);
         $this->assertNotNull($dish->published_at);
-        $this->assertNotNull($dish->image_url);
-        Storage::disk('public')->assertExists(str_replace('storage/', '', $dish->image_url));
+        $this->assertNotNull($dish->image);
+        Storage::disk('public')->assertExists(str_replace('storage/', '', $dish->image['url']));
+    }
+
+    public function test_authenticated_user_can_update_dish_with_patch_json_payload(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $category = $this->createCategory();
+
+        $dish = Dish::query()->create([
+            'category_id' => $category->id,
+            'slug' => 'com-tam',
+            'name' => 'Com tam',
+            'description' => 'Mon cu',
+            'price' => 45000,
+            'original_price' => 50000,
+            'cost_price' => 22000,
+            'image' => null,
+            'unit' => 'phan',
+            'is_featured' => false,
+            'published_at' => null,
+            'status' => 'active',
+            'available_from' => '06:00',
+            'available_to' => '22:00',
+            'sort_order' => 1,
+            'options_json' => null,
+            'tags_json' => null,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($user, 'api')->patchJson('/api/v1/menu/dishes/com-tam', [
+            'name' => 'Com tam suon',
+            'price' => 49000,
+            'is_featured' => true,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('metadata.name', 'Com tam suon')
+            ->assertJsonPath('metadata.slug', 'com-tam-suon')
+            ->assertJsonPath('metadata.price', 49000);
+
+        $dish->refresh();
+
+        $this->assertSame('com-tam-suon', $dish->slug);
+        $this->assertSame(49000, $dish->price);
+        $this->assertTrue($dish->is_featured);
     }
 
     public function test_store_dish_request_rejects_invalid_json_data_field(): void

@@ -17,7 +17,7 @@ class Dish extends BaseModel
         'price',
         'original_price',
         'cost_price',
-        'image_url',
+        'image',
         'unit',
         'is_featured',
         'published_at',
@@ -39,9 +39,9 @@ class Dish extends BaseModel
     {
         return [
             'category_id' => 'integer',
-            'price' => 'decimal:2',
-            'original_price' => 'decimal:2',
-            'cost_price' => 'decimal:2',
+            'price' => 'integer',
+            'original_price' => 'integer',
+            'cost_price' => 'integer',
             'is_featured' => 'boolean',
             'published_at' => 'date',
             'available_from' => 'string',
@@ -85,6 +85,16 @@ class Dish extends BaseModel
 
                 return max($this->price - $maxDiscount, 0);
             }
+        );
+    }
+
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => is_string($value) ? json_decode($value, true) : $value,
+            set: fn ($value) => is_array($value)
+                ? json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                : $value
         );
     }
 

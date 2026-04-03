@@ -238,7 +238,7 @@ class DishSeeder extends Seeder
                     'price' => $item['price'],
                     'original_price' => $item['original_price'],
                     'cost_price' => $item['cost_price'],
-                    'image_url' => null,
+                    'image' => null,
                     'unit' => $item['unit'],
                     'is_featured' => $item['is_featured'],
                     'published_at' => $item['published_at'],

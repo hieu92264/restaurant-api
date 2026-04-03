@@ -39,11 +39,10 @@ class DishController extends Controller
         $data['published_at'] = null;
 
         if ($image = $this->resolveUploadedImage($request)) {
-            $data['image_url'] = $this->storeWebpImage($image, $data['slug']);
+            $data['image'] = $this->storeWebpImage($image, $data['slug']);
         }
 
-        unset($data['image']);
-        unset($data['data']);
+        unset($data['image_url'], $data['data']);
 
         $dish = Dish::create($data);
 
@@ -71,16 +70,18 @@ class DishController extends Controller
         }
 
         if ($image = $this->resolveUploadedImage($request)) {
-            $this->deleteStoredImage($dish->image_url);
-            $data['image_url'] = $this->storeWebpImage($image, $currentSlug);
+            $this->deleteStoredImage($dish->getRawOriginal('image') ?? $dish->image);
+            $data['image'] = $this->storeWebpImage($image, $currentSlug);
         }
 
-        unset($data['image']);
-        unset($data['data']);
+        unset($data['image_url'], $data['data']);
 
         $dish->update($data);
 
-        return $this->success($dish->fresh()->load('category'), 'Cập nhật món ăn thành công.');
+        return $this->success(
+            $dish->fresh()->load('category'),
+            'Cập nhật món ăn thành công.'
+        );
     }
 
     public function destroy(string $slug): JsonResponse
@@ -120,12 +121,12 @@ class DishController extends Controller
 
     private function resolveUploadedImage(StoreDishRequest|UpdateDishRequest $request): ?UploadedFile
     {
-        if ($request->hasFile('image_url')) {
-            return $request->file('image_url');
-        }
-
         if ($request->hasFile('image')) {
             return $request->file('image');
+        }
+
+        if ($request->hasFile('image_url')) {
+            return $request->file('image_url');
         }
 
         return null;
@@ -137,7 +138,10 @@ class DishController extends Controller
         $image = imagecreatefromstring($imageData);
 
         if ($image === false) {
-            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Không thể đọc file ảnh hợp lệ.');
+            abort(
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+                'Không thể đọc file ảnh hợp lệ.'
+            );
         }
 
         imagesavealpha($image, true);
@@ -153,12 +157,27 @@ class DishController extends Controller
         imagewebp($image, $absolutePath, 85);
         imagedestroy($image);
 
-        return 'storage/' . $relativePath;
+        return json_encode([
+            'size' => (int) Storage::disk('public')->size($relativePath),
+            'name' => basename($relativePath),
+            'url' => 'storage/' . $relativePath,
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
     }
 
-    private function deleteStoredImage(?string $imageUrl): void
+    private function deleteStoredImage(array|string|null $image): void
     {
-        if (!$imageUrl) {
+        if ($image === null || $image === '') {
+            return;
+        }
+
+        if (is_string($image)) {
+            $decodedImage = json_decode($image, true);
+            $image = is_array($decodedImage) ? $decodedImage : ['url' => $image];
+        }
+
+        $imageUrl = $image['url'] ?? null;
+
+        if (!is_string($imageUrl) || $imageUrl === '') {
             return;
         }
 

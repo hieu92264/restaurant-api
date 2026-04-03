@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('slug', 50)->unique();
             $table->string('name', 150);
             $table->text('description')->nullable();
-            $table->decimal('price', 12, 2);
-            $table->decimal('original_price', 12, 2)->nullable();
-            $table->decimal('cost_price', 12, 2)->nullable();
-            $table->string('image_url')->nullable();
+            $table->integer('price');
+            $table->integer('original_price')->nullable();
+            $table->integer('cost_price')->nullable();
+            $table->text('image')->nullable();
             $table->string('unit', 50)->nullable();
             $table->boolean('is_featured')->default(false);
             $table->date('published_at')->nullable();

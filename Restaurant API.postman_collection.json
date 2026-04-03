@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "3d19480e-fb5c-4ec9-aafd-bd076aa2ea15",
         "name": "Restaurant API",
-        "description": "# Restaurant API\n\nCollection matches the current routes in this project.\n\n## Configuration\n- `{{base_url}}`: for example `http://127.0.0.1:8000/api/v1`\n- Bearer token uses `{{access_token}}`\n\n## Notes\n- Run `Auth / Login` first to get a token.\n- `DELETE` currently performs a soft delete by setting `is_active = false`.\n- You can restore a record with `PATCH` and `{\"is_active\": true}`.\n- `roles`, `categories`, and `dishes` use `slug` for detail/update/delete APIs.\n- `users` still use `id` for detail/update/delete APIs.\n- `dishes` create/update uses `multipart/form-data` with `image_url` as the uploaded file and `data` as a JSON string. The backend converts the image to `.webp`.\n",
+        "description": "# Restaurant API\n\nCollection đồng bộ với các route hiện có trong project.\n\n## Cấu hình\n- `{{base_url}}`: ví dụ `http://127.0.0.1:8000/api/v1`\n- Bearer token dùng `{{access_token}}`\n\n## Ghi chú\n- Chạy `Auth / Login` trước để lấy token.\n- `DELETE` hiện là soft delete bằng `is_active = false`.\n- Có thể khôi phục bản ghi với `PATCH` và `{\"is_active\": true}`.\n- `roles`, `categories`, `dishes`, `discounts`, `combos`, `restaurant tables` dùng `slug` cho detail/update/delete.\n- `users` vẫn dùng `id`.\n- `dishes` create/update dùng `multipart/form-data` với `image` là file upload và `data` là JSON string. Backend sẽ convert ảnh sang `.webp` và lưu metadata vào cột `image` theo dạng `{ size, name, url }`.\n",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         "_exporter_id": "38705991",
         "_collection_link": "https://go.postman.co/collection/38705991-3d19480e-fb5c-4ec9-aafd-bd076aa2ea15?source=collection_link"
@@ -272,7 +272,7 @@
                                 }
                             ]
                         },
-                        "description": "Cập nhật user. Có thể restore bằng `{\"is_active\": true}`."
+                        "description": "Cập nhật user theo id."
                     },
                     "response": []
                 },
@@ -307,7 +307,7 @@
                     "response": []
                 }
             ],
-            "description": "API người dùng. Xóa là soft delete.\n\n## Cấu trúc dữ liệu bảng `users`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của người dùng. |\n| `role_id` | bigint | Khóa ngoại liên kết tới bảng `roles`, xác định vai trò của user. |\n| `user_name` | varchar(255) | Tên đăng nhập duy nhất, có thể dùng để login. |\n| `full_name` | varchar(255) | Họ tên hiển thị của người dùng. |\n| `email` | varchar(255) | Email đăng nhập/liên hệ, duy nhất trong hệ thống. |\n| `password` | varchar(255) | Mật khẩu đã được hash. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` nghĩa là đã bị ẩn/khóa mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |"
+            "description": "API người dùng. Xóa là soft delete.\n\n## Cấu trúc dữ liệu bảng `users`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của người dùng. |\n| `role_id` | bigint | Khóa ngoại liên kết tới bảng `roles`, xác định vai trò của user. |\n| `user_name` | varchar(255) | Tên đăng nhập duy nhất, có thể dùng để login. |\n| `full_name` | varchar(255) | Họ tên hiển thị của người dùng. |\n| `email` | varchar(255) | Email đăng nhập/liên hệ, duy nhất trong hệ thống. |\n| `password` | varchar(255) | Mật khẩu đã được hash. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` nghĩa là đã bị ẩn/khóa mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
         },
         {
             "name": "Roles",
@@ -361,7 +361,7 @@
                                 }
                             ]
                         },
-                        "description": "Lấy chi tiết role theo slug."
+                        "description": "Lấy chi tiết vai trò theo slug."
                     },
                     "response": []
                 },
@@ -397,7 +397,7 @@
                                 "roles"
                             ]
                         },
-                        "description": "Tạo role mới."
+                        "description": "Tạo vai trò mới."
                     },
                     "response": []
                 },
@@ -440,7 +440,7 @@
                                 }
                             ]
                         },
-                        "description": "Cập nhật role. Có thể restore với `is_active = true`."
+                        "description": "Cập nhật vai trò theo slug."
                     },
                     "response": []
                 },
@@ -470,12 +470,12 @@
                                 }
                             ]
                         },
-                        "description": "Ẩn role bằng `is_active = false`."
+                        "description": "Ẩn vai trò bằng `is_active = false`."
                     },
                     "response": []
                 }
             ],
-            "description": "API vai trò. Xóa là soft delete. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `roles`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của vai trò. |\n| `name` | varchar(255) | Tên hiển thị của vai trò, ví dụ Quản lý, Thu ngân. |\n| `slug` | varchar(255) | Mã định danh duy nhất dùng trong API detail/update/delete. |\n| `remark` | varchar(255), nullable | Ghi chú mô tả trách nhiệm hoặc phạm vi vai trò. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |"
+            "description": "API vai trò. Xóa là soft delete. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `roles`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của vai trò. |\n| `name` | varchar(255) | Tên hiển thị của vai trò, ví dụ Quản lý, Thu ngân. |\n| `slug` | varchar(255) | Mã định danh duy nhất dùng trong API detail/update/delete. |\n| `remark` | varchar(255), nullable | Ghi chú mô tả trách nhiệm hoặc phạm vi vai trò. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
         },
         {
             "name": "Menu",
@@ -571,7 +571,7 @@
                                         "categories"
                                     ]
                                 },
-                                "description": "Tạo category mới. Backend tự sinh slug từ name nếu bạn đang xử lý như hiện tại."
+                                "description": "Tạo category mới. Backend tự sinh slug từ name nếu đang xử lý như hiện tại."
                             },
                             "response": []
                         },
@@ -615,7 +615,7 @@
                                         }
                                     ]
                                 },
-                                "description": "Cập nhật category. Có thể restore bằng `{\"is_active\": true}`."
+                                "description": "Cập nhật category theo slug."
                             },
                             "response": []
                         },
@@ -651,7 +651,7 @@
                             "response": []
                         }
                     ],
-                    "description": "API danh mục món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `categories`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của danh mục. |\n| `parent_id` | bigint, nullable | Khóa ngoại tự tham chiếu đến `categories.id`, dùng cho danh mục cha/con. |\n| `name` | varchar(150) | Tên danh mục hiển thị trên menu. |\n| `slug` | varchar(50) | Mã định danh duy nhất dùng trong API detail/update/delete. |\n| `description` | text, nullable | Mô tả ý nghĩa hoặc phạm vi của danh mục. |\n| `sort_order` | integer | Thứ tự sắp xếp danh mục trên giao diện hoặc trong danh sách. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm khỏi luồng sử dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |"
+                    "description": "API danh mục món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `categories`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của danh mục. |\n| `parent_id` | bigint, nullable | Khóa ngoại tự tham chiếu đến `categories.id`, dùng cho danh mục cha/con. |\n| `name` | varchar(150) | Tên danh mục hiển thị trên menu. |\n| `slug` | varchar(50) | Mã định danh duy nhất dùng trong API detail/update/delete. |\n| `description` | text, nullable | Mô tả ý nghĩa hoặc phạm vi của danh mục. |\n| `sort_order` | integer | Thứ tự sắp xếp danh mục trên giao diện hoặc trong danh sách. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm khỏi luồng sử dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
                 },
                 {
                     "name": "Dishes",
@@ -724,7 +724,7 @@
                                     "mode": "formdata",
                                     "formdata": [
                                         {
-                                            "key": "image_url",
+                                            "key": "image",
                                             "type": "file",
                                             "src": ""
                                         },
@@ -745,14 +745,14 @@
                                         "dishes"
                                     ]
                                 },
-                                "description": "Create a dish with `multipart/form-data`. Send the uploaded image in `image_url` and send all remaining fields inside `data` as a JSON string."
+                                "description": "Tạo món ăn với `multipart/form-data`. Gửi file ảnh ở field `image` và gửi các field còn lại trong `data` dưới dạng JSON string."
                             },
                             "response": []
                         },
                         {
                             "name": "Update Dish",
                             "request": {
-                                "method": "PATCH",
+                                "method": "POST",
                                 "header": [
                                     {
                                         "key": "Accept",
@@ -763,7 +763,7 @@
                                     "mode": "formdata",
                                     "formdata": [
                                         {
-                                            "key": "image_url",
+                                            "key": "image",
                                             "type": "file",
                                             "src": ""
                                         },
@@ -791,7 +791,7 @@
                                         }
                                     ]
                                 },
-                                "description": "Update a dish with `multipart/form-data`. You may send a new uploaded image in `image_url` and the changed fields inside `data` as a JSON string."
+                                "description": "Cập nhật món ăn có upload file bằng `POST` + `multipart/form-data`. Nếu chỉ update JSON không có file, bạn vẫn có thể gọi `PATCH` tới cùng URL."
                             },
                             "response": []
                         },
@@ -827,7 +827,7 @@
                             "response": []
                         }
                     ],
-                    "description": "Dish APIs. Detail/update/delete use slug.\n\nCreate/Update uses `multipart/form-data` with 2 parts:\n- `image_url`: image file, optional.\n- `data`: JSON string containing fields such as `category_id`, `name`, `price`, `options_json`, `tags_json`, and more."
+                    "description": "Dish APIs. Detail/update/delete dùng slug.\n\nCreate/Update dùng `multipart/form-data` với 2 field:\n- `image`: file ảnh, không bắt buộc.\n- `data`: JSON string chứa các field như `category_id`, `name`, `price`, `original_price`, `cost_price`, `options_json`, `tags_json`, và hơn thế nữa.\n\nẢnh sau khi upload sẽ được backend convert sang `.webp` và response trả về metadata trong `image` theo dạng:\n`{\"size\":12345,\"name\":\"dish_xxxx.webp\",\"url\":\"storage/dishes/dish_xxxx.webp\"}`\n"
                 },
                 {
                     "name": "Discounts",
@@ -852,7 +852,7 @@
                                         "discounts"
                                     ]
                                 },
-                                "description": "Lấy danh sách discount và các món ăn đang được gán."
+                                "description": "Lấy danh sách discount và các món ăn đang được gắn."
                             },
                             "response": []
                         },
@@ -920,7 +920,7 @@
                                         "discounts"
                                     ]
                                 },
-                                "description": "Tạo discount cho món ăn. Hiện tại nên dùng `scope = dish` và gửi `dish_slugs`."
+                                "description": "Tạo discount và gắn danh sách món qua `dish_slugs`."
                             },
                             "response": []
                         },
@@ -995,12 +995,12 @@
                                         }
                                     ]
                                 },
-                                "description": "Ẩn discount bằng cách cập nhật `is_active = false`."
+                                "description": "Ẩn discount bằng `is_active = false`."
                             },
                             "response": []
                         }
                     ],
-                    "description": "API khuyến mãi cho món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `discounts`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của discount. |\n| `is_active` | boolean | Trạng thái hoạt động của discount. |\n| `slug` | varchar(255) | Mã định danh duy nhất dùng cho detail/update/delete. |\n| `name` | varchar(255) | Tên hiển thị của chương trình giảm giá. |\n| `description` | text, nullable | Mô tả ngắn cho khuyến mãi. |\n| `scope` | enum | Hiện hướng tới `dish`, sau này có thể mở rộng `invoice`. |\n| `discount_type` | enum | Kiểu giảm giá: `percentage` hoặc `fixed`. |\n| `starts_at` | datetime, nullable | Thời điểm bắt đầu áp dụng. |\n| `ends_at` | datetime, nullable | Thời điểm kết thúc áp dụng. |\n| `quantity` | integer, nullable | Số lượng/giới hạn phát hành nếu cần. |\n| `max_use_times` | integer, nullable | Số lần sử dụng tối đa. |\n| `discount_value` | integer | Giá trị giảm giá. |\n| `min_order_value` | decimal(8,2), nullable | Giá trị đơn tối thiểu để được áp dụng. |\n| `sort_order` | decimal(8,2), nullable | Thứ tự ưu tiên hiển thị/áp dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n\n## Pivot `dish_discount`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `dish_id` | bigint | Khóa ngoại tới `dishes`. |\n| `discount_id` | bigint | Khóa ngoại tới `discounts`. |\n| `created_at` | timestamp | Thời điểm gắn discount vào món. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |"
+                    "description": "API khuyến mãi cho món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `discounts`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của discount. |\n| `is_active` | boolean | Trạng thái hoạt động của discount. |\n| `slug` | varchar(255) | Mã định danh duy nhất dùng cho detail/update/delete. |\n| `name` | varchar(255) | Tên hiển thị của chương trình giảm giá. |\n| `description` | text, nullable | Mô tả ngắn cho khuyến mãi. |\n| `scope` | enum | Hiện hướng tới `dish`, sau này có thể mở rộng `invoice`. |\n| `discount_type` | enum | Kiểu giảm giá: `percentage` hoặc `fixed`. |\n| `starts_at` | datetime, nullable | Thời điểm bắt đầu áp dụng. |\n| `ends_at` | datetime, nullable | Thời điểm kết thúc áp dụng. |\n| `quantity` | integer, nullable | Số lượng/giới hạn phát hành nếu cần. |\n| `max_use_times` | integer, nullable | Số lần sử dụng tối đa. |\n| `discount_value` | integer | Giá trị giảm giá. |\n| `min_order_value` | decimal(8,2), nullable | Giá trị đơn tối thiểu để được áp dụng. |\n| `sort_order` | decimal(8,2), nullable | Thứ tự ưu tiên hiển thị/áp dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n\n## Pivot `dish_discount`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `dish_id` | bigint | Khóa ngoại tới `dishes`. |\n| `discount_id` | bigint | Khóa ngoại tới `discounts`. |\n| `created_at` | timestamp | Thời điểm gắn discount vào món. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
                 },
                 {
                     "name": "Combos",
@@ -1168,15 +1168,188 @@
                                         }
                                     ]
                                 },
-                                "description": "Ẩn combo bằng cách cập nhật `is_active = false`."
+                                "description": "Ẩn combo bằng `is_active = false`."
                             },
                             "response": []
                         }
                     ],
-                    "description": "API combo món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `combos`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của combo. |\n| `slug` | varchar(30) | Mã định danh duy nhất dùng cho detail/update/delete. |\n| `name` | varchar(150) | Tên combo hiển thị trên menu. |\n| `remark` | text, nullable | Ghi chú hoặc mô tả ngắn cho combo. |\n| `base_price` | decimal(12,2) | Giá bán của combo. |\n| `is_active` | boolean | Trạng thái hoạt động của combo. |\n| `start_at` | datetime, nullable | Thời điểm bắt đầu bán combo. |\n| `end_at` | datetime, nullable | Thời điểm kết thúc bán combo. |\n| `max_use_times` | integer | Giới hạn số lần sử dụng nếu cần. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n\n## Pivot `combo_dishes`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `combo_id` | bigint | Khóa ngoại tới `combos`. |\n| `dish_id` | bigint | Khóa ngoại tới `dishes`. |\n| `quantity` | decimal(10,2) | Số lượng món trong combo. |\n| `sort_order` | integer | Thứ tự hiển thị món trong combo. |\n| `is_active` | boolean | Trạng thái áp dụng của món trong combo. |\n| `created_at` | timestamp | Thời điểm thêm món vào combo. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |"
+                    "description": "API combo món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `combos`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của combo. |\n| `slug` | varchar(30) | Mã định danh duy nhất dùng cho detail/update/delete. |\n| `name` | varchar(150) | Tên combo hiển thị trên menu. |\n| `remark` | text, nullable | Ghi chú hoặc mô tả ngắn cho combo. |\n| `base_price` | decimal(12,2) | Giá bán của combo. |\n| `is_active` | boolean | Trạng thái hoạt động của combo. |\n| `start_at` | datetime, nullable | Thời điểm bắt đầu bán combo. |\n| `end_at` | datetime, nullable | Thời điểm kết thúc bán combo. |\n| `max_use_times` | integer | Giới hạn số lần sử dụng nếu cần. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n\n## Pivot `combo_dishes`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `combo_id` | bigint | Khóa ngoại tới `combos`. |\n| `dish_id` | bigint | Khóa ngoại tới `dishes`. |\n| `quantity` | decimal(10,2) | Số lượng món trong combo. |\n| `sort_order` | integer | Thứ tự hiển thị món trong combo. |\n| `is_active` | boolean | Trạng thái áp dụng của món trong combo. |\n| `created_at` | timestamp | Thời điểm thêm món vào combo. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
                 }
             ],
             "description": "API thực đơn gồm `categories`, `dishes`, `discounts` và `combos`."
+        },
+        {
+            "name": "Tables",
+            "description": "API bàn nhà hàng. Detail/update/delete dùng slug.\n\nCác trạng thái hợp lệ: `AVAILABLE`, `OCCUPIED`, `RESERVED`, `CLEANING`, `DISABLED`.\n",
+            "item": [
+                {
+                    "name": "List Tables",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/table/tables",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "table",
+                                "tables"
+                            ]
+                        },
+                        "description": "Lấy danh sách bàn."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show Table",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/table/tables/:table_slug",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "table",
+                                "tables",
+                                ":table_slug"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "table_slug",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Lấy chi tiết bàn theo slug."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Table",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Bàn sân vườn 01\",\n  \"capacity\": 4,\n  \"status\": \"AVAILABLE\",\n  \"is_active\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/table/tables",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "table",
+                                "tables"
+                            ]
+                        },
+                        "description": "Tạo bàn mới."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Table",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Bàn sân vườn VIP 01\",\n  \"capacity\": 6,\n  \"status\": \"RESERVED\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/table/tables/:table_slug",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "table",
+                                "tables",
+                                ":table_slug"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "table_slug",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Cập nhật thông tin bàn theo slug."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Table",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/table/tables/:table_slug",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "table",
+                                "tables",
+                                ":table_slug"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "table_slug",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Ẩn bàn bằng `is_active = false`."
+                    },
+                    "response": []
+                }
+            ]
         }
     ],
     "auth": {
