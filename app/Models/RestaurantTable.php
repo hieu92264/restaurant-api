@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
- * @property int|null $area_id
  * @property string $slug
  * @property string $name
  * @property int $capacity
@@ -15,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\TableArea|null $area
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CartOrder> $cartOrders
  * @property-read int|null $cart_orders_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
@@ -25,7 +22,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereAreaId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereCapacity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereCreatedAt($value)
@@ -39,7 +35,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class RestaurantTable extends BaseModel
 {
     protected $fillable = [
-        'area_id',
         'slug',
         'name',
         'capacity',
@@ -50,16 +45,10 @@ class RestaurantTable extends BaseModel
     protected function casts(): array
     {
         return [
-            'area_id' => 'integer',
             'capacity' => 'integer',
             'status' => 'string',
             'is_active' => 'boolean',
         ];
-    }
-
-    public function area(): BelongsTo
-    {
-        return $this->belongsTo(TableArea::class, 'area_id');
     }
 
     public function sessions(): HasMany
