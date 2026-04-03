@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "3d19480e-fb5c-4ec9-aafd-bd076aa2ea15",
         "name": "Restaurant API",
-        "description": "# Restaurant API\n\nCollection khớp với route hiện tại của project.\n\n## Cấu hình\n- `{{base_url}}`: ví dụ `http://127.0.0.1:8000/api/v1`\n- Bearer token dùng biến `{{access_token}}`\n\n## Ghi chú\n- Chạy `Auth / Login` trước để lấy token.\n- `DELETE` hiện là soft delete qua `is_active = false`.\n- Có thể restore bằng `PATCH` với `{\"is_active\": true}`.\n- `roles`, `categories`, `dishes` dùng `slug` cho các API detail/update/delete.\n- `users` hiện vẫn dùng `id` cho detail/update/delete.\n- `dishes.image` upload file và backend sẽ convert sang `.webp`.\n",
+        "description": "# Restaurant API\n\nCollection kh?p v?i route hi?n t?i c?a project.\n\n## C?u h?nh\n- `{{base_url}}`: v? d? `http://127.0.0.1:8000/api/v1`\n- Bearer token d?ng bi?n `{{access_token}}`\n\n## Ghi ch?\n- Ch?y `Auth / Login` tr??c ?? l?y token.\n- `DELETE` hi?n l? soft delete qua `is_active = false`.\n- C? th? restore b?ng `PATCH` v?i `{\"is_active\": true}`.\n- `roles`, `categories`, `dishes` d?ng `slug` cho c?c API detail/update/delete.\n- `users` hi?n v?n d?ng `id` cho detail/update/delete.\n- `dishes` t?o/c?p nh?t b?ng `multipart/form-data` v?i `image_url` l? file v? `data` l? JSON string; backend s? convert ?nh sang `.webp`.\n",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         "_exporter_id": "38705991",
         "_collection_link": "https://go.postman.co/collection/38705991-3d19480e-fb5c-4ec9-aafd-bd076aa2ea15?source=collection_link"
@@ -724,83 +724,13 @@
                                     "mode": "formdata",
                                     "formdata": [
                                         {
-                                            "key": "category_id",
-                                            "value": "{{category_id}}",
-                                            "type": "text"
+                                            "key": "image_url",
+                                            "type": "file",
+                                            "src": ""
                                         },
                                         {
-                                            "key": "name",
-                                            "value": "Cơm gà xối mỡ",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "description",
-                                            "value": "Cơm gà giòn, ăn kèm dưa leo và nước mắm gừng",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "price",
-                                            "value": "58000",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "original_price",
-                                            "value": "65000",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "cost_price",
-                                            "value": "28000",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "unit",
-                                            "value": "phần",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "is_featured",
-                                            "value": "true",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "is_new",
-                                            "value": "true",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "status",
-                                            "value": "active",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "available_from",
-                                            "value": "06:00",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "available_to",
-                                            "value": "21:30",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "sort_order",
-                                            "value": "1",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "options_json[]",
-                                            "value": "{\"name\":\"Size\",\"type\":\"single\",\"options\":[{\"label\":\"Thường\",\"price_delta\":0},{\"label\":\"Lớn\",\"price_delta\":10000}]}",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "tags_json[]",
-                                            "value": "best_seller",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "tags_json[]",
-                                            "value": "new",
+                                            "key": "data",
+                                            "value": "{\n  \"category_id\": {{category_id}},\n  \"name\": \"Com ga xoi mo\",\n  \"description\": \"Com ga gion, an kem dua leo va nuoc mam gung\",\n  \"price\": 58000,\n  \"original_price\": 65000,\n  \"cost_price\": 28000,\n  \"unit\": \"phan\",\n  \"is_featured\": true,\n  \"status\": \"active\",\n  \"available_from\": \"06:00\",\n  \"available_to\": \"21:30\",\n  \"sort_order\": 1,\n  \"options_json\": [\n    {\n      \"name\": \"Size\",\n      \"type\": \"single\",\n      \"options\": [\n        {\n          \"label\": \"Thuong\",\n          \"price_delta\": 0\n        },\n        {\n          \"label\": \"Lon\",\n          \"price_delta\": 10000\n        }\n      ]\n    }\n  ],\n  \"tags_json\": [\"best_seller\", \"new\"],\n  \"is_active\": true\n}",
                                             "type": "text"
                                         }
                                     ]
@@ -815,7 +745,7 @@
                                         "dishes"
                                     ]
                                 },
-                                "description": "Tạo món ăn mới bằng `form-data`. Nếu thêm `image`, backend sẽ convert sang `.webp`."
+                                "description": "T?o m?n ?n b?ng `multipart/form-data`. G?i file ?nh ? `image_url` v? to?n b? field c?n l?i trong `data` d??i d?ng JSON string."
                             },
                             "response": []
                         },
@@ -833,23 +763,13 @@
                                     "mode": "formdata",
                                     "formdata": [
                                         {
-                                            "key": "name",
-                                            "value": "Cơm gà xối mỡ đặc biệt",
-                                            "type": "text"
+                                            "key": "image_url",
+                                            "type": "file",
+                                            "src": ""
                                         },
                                         {
-                                            "key": "price",
-                                            "value": "62000",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "is_featured",
-                                            "value": "true",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "is_active",
-                                            "value": "true",
+                                            "key": "data",
+                                            "value": "{\n  \"name\": \"Com ga xoi mo dac biet\",\n  \"price\": 62000,\n  \"is_featured\": true,\n  \"is_active\": true\n}",
                                             "type": "text"
                                         }
                                     ]
@@ -871,7 +791,7 @@
                                         }
                                     ]
                                 },
-                                "description": "Cập nhật món ăn. Có thể gửi `image` mới để thay ảnh cũ."
+                                "description": "C?p nh?t m?n ?n b?ng `multipart/form-data`. C? th? g?i `image_url` l? file m?i v? `data` l? JSON string ch?a c?c field c?n ??i."
                             },
                             "response": []
                         },
@@ -907,7 +827,7 @@
                             "response": []
                         }
                     ],
-                    "description": "API món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `dishes`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của món ăn. |\n| `category_id` | bigint | Khóa ngoại liên kết tới `categories`, xác định món thuộc danh mục nào. |\n| `name` | varchar(150) | Tên món ăn hiển thị cho người dùng. |\n| `slug` | varchar(50) | Mã định danh duy nhất dùng trong API detail/update/delete. |\n| `description` | text, nullable | Mô tả ngắn về món ăn, thành phần hoặc cách phục vụ. |\n| `price` | decimal(12,2) | Giá bán hiện tại của món. |\n| `original_price` | decimal(12,2), nullable | Giá gốc/tham chiếu trước khuyến mãi để phục vụ hiển thị hoặc so sánh. |\n| `cost_price` | decimal(12,2), nullable | Giá vốn nội bộ để theo dõi kinh doanh, không phải giá bán cho khách. |\n| `image_url` | varchar(255), nullable | Đường dẫn ảnh món ăn đã upload/lưu trữ. |\n| `unit` | varchar(50), nullable | Đơn vị bán, ví dụ `phần`, `ly`, `tô`. |\n| `is_featured` | boolean | Đánh dấu món nổi bật để ưu tiên hiển thị. |\n| `is_new` | boolean | Đánh dấu món mới để gắn nhãn trên giao diện. |\n| `status` | varchar(30) | Trạng thái nghiệp vụ của món, ví dụ `active`. |\n| `available_from` | time, nullable | Giờ bắt đầu phục vụ món trong ngày. |\n| `available_to` | time, nullable | Giờ kết thúc phục vụ món trong ngày. |\n| `sort_order` | integer | Thứ tự sắp xếp món trong danh mục hoặc danh sách. |\n| `options_json` | json, nullable | Danh sách tùy chọn đi kèm món như size, topping, mức giá cộng thêm. |\n| `tags_json` | json, nullable | Danh sách tag phục vụ lọc, hiển thị hoặc phân loại. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm khỏi menu. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |"
+                    "description": "API m?n ?n. Detail/update/delete d?ng slug.\n\nCreate/Update d?ng `multipart/form-data` v?i 2 part:\n- `image_url`: file ?nh, tu? ch?n.\n- `data`: JSON string ch?a c?c field nh? `category_id`, `name`, `price`, `options_json`, `tags_json`, ..."
                 },
                 {
                     "name": "Discounts",
