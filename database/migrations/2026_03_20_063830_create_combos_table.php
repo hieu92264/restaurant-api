@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug', 30)->unique();
             $table->string('name', 150);
             $table->text('remark')->nullable();
-            $table->decimal('base_price', 12, 2);
+            $table->integer('base_price');
             $table->boolean('is_active')->default(true);
             $table->dateTime('start_at')->nullable();
             $table->dateTime('end_at')->nullable();

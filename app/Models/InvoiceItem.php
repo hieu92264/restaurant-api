@@ -62,10 +62,10 @@ class InvoiceItem extends BaseModel
             'invoice_id' => 'integer',
             'combo_id' => 'integer',
             'quantity' => 'decimal:2',
-            'base_unit_price' => 'decimal:2',
-            'option_total_price' => 'decimal:2',
-            'unit_final_price' => 'decimal:2',
-            'line_total' => 'decimal:2',
+            'base_unit_price' => 'integer',
+            'option_total_price' => 'integer',
+            'unit_final_price' => 'integer',
+            'line_total' => 'integer',
             'is_active' => 'boolean',
         ];
     }

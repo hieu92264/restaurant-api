@@ -24,7 +24,7 @@ return new class extends Migration
             $table->integer('quantity')->nullable();
             $table->integer('max_use_times')->nullable();
             $table->integer('discount_value')->default(0);
-            $table->decimal('min_order_value', 8, 2)->nullable();
+            $table->integer('min_order_value')->nullable();
             $table->decimal('sort_order', 8, 2)->nullable();
             $table->timestamps();
         });

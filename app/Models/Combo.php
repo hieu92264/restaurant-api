@@ -51,7 +51,7 @@ class Combo extends BaseModel
     protected function casts(): array
     {
         return [
-            'base_price' => 'decimal:2',
+            'base_price' => 'integer',
             'is_active' => 'boolean',
             'start_at' => 'datetime',
             'end_at' => 'datetime',

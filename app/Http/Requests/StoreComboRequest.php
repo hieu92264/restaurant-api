@@ -20,7 +20,7 @@ class StoreComboRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:150'],
             'remark' => ['nullable', 'string'],
-            'base_price' => ['required', 'numeric', 'min:0'],
+            'base_price' => ['required', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
             'start_at' => ['nullable', 'date'],
             'end_at' => ['nullable', 'date', 'after_or_equal:start_at'],

@@ -61,8 +61,8 @@ class Payment extends BaseModel
         return [
             'invoice_id' => 'integer',
             'method' => 'string',
-            'requested_amount' => 'decimal:2',
-            'paid_amount' => 'decimal:2',
+            'requested_amount' => 'integer',
+            'paid_amount' => 'integer',
             'paid_time' => 'datetime',
             'status' => 'string',
             'confirmed_by_employee_id' => 'integer',

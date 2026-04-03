@@ -44,6 +44,8 @@ class Discount extends Model
         'is_active' => 'boolean',
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
+        'discount_value' => 'integer',
+        'min_order_value' => 'integer',
     ];
 
     public function dishes(): BelongsToMany

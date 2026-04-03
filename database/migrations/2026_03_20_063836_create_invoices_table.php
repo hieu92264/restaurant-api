@@ -22,13 +22,13 @@ return new class extends Migration
             $table->foreignId('created_by_employee_id')->constrained('users');
             $table->string('customer_name', 100)->nullable();
             $table->string('customer_phone', 20)->nullable();
-            $table->decimal('subtotal_amount', 12, 2)->default(0);
-            $table->decimal('discount_amount', 12, 2)->default(0);
-            $table->decimal('service_charge_amount', 12, 2)->default(0);
-            $table->decimal('tax_amount', 12, 2)->default(0);
-            $table->decimal('total_amount', 12, 2)->default(0);
-            $table->decimal('paid_amount', 12, 2)->default(0);
-            $table->decimal('change_amount', 12, 2)->default(0);
+            $table->integer('subtotal_amount')->default(0);
+            $table->integer('discount_amount')->default(0);
+            $table->integer('service_charge_amount')->default(0);
+            $table->integer('tax_amount')->default(0);
+            $table->integer('total_amount')->default(0);
+            $table->integer('paid_amount')->default(0);
+            $table->integer('change_amount')->default(0);
             $table->enum('invoice_status', InvoiceStatus::values())
                 ->default(InvoiceStatus::PENDING);
             $table->dateTime('issued_at');

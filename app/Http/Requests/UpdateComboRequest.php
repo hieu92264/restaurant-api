@@ -20,7 +20,7 @@ class UpdateComboRequest extends FormRequest
         return [
             'name' => ['sometimes', 'string', 'max:150'],
             'remark' => ['sometimes', 'nullable', 'string'],
-            'base_price' => ['sometimes', 'numeric', 'min:0'],
+            'base_price' => ['sometimes', 'integer', 'min:0'],
             'is_active' => ['sometimes', 'boolean'],
             'start_at' => ['sometimes', 'nullable', 'date'],
             'end_at' => ['sometimes', 'nullable', 'date', 'after_or_equal:start_at'],

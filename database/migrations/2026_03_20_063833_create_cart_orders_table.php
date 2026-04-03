@@ -21,11 +21,11 @@ return new class extends Migration
             $table->foreignId('created_by_employee_id')->constrained('users');
             $table->enum('status', CartOrderStatus::values())
                 ->default(CartOrderStatus::OPEN);
-            $table->decimal('subtotal_amount', 12, 2)->default(0);
-            $table->decimal('discount_amount', 12, 2)->default(0);
-            $table->decimal('service_charge_amount', 12, 2)->default(0);
-            $table->decimal('tax_amount', 12, 2)->default(0);
-            $table->decimal('total_amount', 12, 2)->default(0);
+            $table->integer('subtotal_amount')->default(0);
+            $table->integer('discount_amount')->default(0);
+            $table->integer('service_charge_amount')->default(0);
+            $table->integer('tax_amount')->default(0);
+            $table->integer('total_amount')->default(0);
             $table->string('remark', 255)->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

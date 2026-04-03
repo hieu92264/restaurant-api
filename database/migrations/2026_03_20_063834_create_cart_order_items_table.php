@@ -20,10 +20,10 @@ return new class extends Migration
             $table->string('item_name_snapshot', 150);
             $table->string('variant_name_snapshot', 150)->nullable();
             $table->decimal('quantity', 10, 2);
-            $table->decimal('base_unit_price', 12, 2);
-            $table->decimal('option_total_price', 12, 2)->default(0);
-            $table->decimal('unit_final_price', 12, 2);
-            $table->decimal('line_total', 12, 2);
+            $table->integer('base_unit_price');
+            $table->integer('option_total_price')->default(0);
+            $table->integer('unit_final_price');
+            $table->integer('line_total');
             $table->string('item_note', 255)->nullable();
             $table->enum('line_status', OrderLineStatus::values())
                 ->default(OrderLineStatus::ACTIVE);

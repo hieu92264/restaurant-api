@@ -72,11 +72,11 @@ class CartOrder extends BaseModel
             'table_id' => 'integer',
             'created_by_employee_id' => 'integer',
             'status' => 'string',
-            'subtotal_amount' => 'decimal:2',
-            'discount_amount' => 'decimal:2',
-            'service_charge_amount' => 'decimal:2',
-            'tax_amount' => 'decimal:2',
-            'total_amount' => 'decimal:2',
+            'subtotal_amount' => 'integer',
+            'discount_amount' => 'integer',
+            'service_charge_amount' => 'integer',
+            'tax_amount' => 'integer',
+            'total_amount' => 'integer',
             'is_active' => 'boolean',
         ];
     }

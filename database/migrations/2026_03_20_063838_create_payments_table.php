@@ -20,8 +20,8 @@ return new class extends Migration
             $table->enum('method', PaymentMethod::values());
             $table->string('transaction_code', 100)->nullable();
             $table->text('qr_content')->nullable();
-            $table->decimal('requested_amount', 12, 2)->default(0);
-            $table->decimal('paid_amount', 12, 2)->default(0);
+            $table->integer('requested_amount')->default(0);
+            $table->integer('paid_amount')->default(0);
             $table->dateTime('paid_time')->nullable();
             $table->enum('status', PaymentStatus::values())
                 ->default(PaymentStatus::PENDING);

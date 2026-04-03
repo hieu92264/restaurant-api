@@ -98,7 +98,7 @@ class ComboTest extends TestCase
 
         $response->assertCreated()
             ->assertJsonPath('metadata.name', 'Combo trưa văn phòng')
-            ->assertJsonPath('metadata.base_price', '129000.00');
+            ->assertJsonPath('metadata.base_price', 129000);
 
         $combo = Combo::query()->where('slug', 'combo-trua-van-phong')->first();
 
@@ -153,13 +153,13 @@ class ComboTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('metadata.name', 'Combo sáng đặc biệt')
-            ->assertJsonPath('metadata.base_price', '99000.00');
+            ->assertJsonPath('metadata.base_price', 99000);
 
         $combo->refresh();
 
         $this->assertSame('combo-sang-dac-biet', $combo->slug);
         $this->assertSame('Combo sáng đặc biệt', $combo->name);
-        $this->assertSame('99000.00', $combo->base_price);
+        $this->assertSame(99000, $combo->base_price);
 
         $this->assertDatabaseHas('combo_dishes', [
             'combo_id' => $combo->id,
