@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $max_use_times
  * @property string|null $tag
  * @property array<int, string>|null $days_in_week
- * @property \Illuminate\Support\Carbon|null $start_time
- * @property \Illuminate\Support\Carbon|null $end_time
+ * @property string|null $start_time
+ * @property string|null $end_time
  * @property \Illuminate\Support\Carbon|null $start_at
  * @property \Illuminate\Support\Carbon|null $end_at
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -110,8 +110,8 @@ class Combo extends BaseModel
             'max_use_times' => 'integer',
             'tag' => 'string',
             'days_in_week' => 'array',
-            'start_time' => 'datetime:H:i:s',
-            'end_time' => 'datetime:H:i:s',
+            'start_time' => 'string',
+            'end_time' => 'string',
             'start_at' => 'datetime',
             'end_at' => 'datetime',
             'created_at' => 'datetime',

@@ -26,8 +26,8 @@ return new class extends Migration {
             $table->enum('tag', ComboTag::values())->nullable();
             $table->json('days_in_week')->nullable();
 
-            $table->dateTime('start_time')->nullable();
-            $table->dateTime('end_time')->nullable();
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
             $table->dateTime('start_at')->nullable();
             $table->dateTime('end_at')->nullable();
 

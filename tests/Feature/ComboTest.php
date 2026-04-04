@@ -82,9 +82,9 @@ class ComboTest extends TestCase
             'combo_price' => 129000,
             'is_active' => true,
             'tag' => 'HOT',
-            'days_in_week' => ['MONDAY', 'TUESDAY'],
-            'start_time' => now()->startOfDay()->setTime(10, 0)->toDateTimeString(),
-            'end_time' => now()->startOfDay()->setTime(14, 0)->toDateTimeString(),
+            'days_in_week' => ['T2', 'T3'],
+            'start_time' => '10:00',
+            'end_time' => '14:00',
             'start_at' => now()->toDateTimeString(),
             'end_at' => now()->addDays(7)->toDateTimeString(),
             'max_use_times' => 50,
@@ -108,13 +108,13 @@ class ComboTest extends TestCase
             ->assertJsonPath('metadata.name', 'Combo trua van phong')
             ->assertJsonPath('metadata.combo_price', 129000)
             ->assertJsonPath('metadata.tag', 'HOT')
-            ->assertJsonPath('metadata.days_in_week.0', 'MONDAY');
+            ->assertJsonPath('metadata.days_in_week.0', 'T2');
 
         $combo = Combo::query()->where('slug', 'combo-trua-van-phong')->first();
 
         $this->assertNotNull($combo);
         $this->assertSame(129000, $combo->combo_price);
-        $this->assertSame(['MONDAY', 'TUESDAY'], $combo->days_in_week);
+        $this->assertSame(['T2', 'T3'], $combo->days_in_week);
         $this->assertDatabaseHas('combo_dishes', [
             'combo_id' => $combo->id,
             'dish_id' => $dishOne->id,
@@ -154,7 +154,7 @@ class ComboTest extends TestCase
             'name' => 'Combo sang dac biet',
             'combo_price' => 99000,
             'tag' => 'FAST',
-            'days_in_week' => ['FRIDAY'],
+            'days_in_week' => ['T6'],
             'dishes' => [
                 [
                     'dish_slug' => $dishThree->slug,
@@ -169,14 +169,14 @@ class ComboTest extends TestCase
             ->assertJsonPath('metadata.name', 'Combo sang dac biet')
             ->assertJsonPath('metadata.combo_price', 99000)
             ->assertJsonPath('metadata.tag', 'FAST')
-            ->assertJsonPath('metadata.days_in_week.0', 'FRIDAY');
+            ->assertJsonPath('metadata.days_in_week.0', 'T6');
 
         $combo->refresh();
 
         $this->assertSame('combo-sang-dac-biet', $combo->slug);
         $this->assertSame('Combo sang dac biet', $combo->name);
         $this->assertSame(99000, $combo->combo_price);
-        $this->assertSame(['FRIDAY'], $combo->days_in_week);
+        $this->assertSame(['T6'], $combo->days_in_week);
 
         $this->assertDatabaseHas('combo_dishes', [
             'combo_id' => $combo->id,
