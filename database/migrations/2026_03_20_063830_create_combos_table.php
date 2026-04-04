@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->string('name', 150);
 
             $table->text('remark')->nullable();
+            $table->json('combo_image')->nullable();
 
             $table->integer('combo_price');
 

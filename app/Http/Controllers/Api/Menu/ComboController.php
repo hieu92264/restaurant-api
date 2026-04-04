@@ -8,7 +8,9 @@ use App\Http\Requests\UpdateComboRequest;
 use App\Models\Combo;
 use App\Models\Dish;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -43,6 +45,12 @@ class ComboController extends Controller
 
         $data['slug'] = $this->generateUniqueSlug($data['name']);
 
+        if ($image = $this->resolveUploadedImage($request)) {
+            $data['combo_image'] = $this->storeWebpImage($image, $data['slug']);
+        }
+
+        unset($data['combo_image_url'], $data['data']);
+
         $combo = DB::transaction(function () use ($data, $dishes) {
             $combo = Combo::query()->create($data);
             $this->syncComboDishes($combo, $dishes);
@@ -65,9 +73,19 @@ class ComboController extends Controller
         $dishes = $data['dishes'] ?? [];
         unset($data['dishes']);
 
+        $currentSlug = $combo->slug;
+
         if (array_key_exists('name', $data)) {
             $data['slug'] = $this->generateUniqueSlug($data['name'], $combo->id);
+            $currentSlug = $data['slug'];
         }
+
+        if ($image = $this->resolveUploadedImage($request)) {
+            $this->deleteStoredImage($combo->getRawOriginal('combo_image') ?? $combo->combo_image);
+            $data['combo_image'] = $this->storeWebpImage($image, $currentSlug);
+        }
+
+        unset($data['combo_image_url'], $data['data']);
 
         DB::transaction(function () use ($combo, $data, $hasDishes, $dishes) {
             $combo->update($data);
@@ -150,5 +168,71 @@ class ComboController extends Controller
         }
 
         return $slug;
+    }
+
+    private function resolveUploadedImage(StoreComboRequest|UpdateComboRequest $request): ?UploadedFile
+    {
+        if ($request->hasFile('combo_image')) {
+            return $request->file('combo_image');
+        }
+
+        if ($request->hasFile('combo_image_url')) {
+            return $request->file('combo_image_url');
+        }
+
+        return null;
+    }
+
+    private function storeWebpImage(UploadedFile $file, string $slug): string
+    {
+        $imageData = file_get_contents($file->getRealPath());
+        $image = imagecreatefromstring($imageData);
+
+        if ($image === false) {
+            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Không thể đọc file ảnh hợp lệ.');
+        }
+
+        imagesavealpha($image, true);
+
+        $relativePath = 'combos/' . $slug . '_' . Str::random(8) . '.webp';
+        $absolutePath = Storage::disk('public')->path($relativePath);
+        $directory = dirname($absolutePath);
+
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        imagewebp($image, $absolutePath, 85);
+        imagedestroy($image);
+
+        return json_encode([
+            'size' => (int) Storage::disk('public')->size($relativePath),
+            'name' => basename($relativePath),
+            'url' => 'storage/' . $relativePath,
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    }
+
+    private function deleteStoredImage(array|string|null $image): void
+    {
+        if ($image === null || $image === '') {
+            return;
+        }
+
+        if (is_string($image)) {
+            $decodedImage = json_decode($image, true);
+            $image = is_array($decodedImage) ? $decodedImage : ['url' => $image];
+        }
+
+        $imageUrl = $image['url'] ?? null;
+
+        if (! is_string($imageUrl) || $imageUrl === '') {
+            return;
+        }
+
+        $relativePath = Str::of($imageUrl)->after('storage/')->value();
+
+        if ($relativePath !== '') {
+            Storage::disk('public')->delete($relativePath);
+        }
     }
 }

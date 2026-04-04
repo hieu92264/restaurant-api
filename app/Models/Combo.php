@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
  * @property string $slug
  * @property string $name
  * @property string|null $remark
+ * @property array<string, mixed>|null $combo_image
  * @property int $combo_price
  * @property bool $is_active
  * @property int $max_use_times
@@ -51,6 +52,7 @@ class Combo extends BaseModel
         'slug',
         'name',
         'remark',
+        'combo_image',
         'combo_price',
         'max_use_times',
         'tag',
@@ -94,6 +96,16 @@ class Combo extends BaseModel
                 ->where('combo_dishes.is_active', true)
                 ->join('dishes', 'combo_dishes.dish_id', '=', 'dishes.id')
                 ->sum(DB::raw('dishes.price * combo_dishes.quantity'))
+        );
+    }
+
+    protected function comboImage(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value) => is_string($value) ? json_decode($value, true) : $value,
+            set: fn($value) => is_array($value)
+                ? json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                : $value
         );
     }
 
