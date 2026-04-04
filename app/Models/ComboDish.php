@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property int $combo_id
  * @property int $dish_id
- * @property numeric $quantity
+ * @property int $quantity
  * @property int $sort_order
  * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -43,7 +43,7 @@ class ComboDish extends BaseModel
         return [
             'combo_id' => 'integer',
             'dish_id' => 'integer',
-            'quantity' => 'decimal:2',
+            'quantity' => 'integer',
             'sort_order' => 'integer',
             'is_active' => 'boolean',
         ];
