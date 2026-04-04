@@ -6,7 +6,6 @@ use App\Common\Constants\ComboTag;
 use App\Common\Constants\DayInWeek;
 use App\Models\Combo;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class ComboSeeder extends Seeder
@@ -16,9 +15,6 @@ class ComboSeeder extends Seeder
      */
     public function run(): void
     {
-        $campaignStart = Carbon::create(2026, 4, 1, 0, 0, 0);
-        $campaignEnd = Carbon::create(2026, 6, 30, 23, 59, 59);
-
         $combos = [
             [
                 'name' => 'Da Tiec Thuong Uyen',
@@ -33,10 +29,10 @@ class ComboSeeder extends Seeder
                     DayInWeek::THURSDAY,
                     DayInWeek::FRIDAY,
                 ],
-                'start_time' => Carbon::create(2026, 4, 1, 18, 0, 0),
-                'end_time' => Carbon::create(2026, 4, 1, 22, 0, 0),
-                'start_at' => $campaignStart,
-                'end_at' => $campaignEnd,
+                'start_time' => '18:00',
+                'end_time' => '22:00',
+                'start_at' => '2026-04-01 00:00:00',
+                'end_at' => '2026-06-30 23:59:59',
                 'is_active' => true,
             ],
             [
@@ -54,10 +50,10 @@ class ComboSeeder extends Seeder
                     DayInWeek::SATURDAY,
                     DayInWeek::SUNDAY,
                 ],
-                'start_time' => Carbon::create(2026, 4, 1, 10, 0, 0),
-                'end_time' => Carbon::create(2026, 4, 1, 14, 0, 0),
-                'start_at' => $campaignStart,
-                'end_at' => $campaignEnd,
+                'start_time' => '10:00',
+                'end_time' => '14:00',
+                'start_at' => '2026-04-01 00:00:00',
+                'end_at' => '2026-06-30 23:59:59',
                 'is_active' => true,
             ],
             [
@@ -73,10 +69,10 @@ class ComboSeeder extends Seeder
                     DayInWeek::THURSDAY,
                     DayInWeek::FRIDAY,
                 ],
-                'start_time' => Carbon::create(2026, 4, 1, 11, 30, 0),
-                'end_time' => Carbon::create(2026, 4, 1, 13, 30, 0),
-                'start_at' => $campaignStart,
-                'end_at' => $campaignEnd,
+                'start_time' => '11:30',
+                'end_time' => '13:30',
+                'start_at' => '2026-04-01 00:00:00',
+                'end_at' => '2026-06-30 23:59:59',
                 'is_active' => true,
             ],
             [
@@ -89,10 +85,10 @@ class ComboSeeder extends Seeder
                     DayInWeek::SATURDAY,
                     DayInWeek::SUNDAY,
                 ],
-                'start_time' => Carbon::create(2026, 4, 1, 14, 0, 0),
-                'end_time' => Carbon::create(2026, 4, 1, 17, 0, 0),
-                'start_at' => $campaignStart,
-                'end_at' => $campaignEnd,
+                'start_time' => '14:00',
+                'end_time' => '17:00',
+                'start_at' => '2026-04-01 00:00:00',
+                'end_at' => '2026-06-30 23:59:59',
                 'is_active' => true,
             ],
         ];
