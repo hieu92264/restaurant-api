@@ -92,10 +92,10 @@ class Combo extends BaseModel
     protected function sellingPrice(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->comboDishes()
+            get: fn() => (int) round($this->comboDishes()
                 ->where('combo_dishes.is_active', true)
                 ->join('dishes', 'combo_dishes.dish_id', '=', 'dishes.id')
-                ->sum(DB::raw('dishes.price * combo_dishes.quantity'))
+                ->sum(DB::raw('dishes.price * combo_dishes.quantity')))
         );
     }
 
@@ -118,6 +118,7 @@ class Combo extends BaseModel
     {
         return [
             'combo_price' => 'integer',
+            'seling_price' => 'integer',
             'is_active' => 'boolean',
             'max_use_times' => 'integer',
             'tag' => 'string',
