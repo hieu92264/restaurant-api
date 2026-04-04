@@ -2,8 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Common\Constants\ComboTag;
+use App\Common\Constants\DayInWeek;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreComboRequest extends FormRequest
 {
@@ -20,8 +23,13 @@ class StoreComboRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:150'],
             'remark' => ['nullable', 'string'],
-            'base_price' => ['required', 'integer', 'min:0'],
+            'combo_price' => ['required', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
+            'tag' => ['nullable', Rule::in(ComboTag::values())],
+            'days_in_week' => ['nullable', 'array'],
+            'days_in_week.*' => ['string', Rule::in(DayInWeek::values())],
+            'start_time' => ['nullable', 'date'],
+            'end_time' => ['nullable', 'date', 'after_or_equal:start_time'],
             'start_at' => ['nullable', 'date'],
             'end_at' => ['nullable', 'date', 'after_or_equal:start_at'],
             'max_use_times' => ['nullable', 'integer', 'min:0'],

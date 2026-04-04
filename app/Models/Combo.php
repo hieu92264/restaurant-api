@@ -2,16 +2,25 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property int $id
  * @property string $slug
  * @property string $name
  * @property string|null $remark
- * @property numeric $base_price
+ * @property int $combo_price
  * @property bool $is_active
+ * @property int $max_use_times
+ * @property string|null $tag
+ * @property array<int, string>|null $days_in_week
+ * @property \Illuminate\Support\Carbon|null $start_time
+ * @property \Illuminate\Support\Carbon|null $end_time
+ * @property \Illuminate\Support\Carbon|null $start_at
+ * @property \Illuminate\Support\Carbon|null $end_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CartOrderItem> $cartOrderItems
@@ -25,7 +34,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereBasePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereComboPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereId($value)
@@ -38,33 +47,23 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Combo extends BaseModel
 {
     protected $fillable = [
+        'is_active',
         'slug',
         'name',
         'remark',
-        'base_price',
-        'is_active',
+        'combo_price',
+        'max_use_times',
+        'tag',
+        'days_in_week',
+        'start_time',
+        'end_time',
         'start_at',
         'end_at',
-        'max_use_times',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'base_price' => 'integer',
-            'is_active' => 'boolean',
-            'start_at' => 'datetime',
-            'end_at' => 'datetime',
-            'max_use_times' => 'integer',
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-        ];
-    }
-
-    public function comboDishes(): HasMany
-    {
-        return $this->hasMany(ComboDish::class, 'combo_id');
-    }
+    protected $appends = [
+        'selling_price',
+    ];
 
     public function dishes(): BelongsToMany
     {
@@ -86,5 +85,37 @@ class Combo extends BaseModel
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    protected function sellingPrice(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->comboDishes()
+                ->where('combo_dishes.is_active', true)
+                ->join('dishes', 'combo_dishes.dish_id', '=', 'dishes.id')
+                ->sum(DB::raw('dishes.price * combo_dishes.quantity'))
+        );
+    }
+
+    public function comboDishes(): HasMany
+    {
+        return $this->hasMany(ComboDish::class, 'combo_id');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'combo_price' => 'integer',
+            'is_active' => 'boolean',
+            'max_use_times' => 'integer',
+            'tag' => 'string',
+            'days_in_week' => 'array',
+            'start_time' => 'datetime:H:i:s',
+            'end_time' => 'datetime:H:i:s',
+            'start_at' => 'datetime',
+            'end_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
     }
 }

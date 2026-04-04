@@ -27,11 +27,15 @@ class ComboTest extends TestCase
             'slug',
             'name',
             'remark',
-            'base_price',
             'is_active',
+            'combo_price',
+            'max_use_times',
+            'tag',
+            'days_in_week',
+            'start_time',
+            'end_time',
             'start_at',
             'end_at',
-            'max_use_times',
             'created_at',
             'updated_at',
         ]));
@@ -52,8 +56,8 @@ class ComboTest extends TestCase
     {
         $validator = Validator::make(
             [
-                'name' => 'Combo trưa',
-                'base_price' => 99000,
+                'name' => 'Combo trua',
+                'combo_price' => 99000,
                 'dishes' => [
                     [
                         'quantity' => 1,
@@ -73,10 +77,14 @@ class ComboTest extends TestCase
         [$dishOne, $dishTwo] = $this->createSampleDishes();
 
         $response = $this->actingAs($user, 'api')->postJson('/api/v1/menu/combos', [
-            'name' => 'Combo trưa văn phòng',
-            'remark' => 'Combo cơ bản cho 2 người',
-            'base_price' => 129000,
+            'name' => 'Combo trua van phong',
+            'remark' => 'Combo co ban cho 2 nguoi',
+            'combo_price' => 129000,
             'is_active' => true,
+            'tag' => 'HOT',
+            'days_in_week' => ['MONDAY', 'TUESDAY'],
+            'start_time' => now()->startOfDay()->setTime(10, 0)->toDateTimeString(),
+            'end_time' => now()->startOfDay()->setTime(14, 0)->toDateTimeString(),
             'start_at' => now()->toDateTimeString(),
             'end_at' => now()->addDays(7)->toDateTimeString(),
             'max_use_times' => 50,
@@ -97,12 +105,16 @@ class ComboTest extends TestCase
         ]);
 
         $response->assertCreated()
-            ->assertJsonPath('metadata.name', 'Combo trưa văn phòng')
-            ->assertJsonPath('metadata.base_price', 129000);
+            ->assertJsonPath('metadata.name', 'Combo trua van phong')
+            ->assertJsonPath('metadata.combo_price', 129000)
+            ->assertJsonPath('metadata.tag', 'HOT')
+            ->assertJsonPath('metadata.days_in_week.0', 'MONDAY');
 
         $combo = Combo::query()->where('slug', 'combo-trua-van-phong')->first();
 
         $this->assertNotNull($combo);
+        $this->assertSame(129000, $combo->combo_price);
+        $this->assertSame(['MONDAY', 'TUESDAY'], $combo->days_in_week);
         $this->assertDatabaseHas('combo_dishes', [
             'combo_id' => $combo->id,
             'dish_id' => $dishOne->id,
@@ -126,9 +138,9 @@ class ComboTest extends TestCase
 
         $combo = Combo::query()->create([
             'slug' => 'combo-sang',
-            'name' => 'Combo sáng',
-            'remark' => 'Combo buổi sáng',
-            'base_price' => 89000,
+            'name' => 'Combo sang',
+            'remark' => 'Combo buoi sang',
+            'combo_price' => 89000,
             'is_active' => true,
             'max_use_times' => 10,
         ]);
@@ -139,8 +151,10 @@ class ComboTest extends TestCase
         ]);
 
         $response = $this->actingAs($user, 'api')->patchJson('/api/v1/menu/combos/combo-sang', [
-            'name' => 'Combo sáng đặc biệt',
-            'base_price' => 99000,
+            'name' => 'Combo sang dac biet',
+            'combo_price' => 99000,
+            'tag' => 'FAST',
+            'days_in_week' => ['FRIDAY'],
             'dishes' => [
                 [
                     'dish_slug' => $dishThree->slug,
@@ -152,14 +166,17 @@ class ComboTest extends TestCase
         ]);
 
         $response->assertOk()
-            ->assertJsonPath('metadata.name', 'Combo sáng đặc biệt')
-            ->assertJsonPath('metadata.base_price', 99000);
+            ->assertJsonPath('metadata.name', 'Combo sang dac biet')
+            ->assertJsonPath('metadata.combo_price', 99000)
+            ->assertJsonPath('metadata.tag', 'FAST')
+            ->assertJsonPath('metadata.days_in_week.0', 'FRIDAY');
 
         $combo->refresh();
 
         $this->assertSame('combo-sang-dac-biet', $combo->slug);
-        $this->assertSame('Combo sáng đặc biệt', $combo->name);
-        $this->assertSame(99000, $combo->base_price);
+        $this->assertSame('Combo sang dac biet', $combo->name);
+        $this->assertSame(99000, $combo->combo_price);
+        $this->assertSame(['FRIDAY'], $combo->days_in_week);
 
         $this->assertDatabaseHas('combo_dishes', [
             'combo_id' => $combo->id,
@@ -202,17 +219,17 @@ class ComboTest extends TestCase
     private function createSampleDishes(int $count = 2): array
     {
         $category = Category::query()->create([
-            'name' => 'Danh mục combo test',
+            'name' => 'Danh muc combo test',
             'slug' => 'danh-muc-combo-test',
-            'description' => 'Danh mục dùng cho test combo',
+            'description' => 'Danh muc dung cho test combo',
             'sort_order' => 1,
             'is_active' => true,
         ]);
 
         $definitions = [
-            ['slug' => 'combo-mon-1', 'name' => 'Combo món 1'],
-            ['slug' => 'combo-mon-2', 'name' => 'Combo món 2'],
-            ['slug' => 'combo-mon-3', 'name' => 'Combo món 3'],
+            ['slug' => 'combo-mon-1', 'name' => 'Combo mon 1'],
+            ['slug' => 'combo-mon-2', 'name' => 'Combo mon 2'],
+            ['slug' => 'combo-mon-3', 'name' => 'Combo mon 3'],
         ];
 
         $dishes = [];
@@ -222,11 +239,11 @@ class ComboTest extends TestCase
                 'category_id' => $category->id,
                 'slug' => $definition['slug'],
                 'name' => $definition['name'],
-                'description' => 'Mô tả món test cho combo',
+                'description' => 'Mo ta mon test cho combo',
                 'price' => 45000 + ($index * 5000),
                 'original_price' => 52000 + ($index * 5000),
                 'cost_price' => 22000 + ($index * 2000),
-                'unit' => 'phần',
+                'unit' => 'phan',
                 'is_featured' => false,
                 'published_at' => null,
                 'status' => 'active',
