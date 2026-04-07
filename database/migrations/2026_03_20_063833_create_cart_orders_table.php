@@ -1,6 +1,5 @@
 <?php
 
-use App\Common\Constants\ActiveStatus;
 use App\Common\Constants\CartOrderStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -18,7 +17,7 @@ return new class extends Migration
             $table->foreignId('session_id')->constrained('table_sessions');
             $table->foreignId('table_id')->constrained('restaurant_tables');
             $table->string('order_no', 30)->unique();
-            $table->foreignId('created_by_employee_id')->constrained('users');
+            $table->string('created_by_employee');
             $table->enum('status', CartOrderStatus::values())
                 ->default(CartOrderStatus::OPEN);
             $table->integer('subtotal_amount')->default(0);
@@ -29,6 +28,10 @@ return new class extends Migration
             $table->string('remark', 255)->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+
+            $table->foreign('created_by_employee')
+                ->references('user_name')
+                ->on('users');
         });
     }
 

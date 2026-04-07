@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('table_sessions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('table_id')->constrained('restaurant_tables');
-            $table->foreignId('opened_by_employee_id')->constrained('users');
-            $table->foreignId('closed_by_employee_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('opened_by_employee');
+            $table->string('closed_by_employee')->nullable();
             $table->integer('guest_count')->nullable();
             $table->enum('status', TableSessionStatus::values())
                 ->default(TableSessionStatus::OPEN);
@@ -26,6 +26,14 @@ return new class extends Migration
             $table->string('remark', 255)->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+
+            $table->foreign('opened_by_employee')
+                ->references('user_name')
+                ->on('users');
+            $table->foreign('closed_by_employee')
+                ->references('user_name')
+                ->on('users')
+                ->nullOnDelete();
         });
     }
 

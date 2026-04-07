@@ -31,7 +31,11 @@ return new class extends Migration
     private function changeMoneyColumnsToInteger(): void
     {
         if (Schema::hasTable('combos')) {
-            DB::statement('ALTER TABLE combos MODIFY discount_price INTEGER NOT NULL');
+            if (Schema::hasColumn('combos', 'discount_price')) {
+                DB::statement('ALTER TABLE combos MODIFY discount_price INTEGER NOT NULL');
+            } elseif (Schema::hasColumn('combos', 'combo_price')) {
+                DB::statement('ALTER TABLE combos MODIFY combo_price INTEGER NOT NULL');
+            }
         }
 
         if (Schema::hasTable('cart_orders')) {
@@ -79,7 +83,11 @@ return new class extends Migration
     private function changeMoneyColumnsToDecimal(): void
     {
         if (Schema::hasTable('combos')) {
-            DB::statement('ALTER TABLE combos MODIFY discount_price DECIMAL(12,2) NOT NULL');
+            if (Schema::hasColumn('combos', 'discount_price')) {
+                DB::statement('ALTER TABLE combos MODIFY discount_price DECIMAL(12,2) NOT NULL');
+            } elseif (Schema::hasColumn('combos', 'combo_price')) {
+                DB::statement('ALTER TABLE combos MODIFY combo_price DECIMAL(12,2) NOT NULL');
+            }
         }
 
         if (Schema::hasTable('cart_orders')) {

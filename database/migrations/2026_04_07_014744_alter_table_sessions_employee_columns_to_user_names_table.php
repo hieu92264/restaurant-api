@@ -17,6 +17,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (! Schema::hasColumn('table_sessions', 'opened_by_employee_id')
+            || ! Schema::hasColumn('table_sessions', 'closed_by_employee_id')) {
+            return;
+        }
+
         if ($this->usingSqlite()) {
             $this->upSqlite();
 
@@ -71,6 +76,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (! Schema::hasColumn('table_sessions', 'opened_by_employee')
+            || ! Schema::hasColumn('table_sessions', 'closed_by_employee')) {
+            return;
+        }
+
         if ($this->usingSqlite()) {
             $this->downSqlite();
 

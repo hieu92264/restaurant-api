@@ -11,17 +11,21 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $cart_order_id
  * @property int $session_id
  * @property int $table_id
- * @property int $created_by_employee_id
+ * @property string|null $reservation_code
+ * @property string $created_by_employee
  * @property string|null $customer_name
  * @property string|null $customer_phone
  * @property numeric $subtotal_amount
  * @property numeric $discount_amount
  * @property numeric $service_charge_amount
  * @property numeric $tax_amount
+ * @property numeric $deposit_amount
  * @property numeric $total_amount
  * @property numeric $paid_amount
+ * @property numeric $remaining_amount
  * @property numeric $change_amount
- * @property string $invoice_status
+ * @property string|null $payment_method
+ * @property string $payment_status
  * @property \Illuminate\Support\Carbon $issued_at
  * @property \Illuminate\Support\Carbon|null $paid_at
  * @property string|null $note
@@ -32,8 +36,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \App\Models\User $createdByEmployee
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceItem> $items
  * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
- * @property-read int|null $payments_count
  * @property-read \App\Models\TableSession $session
  * @property-read \App\Models\RestaurantTable $table
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice newModelQuery()
@@ -42,18 +44,22 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCartOrderId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereChangeAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCreatedByEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCreatedByEmployee($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCustomerName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCustomerPhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereDiscountAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereInvoiceStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereDepositAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice wherePaymentMethod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice wherePaymentStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereIssuedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereNo($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereNote($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice wherePaidAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice wherePaidAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereRemainingAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereReservationCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereServiceChargeAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereSessionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereSubtotalAmount($value)
@@ -70,17 +76,21 @@ class Invoice extends BaseModel
         'cart_order_id',
         'session_id',
         'table_id',
-        'created_by_employee_id',
+        'reservation_code',
+        'created_by_employee',
         'customer_name',
         'customer_phone',
         'subtotal_amount',
         'discount_amount',
         'service_charge_amount',
         'tax_amount',
+        'deposit_amount',
         'total_amount',
         'paid_amount',
+        'remaining_amount',
         'change_amount',
-        'invoice_status',
+        'payment_method',
+        'payment_status',
         'issued_at',
         'paid_at',
         'note',
@@ -93,15 +103,19 @@ class Invoice extends BaseModel
             'cart_order_id' => 'integer',
             'session_id' => 'integer',
             'table_id' => 'integer',
-            'created_by_employee_id' => 'integer',
+            'reservation_code' => 'string',
+            'created_by_employee' => 'string',
             'subtotal_amount' => 'integer',
             'discount_amount' => 'integer',
             'service_charge_amount' => 'integer',
             'tax_amount' => 'integer',
+            'deposit_amount' => 'integer',
             'total_amount' => 'integer',
             'paid_amount' => 'integer',
+            'remaining_amount' => 'integer',
             'change_amount' => 'integer',
-            'invoice_status' => 'string',
+            'payment_method' => 'string',
+            'payment_status' => 'string',
             'issued_at' => 'datetime',
             'paid_at' => 'datetime',
             'is_active' => 'boolean',
@@ -127,16 +141,11 @@ class Invoice extends BaseModel
 
     public function createdByEmployee(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by_employee_id');
+        return $this->belongsTo(User::class, 'created_by_employee', 'user_name');
     }
 
     public function items(): HasMany
     {
         return $this->hasMany(InvoiceItem::class, 'invoice_id');
-    }
-
-    public function payments(): HasMany
-    {
-        return $this->hasMany(Payment::class, 'invoice_id');
     }
 }

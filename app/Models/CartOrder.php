@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $session_id
  * @property int $table_id
  * @property string $order_no
- * @property int $created_by_employee_id
+ * @property string $created_by_employee
  * @property string $status
  * @property numeric $subtotal_amount
  * @property numeric $discount_amount
@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrder newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrder query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrder whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrder whereCreatedByEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrder whereCreatedByEmployee($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrder whereDiscountAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrder whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrder whereIsActive($value)
@@ -54,7 +54,7 @@ class CartOrder extends BaseModel
         'session_id',
         'table_id',
         'order_no',
-        'created_by_employee_id',
+        'created_by_employee',
         'status',
         'subtotal_amount',
         'discount_amount',
@@ -70,7 +70,7 @@ class CartOrder extends BaseModel
         return [
             'session_id' => 'integer',
             'table_id' => 'integer',
-            'created_by_employee_id' => 'integer',
+            'created_by_employee' => 'string',
             'status' => 'string',
             'subtotal_amount' => 'integer',
             'discount_amount' => 'integer',
@@ -93,7 +93,7 @@ class CartOrder extends BaseModel
 
     public function createdByEmployee(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by_employee_id');
+        return $this->belongsTo(User::class, 'created_by_employee', 'user_name');
     }
 
     public function items(): HasMany

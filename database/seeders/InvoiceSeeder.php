@@ -2,7 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Common\Constants\InvoiceStatus;
+use App\Common\Constants\InvoicePaymentStatus;
+use App\Common\Constants\PaymentMethod;
 use App\Models\CartOrder;
 use App\Models\Invoice;
 use App\Models\RestaurantTable;
@@ -28,20 +29,24 @@ class InvoiceSeeder extends Seeder
                 'cart_order_id' => $order?->id,
                 'session_id' => $session?->id,
                 'table_id' => $table?->id,
-                'created_by_employee_id' => $cashier?->id,
-                'customer_name' => 'Công ty ABC',
+                'reservation_code' => null,
+                'created_by_employee' => $cashier?->user_name,
+                'customer_name' => 'Cong ty ABC',
                 'customer_phone' => '0909000001',
                 'subtotal_amount' => 97000,
                 'discount_amount' => 5000,
                 'service_charge_amount' => 0,
                 'tax_amount' => 0,
+                'deposit_amount' => 0,
                 'total_amount' => 92000,
                 'paid_amount' => 100000,
+                'remaining_amount' => 0,
                 'change_amount' => 8000,
-                'invoice_status' => InvoiceStatus::PAID,
+                'payment_method' => PaymentMethod::CASH,
+                'payment_status' => InvoicePaymentStatus::PAID,
                 'issued_at' => '2026-03-20 12:30:00',
                 'paid_at' => '2026-03-20 12:35:00',
-                'note' => 'Khách thanh toán một lần',
+                'note' => 'Khach thanh toan mot lan',
                 'is_active' => true,
             ]
         );
