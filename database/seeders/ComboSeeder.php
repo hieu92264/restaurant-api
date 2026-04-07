@@ -20,7 +20,7 @@ class ComboSeeder extends Seeder
                 'name' => 'Da Tiec Thuong Uyen',
                 'remark' => 'Suon bo My nuong, ruou vang do, salad huu co, trang mieng lava.',
                 'combo_image' => null,
-                'combo_price' => 890000,
+                'discount_price' => 890000,
                 'max_use_times' => 20,
                 'tag' => ComboTag::HOT,
                 'days_in_week' => [
@@ -40,7 +40,7 @@ class ComboSeeder extends Seeder
                 'name' => 'Huong Vi Dai Duong',
                 'remark' => 'Tom hum bo lo, hau song, cha ca la vong, soup hai san.',
                 'combo_image' => null,
-                'combo_price' => 1550000,
+                'discount_price' => 1550000,
                 'max_use_times' => 12,
                 'tag' => ComboTag::SEASONAL,
                 'days_in_week' => [
@@ -62,7 +62,7 @@ class ComboSeeder extends Seeder
                 'name' => 'Business Lunch',
                 'remark' => 'Mon chinh tu chon, ca phe hoac tra, trai cay mua vu.',
                 'combo_image' => null,
-                'combo_price' => 245000,
+                'discount_price' => 245000,
                 'max_use_times' => 60,
                 'tag' => ComboTag::FAST,
                 'days_in_week' => [
@@ -82,7 +82,7 @@ class ComboSeeder extends Seeder
                 'name' => 'Afternoon Tea Set',
                 'remark' => 'Macarons, banh mousse, tra Anh Quoc, scones.',
                 'combo_image' => null,
-                'combo_price' => 499000,
+                'discount_price' => 499000,
                 'max_use_times' => 30,
                 'tag' => ComboTag::RELAX,
                 'days_in_week' => [

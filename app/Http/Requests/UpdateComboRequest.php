@@ -31,7 +31,7 @@ class UpdateComboRequest extends FormRequest
             'remark' => ['sometimes', 'nullable', 'string'],
             'combo_image' => ['sometimes', 'nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'combo_image_url' => ['sometimes', 'nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'combo_price' => ['sometimes', 'integer', 'min:0'],
+            'discount_price' => ['sometimes', 'integer', 'min:0'],
             'is_active' => ['sometimes', 'boolean'],
             'tag' => ['sometimes', 'nullable', Rule::in(ComboTag::values())],
             'days_in_week' => ['sometimes', 'nullable', 'array'],

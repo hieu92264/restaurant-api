@@ -31,7 +31,7 @@ class StoreComboRequest extends FormRequest
             'remark' => ['nullable', 'string'],
             'combo_image' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'combo_image_url' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'combo_price' => ['required', 'integer', 'min:0'],
+            'discount_price' => ['required', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
             'tag' => ['nullable', Rule::in(ComboTag::values())],
             'days_in_week' => ['nullable', 'array'],

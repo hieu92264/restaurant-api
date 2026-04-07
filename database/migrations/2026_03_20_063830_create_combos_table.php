@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->text('remark')->nullable();
             $table->json('combo_image')->nullable();
 
-            $table->integer('combo_price');
+            $table->integer('discount_price');
 
             $table->integer('max_use_times')->default(0);
 

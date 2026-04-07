@@ -29,7 +29,7 @@ class ComboTest extends TestCase
             'remark',
             'combo_image',
             'is_active',
-            'combo_price',
+            'discount_price',
             'max_use_times',
             'tag',
             'days_in_week',
@@ -60,7 +60,7 @@ class ComboTest extends TestCase
         $response = $this->actingAs($user, 'api')->post('/api/v1/menu/combos', [
             'data' => json_encode([
                 'name' => 'Combo trua',
-                'combo_price' => 99000,
+                'discount_price' => 10000,
                 'dishes' => [
                     [
                         'quantity' => 1,
@@ -85,7 +85,7 @@ class ComboTest extends TestCase
             'data' => json_encode([
                 'name' => 'Combo trua van phong',
                 'remark' => 'Combo co ban cho 2 nguoi',
-                'combo_price' => 129000,
+                'discount_price' => 16000,
                 'is_active' => true,
                 'tag' => 'HOT',
                 'days_in_week' => ['T2', 'T3'],
@@ -113,6 +113,8 @@ class ComboTest extends TestCase
 
         $response->assertCreated()
             ->assertJsonPath('metadata.name', 'Combo trua van phong')
+            ->assertJsonPath('metadata.discount_price', 16000)
+            ->assertJsonPath('metadata.selling_price', 145000)
             ->assertJsonPath('metadata.combo_price', 129000)
             ->assertJsonPath('metadata.tag', 'HOT')
             ->assertJsonPath('metadata.days_in_week.0', 'T2')
@@ -122,6 +124,8 @@ class ComboTest extends TestCase
         $combo = Combo::query()->where('slug', 'combo-trua-van-phong')->first();
 
         $this->assertNotNull($combo);
+        $this->assertSame(16000, $combo->discount_price);
+        $this->assertSame(145000, $combo->selling_price);
         $this->assertSame(129000, $combo->combo_price);
         $this->assertSame(['T2', 'T3'], $combo->days_in_week);
         $this->assertNotNull($combo->combo_image);
@@ -154,7 +158,7 @@ class ComboTest extends TestCase
             'name' => 'Combo sang',
             'remark' => 'Combo buoi sang',
             'combo_image' => null,
-            'combo_price' => 89000,
+            'discount_price' => 1000,
             'is_active' => true,
             'max_use_times' => 10,
         ]);
@@ -169,7 +173,7 @@ class ComboTest extends TestCase
             'combo_image' => UploadedFile::fake()->image('combo-update.png'),
             'data' => json_encode([
                 'name' => 'Combo sang dac biet',
-                'combo_price' => 99000,
+                'discount_price' => 66000,
                 'tag' => 'FAST',
                 'days_in_week' => ['T6'],
                 'dishes' => [
@@ -185,6 +189,8 @@ class ComboTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('metadata.name', 'Combo sang dac biet')
+            ->assertJsonPath('metadata.discount_price', 66000)
+            ->assertJsonPath('metadata.selling_price', 165000)
             ->assertJsonPath('metadata.combo_price', 99000)
             ->assertJsonPath('metadata.tag', 'FAST')
             ->assertJsonPath('metadata.days_in_week.0', 'T6')
@@ -194,6 +200,8 @@ class ComboTest extends TestCase
 
         $this->assertSame('combo-sang-dac-biet', $combo->slug);
         $this->assertSame('Combo sang dac biet', $combo->name);
+        $this->assertSame(66000, $combo->discount_price);
+        $this->assertSame(165000, $combo->selling_price);
         $this->assertSame(99000, $combo->combo_price);
         $this->assertSame(['T6'], $combo->days_in_week);
         $this->assertNotNull($combo->combo_image);

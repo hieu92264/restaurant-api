@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\DB;
  * @property string $name
  * @property string|null $remark
  * @property array<string, mixed>|null $combo_image
- * @property int $combo_price
+ * @property int $discount_price
+ * @property-read int $combo_price
+ * @property-read int $selling_price
  * @property bool $is_active
  * @property int $max_use_times
  * @property string|null $tag
@@ -35,7 +37,7 @@ use Illuminate\Support\Facades\DB;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereComboPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereDiscountPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereId($value)
@@ -53,7 +55,7 @@ class Combo extends BaseModel
         'name',
         'remark',
         'combo_image',
-        'combo_price',
+        'discount_price',
         'max_use_times',
         'tag',
         'days_in_week',
@@ -65,6 +67,7 @@ class Combo extends BaseModel
 
     protected $appends = [
         'selling_price',
+        'combo_price',
     ];
 
     public function dishes(): BelongsToMany
@@ -92,11 +95,20 @@ class Combo extends BaseModel
     protected function sellingPrice(): Attribute
     {
         return Attribute::make(
-            get: fn() => (int) round($this->comboDishes()
-                ->where('combo_dishes.is_active', true)
-                ->join('dishes', 'combo_dishes.dish_id', '=', 'dishes.id')
-                ->sum(DB::raw('dishes.price * combo_dishes.quantity')))
+            get: fn(): int => $this->resolveSellingPrice()
         );
+    }
+
+    protected function comboPrice(): Attribute
+    {
+        return Attribute::make(
+            get: fn(): int => max($this->resolveSellingPrice() - (int) $this->discount_price, 0)
+        );
+    }
+
+    public function comboDishes(): HasMany
+    {
+        return $this->hasMany(ComboDish::class, 'combo_id');
     }
 
     protected function comboImage(): Attribute
@@ -109,16 +121,10 @@ class Combo extends BaseModel
         );
     }
 
-    public function comboDishes(): HasMany
-    {
-        return $this->hasMany(ComboDish::class, 'combo_id');
-    }
-
     protected function casts(): array
     {
         return [
-            'combo_price' => 'integer',
-            'seling_price' => 'integer',
+            'discount_price' => 'integer',
             'is_active' => 'boolean',
             'max_use_times' => 'integer',
             'tag' => 'string',
@@ -130,5 +136,21 @@ class Combo extends BaseModel
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    private function resolveSellingPrice(): int
+    {
+        if ($this->relationLoaded('dishes')) {
+            return (int) round($this->dishes
+                ->where('pivot.is_active', true)
+                ->sum(fn(Dish $dish): int => ((int) $dish->price) * ((int) $dish->pivot->quantity)));
+        }
+
+        return (int) round(
+            $this->comboDishes()
+                ->where('combo_dishes.is_active', true)
+                ->join('dishes', 'combo_dishes.dish_id', '=', 'dishes.id')
+                ->sum(DB::raw('dishes.price * combo_dishes.quantity'))
+        );
     }
 }
