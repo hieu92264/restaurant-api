@@ -146,6 +146,36 @@ class ComboTest extends TestCase
         ]);
     }
 
+    public function test_store_combo_request_rejects_discount_price_greater_than_selling_price(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        [$dishOne, $dishTwo] = $this->createSampleDishes();
+
+        $response = $this->actingAs($user, 'api')->post('/api/v1/menu/combos', [
+            'data' => json_encode([
+                'name' => 'Combo loi',
+                'discount_price' => 200000,
+                'dishes' => [
+                    [
+                        'dish_slug' => $dishOne->slug,
+                        'quantity' => 1,
+                        'sort_order' => 1,
+                        'is_active' => true,
+                    ],
+                    [
+                        'dish_slug' => $dishTwo->slug,
+                        'quantity' => 1,
+                        'sort_order' => 2,
+                        'is_active' => true,
+                    ],
+                ],
+            ], JSON_THROW_ON_ERROR),
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['discount_price']);
+    }
+
     public function test_authenticated_user_can_update_combo_with_multipart_data_and_image_file(): void
     {
         Storage::fake('public');
@@ -234,6 +264,37 @@ class ComboTest extends TestCase
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(['data']);
+    }
+
+    public function test_update_combo_request_rejects_discount_price_greater_than_selling_price(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        [$dishOne, $dishTwo] = $this->createSampleDishes();
+
+        $combo = Combo::query()->create([
+            'slug' => 'combo-test-discount',
+            'name' => 'Combo test discount',
+            'remark' => null,
+            'combo_image' => null,
+            'discount_price' => 1000,
+            'is_active' => true,
+            'max_use_times' => 10,
+        ]);
+
+        $combo->dishes()->sync([
+            $dishOne->id => ['quantity' => 1, 'sort_order' => 1, 'is_active' => true],
+            $dishTwo->id => ['quantity' => 1, 'sort_order' => 2, 'is_active' => true],
+        ]);
+
+        $response = $this->actingAs($user, 'api')->post('/api/v1/menu/combos/combo-test-discount', [
+            '_method' => 'PATCH',
+            'data' => json_encode([
+                'discount_price' => 200000,
+            ], JSON_THROW_ON_ERROR),
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['discount_price']);
     }
 
     private function createAuthenticatedUser(): User

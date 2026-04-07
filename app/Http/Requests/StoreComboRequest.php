@@ -4,11 +4,13 @@ namespace App\Http\Requests;
 
 use App\Common\Constants\ComboTag;
 use App\Common\Constants\DayInWeek;
-use Illuminate\Contracts\Validation\Validator;
+use App\Models\Dish;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator as ValidationValidator;
 use Symfony\Component\HttpFoundation\Response;
 
 class StoreComboRequest extends FormRequest
@@ -49,6 +51,56 @@ class StoreComboRequest extends FormRequest
         ];
     }
 
+    public function withValidator(ValidationValidator $validator): void
+    {
+        $validator->after(function (ValidationValidator $validator): void {
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            $discountPrice = $this->input('discount_price');
+
+            if (!is_numeric($discountPrice)) {
+                return;
+            }
+
+            $sellingPrice = $this->resolveSellingPriceFromItems($this->input('dishes', []));
+
+            if ((int)$discountPrice > $sellingPrice) {
+                $validator->errors()->add(
+                    'discount_price',
+                    'Chiết khấu phải nhỏ hơn hoặc bằng tổng giá bán của các món ăn trong combo'
+                );
+            }
+        });
+    }
+
+    /**
+     * @param array<int, array<string, mixed>>|mixed $items
+     */
+    private function resolveSellingPriceFromItems(mixed $items): int
+    {
+        if (!is_array($items) || $items === []) {
+            return 0;
+        }
+
+        $activeItems = collect($items)
+            ->filter(fn(mixed $item): bool => is_array($item) && ($item['is_active'] ?? true) === true)
+            ->values();
+
+        if ($activeItems->isEmpty()) {
+            return 0;
+        }
+
+        $pricesBySlug = Dish::query()
+            ->whereIn('slug', $activeItems->pluck('dish_slug')->filter()->all())
+            ->pluck('price', 'slug');
+
+        return (int)round($activeItems->sum(
+            fn(array $item): float|int => ((int)($pricesBySlug[$item['dish_slug']] ?? 0)) * ((float)($item['quantity'] ?? 1))
+        ));
+    }
+
     protected function prepareForValidation(): void
     {
         $payload = $this->input('data');
@@ -56,14 +108,14 @@ class StoreComboRequest extends FormRequest
         if (is_string($payload) && $payload !== '') {
             $decodedPayload = json_decode($payload, true);
 
-            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decodedPayload)) {
+            if (json_last_error() !== JSON_ERROR_NONE || !is_array($decodedPayload)) {
                 $this->hasInvalidJsonData = true;
             } else {
                 $this->merge($decodedPayload);
             }
         }
 
-        if ($this->hasFile('combo_image_url') && ! $this->hasFile('combo_image')) {
+        if ($this->hasFile('combo_image_url') && !$this->hasFile('combo_image')) {
             $this->files->set('combo_image', $this->file('combo_image_url'));
         }
     }
