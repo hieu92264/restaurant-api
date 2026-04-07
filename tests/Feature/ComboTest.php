@@ -17,6 +17,53 @@ class ComboTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_guest_can_view_combos_index_and_show(): void
+    {
+        [$dishOne, $dishTwo] = $this->createSampleDishes();
+
+        $combo = Combo::query()->create([
+            'slug' => 'combo-trua',
+            'name' => 'Combo trua',
+            'remark' => 'Combo cho buoi trua',
+            'combo_image' => null,
+            'discount_price' => 10000,
+            'is_active' => true,
+            'max_use_times' => 20,
+        ]);
+
+        $combo->dishes()->sync([
+            $dishOne->id => ['quantity' => 1, 'sort_order' => 1, 'is_active' => true],
+            $dishTwo->id => ['quantity' => 1, 'sort_order' => 2, 'is_active' => true],
+        ]);
+
+        $this->getJson('/api/v1/menu/combos')
+            ->assertOk()
+            ->assertJsonPath('metadata.0.slug', $combo->slug);
+
+        $this->getJson('/api/v1/menu/combos/combo-trua')
+            ->assertOk()
+            ->assertJsonPath('metadata.slug', $combo->slug)
+            ->assertJsonPath('metadata.dishes.0.slug', $dishOne->slug);
+    }
+
+    public function test_guest_cannot_store_combo(): void
+    {
+        [$dishOne] = $this->createSampleDishes(1);
+
+        $this->postJson('/api/v1/menu/combos', [
+            'name' => 'Combo khach',
+            'discount_price' => 5000,
+            'dishes' => [
+                [
+                    'dish_slug' => $dishOne->slug,
+                    'quantity' => 1,
+                    'sort_order' => 1,
+                    'is_active' => true,
+                ],
+            ],
+        ])->assertUnauthorized();
+    }
+
     public function test_combos_and_pivot_tables_have_expected_columns(): void
     {
         $this->assertTrue(Schema::hasTable('combos'));

@@ -15,6 +15,57 @@ class DishTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_guest_can_view_dishes_index_and_show(): void
+    {
+        $category = $this->createCategory();
+
+        $dish = Dish::query()->create([
+            'category_id' => $category->id,
+            'slug' => 'pho-bo',
+            'name' => 'Pho bo',
+            'description' => 'Mon nuoc pho bien',
+            'price' => 50000,
+            'original_price' => 60000,
+            'cost_price' => 25000,
+            'image' => null,
+            'unit' => 'to',
+            'is_featured' => false,
+            'published_at' => null,
+            'status' => 'active',
+            'available_from' => '06:00',
+            'available_to' => '22:00',
+            'sort_order' => 1,
+            'options_json' => null,
+            'tags_json' => null,
+            'is_active' => true,
+        ]);
+
+        $this->getJson('/api/v1/menu/dishes')
+            ->assertOk()
+            ->assertJsonPath('metadata.0.slug', $dish->slug);
+
+        $this->getJson('/api/v1/menu/dishes/pho-bo')
+            ->assertOk()
+            ->assertJsonPath('metadata.slug', $dish->slug)
+            ->assertJsonPath('metadata.category.slug', $category->slug);
+    }
+
+    public function test_guest_cannot_store_dish(): void
+    {
+        $category = $this->createCategory();
+
+        $this->postJson('/api/v1/menu/dishes', [
+            'category_id' => $category->id,
+            'name' => 'Pho bo dac biet',
+            'description' => 'Mon nuoc noi bat',
+            'price' => 65000,
+            'cost_price' => 30000,
+            'unit' => 'to',
+            'status' => 'active',
+            'is_active' => true,
+        ])->assertUnauthorized();
+    }
+
     public function test_authenticated_user_can_store_dish_with_multipart_data_and_image_file(): void
     {
         Storage::fake('public');
