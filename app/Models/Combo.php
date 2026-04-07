@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read int $combo_price
  * @property-read int $selling_price
  * @property bool $is_active
- * @property int $max_use_times
+ * @property int|null $max_use_times
  * @property string|null $tag
  * @property array<int, string>|null $days_in_week
  * @property string|null $start_time

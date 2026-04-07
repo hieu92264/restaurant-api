@@ -22,7 +22,7 @@ return new class extends Migration {
 
             $table->integer('discount_price');
 
-            $table->integer('max_use_times')->default(0);
+            $table->integer('max_use_times')->nullable();
 
             $table->enum('tag', ComboTag::values())->nullable();
             $table->json('days_in_week')->nullable();

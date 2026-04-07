@@ -146,6 +146,47 @@ class ComboTest extends TestCase
         ]);
     }
 
+    public function test_authenticated_user_can_store_combo_with_null_max_use_times(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        [$dishOne, $dishTwo] = $this->createSampleDishes();
+
+        $response = $this->actingAs($user, 'api')->post('/api/v1/menu/combos', [
+            'data' => json_encode([
+                'name' => 'Combo khong gioi han',
+                'discount_price' => 10000,
+                'max_use_times' => null,
+                'dishes' => [
+                    [
+                        'dish_slug' => $dishOne->slug,
+                        'quantity' => 1,
+                        'sort_order' => 1,
+                        'is_active' => true,
+                    ],
+                    [
+                        'dish_slug' => $dishTwo->slug,
+                        'quantity' => 1,
+                        'sort_order' => 2,
+                        'is_active' => true,
+                    ],
+                ],
+            ], JSON_THROW_ON_ERROR),
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('metadata.name', 'Combo khong gioi han')
+            ->assertJsonPath('metadata.max_use_times', null);
+
+        $combo = Combo::query()->where('slug', 'combo-khong-gioi-han')->first();
+
+        $this->assertNotNull($combo);
+        $this->assertNull($combo->max_use_times);
+        $this->assertDatabaseHas('combos', [
+            'id' => $combo->id,
+            'max_use_times' => null,
+        ]);
+    }
+
     public function test_store_combo_request_rejects_discount_price_greater_than_selling_price(): void
     {
         $user = $this->createAuthenticatedUser();
@@ -264,6 +305,45 @@ class ComboTest extends TestCase
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(['data']);
+    }
+
+    public function test_authenticated_user_can_update_combo_max_use_times_to_null(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        [$dishOne, $dishTwo] = $this->createSampleDishes();
+
+        $combo = Combo::query()->create([
+            'slug' => 'combo-gioi-han',
+            'name' => 'Combo gioi han',
+            'remark' => null,
+            'combo_image' => null,
+            'discount_price' => 1000,
+            'is_active' => true,
+            'max_use_times' => 10,
+        ]);
+
+        $combo->dishes()->sync([
+            $dishOne->id => ['quantity' => 1, 'sort_order' => 1, 'is_active' => true],
+            $dishTwo->id => ['quantity' => 1, 'sort_order' => 2, 'is_active' => true],
+        ]);
+
+        $response = $this->actingAs($user, 'api')->post('/api/v1/menu/combos/combo-gioi-han', [
+            '_method' => 'PATCH',
+            'data' => json_encode([
+                'max_use_times' => null,
+            ], JSON_THROW_ON_ERROR),
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('metadata.max_use_times', null);
+
+        $combo->refresh();
+
+        $this->assertNull($combo->max_use_times);
+        $this->assertDatabaseHas('combos', [
+            'id' => $combo->id,
+            'max_use_times' => null,
+        ]);
     }
 
     public function test_update_combo_request_rejects_discount_price_greater_than_selling_price(): void
