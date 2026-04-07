@@ -21,8 +21,8 @@ class TableSessionSeeder extends Seeder
         $sessions = [
             [
                 'table_slug' => 'A01',
-                'opened_by_employee_id' => $waiter?->id,
-                'closed_by_employee_id' => null,
+                'opened_by_employee' => $waiter?->user_name,
+                'closed_by_employee' => null,
                 'guest_count' => 3,
                 'status' => TableSessionStatus::OPEN,
                 'opened_at' => '2026-03-20 18:30:00',
@@ -31,8 +31,8 @@ class TableSessionSeeder extends Seeder
             ],
             [
                 'table_slug' => 'G01',
-                'opened_by_employee_id' => $waiter?->id,
-                'closed_by_employee_id' => $cashier?->id,
+                'opened_by_employee' => $waiter?->user_name,
+                'closed_by_employee' => $cashier?->user_name,
                 'guest_count' => 2,
                 'status' => TableSessionStatus::CLOSED,
                 'opened_at' => '2026-03-20 11:45:00',
@@ -50,8 +50,8 @@ class TableSessionSeeder extends Seeder
                     'opened_at' => $sessionData['opened_at'],
                 ],
                 [
-                    'opened_by_employee_id' => $sessionData['opened_by_employee_id'],
-                    'closed_by_employee_id' => $sessionData['closed_by_employee_id'],
+                    'opened_by_employee' => $sessionData['opened_by_employee'],
+                    'closed_by_employee' => $sessionData['closed_by_employee'],
                     'guest_count' => $sessionData['guest_count'],
                     'status' => $sessionData['status'],
                     'closed_at' => $sessionData['closed_at'],

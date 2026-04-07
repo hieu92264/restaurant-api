@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property int $id
  * @property int $table_id
- * @property int $opened_by_employee_id
- * @property int|null $closed_by_employee_id
+ * @property string $opened_by_employee
+ * @property string|null $closed_by_employee
  * @property int|null $guest_count
  * @property string $status
  * @property \Illuminate\Support\Carbon $opened_at
@@ -29,13 +29,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereClosedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereClosedByEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereClosedByEmployee($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereGuestCount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereIsActive($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereOpenedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereOpenedByEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereOpenedByEmployee($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereRemark($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession whereTableId($value)
@@ -46,8 +46,8 @@ class TableSession extends BaseModel
 {
     protected $fillable = [
         'table_id',
-        'opened_by_employee_id',
-        'closed_by_employee_id',
+        'opened_by_employee',
+        'closed_by_employee',
         'guest_count',
         'status',
         'opened_at',
@@ -60,8 +60,8 @@ class TableSession extends BaseModel
     {
         return [
             'table_id' => 'integer',
-            'opened_by_employee_id' => 'integer',
-            'closed_by_employee_id' => 'integer',
+            'opened_by_employee' => 'string',
+            'closed_by_employee' => 'string',
             'guest_count' => 'integer',
             'status' => 'string',
             'opened_at' => 'datetime',
@@ -79,12 +79,12 @@ class TableSession extends BaseModel
 
     public function openedByEmployee(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'opened_by_employee_id');
+        return $this->belongsTo(User::class, 'opened_by_employee', 'user_name');
     }
 
     public function closedByEmployee(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'closed_by_employee_id');
+        return $this->belongsTo(User::class, 'closed_by_employee', 'user_name');
     }
 
     public function cartOrders(): HasMany
