@@ -16,6 +16,7 @@ class SyncTableStatuses extends Command
      * @var string
      */
     protected $signature = 'app:sync-table-statuses';
+
     /**
      * The console command description.
      *
@@ -31,7 +32,7 @@ class SyncTableStatuses extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $reservationTableCodes = Reservation::query()
             ->whereNotNull('table_code')
@@ -40,10 +41,12 @@ class SyncTableStatuses extends Command
         $sessionTableCodes = TableSession::query()
             ->whereNotNull('table_id')
             ->with('table:id,slug')
-            ->pluck('table.slug')
+            ->get()
+            ->map(fn($session) => $session->table?->slug)
             ->filter();
 
-        $allTableCodes = $reservationTableCodes->merge($sessionTableCodes)
+        $allTableCodes = $reservationTableCodes
+            ->merge($sessionTableCodes)
             ->merge(
                 RestaurantTable::query()->pluck('slug')
             )
