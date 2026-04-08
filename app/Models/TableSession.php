@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
  * @property-read int|null $invoices_count
  * @property-read \App\Models\User $openedByEmployee
+ * @property-read \App\Models\Reservation|null $reservation
  * @property-read \App\Models\RestaurantTable $table
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableSession newQuery()
@@ -53,6 +54,7 @@ class TableSession extends BaseModel
         'opened_at',
         'closed_at',
         'remark',
+        'reservation_code',
         'is_active',
     ];
 
@@ -66,6 +68,7 @@ class TableSession extends BaseModel
             'status' => 'string',
             'opened_at' => 'datetime',
             'closed_at' => 'datetime',
+            'reservation_code' => 'string',
             'is_active' => 'boolean',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
@@ -85,6 +88,11 @@ class TableSession extends BaseModel
     public function closedByEmployee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'closed_by_employee', 'user_name');
+    }
+
+    public function reservation(): BelongsTo
+    {
+        return $this->belongsTo(Reservation::class, 'reservation_code', 'reservation_code');
     }
 
     public function cartOrders(): HasMany

@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \App\Models\User $createdByEmployee
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceItem> $items
  * @property-read int|null $items_count
+ * @property-read \App\Models\Reservation|null $reservation
  * @property-read \App\Models\TableSession $session
  * @property-read \App\Models\RestaurantTable $table
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice newModelQuery()
@@ -142,6 +143,11 @@ class Invoice extends BaseModel
     public function createdByEmployee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by_employee', 'user_name');
+    }
+
+    public function reservation(): BelongsTo
+    {
+        return $this->belongsTo(Reservation::class, 'reservation_code', 'reservation_code');
     }
 
     public function items(): HasMany

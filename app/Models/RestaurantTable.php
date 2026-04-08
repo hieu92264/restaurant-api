@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read int|null $cart_orders_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
  * @property-read int|null $invoices_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Reservation> $reservations
+ * @property-read int|null $reservations_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TableSession> $sessions
  * @property-read int|null $sessions_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable newModelQuery()
@@ -64,6 +66,11 @@ class RestaurantTable extends BaseModel
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class, 'table_id');
+    }
+
+    public function reservations(): HasMany
+    {
+        return $this->hasMany(Reservation::class, 'table_code', 'slug');
     }
 
     public function getRouteKeyName(): string

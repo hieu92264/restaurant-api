@@ -2,10 +2,10 @@
     "info": {
         "_postman_id": "3d19480e-fb5c-4ec9-aafd-bd076aa2ea15",
         "name": "Restaurant API",
-        "description": "# Restaurant API\n\nCollection đồng bộ với các route hiện có trong project.\n\n## Cấu hình\n- `{{base_url}}`: ví dụ `http://127.0.0.1:8000/api/v1`\n- Bearer token dùng `{{access_token}}`\n\n## Ghi chú\n- Chạy `Auth / Login` trước để lấy token.\n- `DELETE` hiện là soft delete bằng `is_active = false`.\n- Có thể khôi phục bản ghi với `PATCH` và `{\"is_active\": true}`.\n- `categories`, `dishes`, `discounts`, `combos`, `restaurant tables` dùng `slug` cho detail/update/delete.\n- `roles` dùng `code` (không phải slug) cho detail/update/delete.\n- `users` dùng `id`.\n- `dishes` create/update dùng `multipart/form-data` với `image` là file upload và `data` là JSON string. Backend convert ảnh sang `.webp` và lưu metadata vào cột `image` theo dạng `{ size, name, url }`.\n- `combos` create/update dùng `multipart/form-data` với `combo_image` là file upload và `data` là JSON string. Backend convert ảnh sang `.webp` và lưu metadata vào cột `combo_image` theo dạng `{ size, name, url }`.\n- Tất cả các cột tiền tệ (`price`, `original_price`, `cost_price`, `discount_price`, `discount_value`, `min_order_value`, v.v.) đều là kiểu `INTEGER` (VNĐ, không dùng decimal).\n",
-        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": "# Restaurant API\n\nCollection đồng bộ với các route hiện có trong project.\n\n## Cấu hình\n- `{{base_url}}`: ví dụ `http:\/\/127.0.0.1:8000\/api\/v1`\n- Bearer token dùng `{{access_token}}`\n\n## Ghi chú\n- Chạy `Auth \/ Login` trước để lấy token.\n- `DELETE` hiện là soft delete bằng `is_active = false`.\n- Có thể khôi phục bản ghi với `PATCH` và `{\"is_active\": true}`.\n- `categories`, `dishes`, `discounts`, `combos`, `restaurant tables` dùng `slug` cho detail\/update\/delete.\n- `roles` dùng `code` (không phải slug) cho detail\/update\/delete.\n- `users` dùng `id`.\n- `dishes` create\/update dùng `multipart\/form-data` với `image` là file upload và `data` là JSON string. Backend convert ảnh sang `.webp` và lưu metadata vào cột `image` theo dạng `{ size, name, url }`.\n- `combos` create\/update dùng `multipart\/form-data` với `combo_image` là file upload và `data` là JSON string. Backend convert ảnh sang `.webp` và lưu metadata vào cột `combo_image` theo dạng `{ size, name, url }`.\n- Tất cả các cột tiền tệ (`price`, `original_price`, `cost_price`, `discount_price`, `discount_value`, `min_order_value`, v.v.) đều là kiểu `INTEGER` (VNĐ, không dùng decimal).\n",
+        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json",
         "_exporter_id": "38705991",
-        "_collection_link": "https://go.postman.co/collection/38705991-3d19480e-fb5c-4ec9-aafd-bd076aa2ea15?source=collection_link"
+        "_collection_link": "https:\/\/go.postman.co\/collection\/38705991-3d19480e-fb5c-4ec9-aafd-bd076aa2ea15?source=collection_link"
     },
     "item": [
         {
@@ -17,13 +17,13 @@
                         {
                             "listen": "test",
                             "script": {
-                                "type": "text/javascript",
+                                "type": "text\/javascript",
                                 "packages": [],
                                 "requests": [],
                                 "exec": [
                                     "const json = pm.response.json();",
                                     "const token = json?.metadata?.access_token;",
-                                    "if (token) pm.environment.set('access_token', token); // Set access token base on current environment"
+                                    "if (token) pm.environment.set('access_token', token); \/\/ Set access token base on current environment"
                                 ]
                             }
                         }
@@ -36,11 +36,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             },
                             {
                                 "key": "Content-Type",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "body": {
@@ -53,7 +53,7 @@
                             }
                         },
                         "url": {
-                            "raw": "{{base_url}}/auth/login",
+                            "raw": "{{base_url}}\/auth\/login",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -73,11 +73,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/auth/refresh",
+                            "raw": "{{base_url}}\/auth\/refresh",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -97,11 +97,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/auth/me",
+                            "raw": "{{base_url}}\/auth\/me",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -121,11 +121,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/auth/logout",
+                            "raw": "{{base_url}}\/auth\/logout",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -151,11 +151,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/users",
+                            "raw": "{{base_url}}\/users",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -174,11 +174,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/users/:user_id",
+                            "raw": "{{base_url}}\/users\/:user_id",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -204,11 +204,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             },
                             {
                                 "key": "Content-Type",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "body": {
@@ -221,7 +221,7 @@
                             }
                         },
                         "url": {
-                            "raw": "{{base_url}}/users",
+                            "raw": "{{base_url}}\/users",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -240,11 +240,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             },
                             {
                                 "key": "Content-Type",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "body": {
@@ -257,7 +257,7 @@
                             }
                         },
                         "url": {
-                            "raw": "{{base_url}}/users/:user_id",
+                            "raw": "{{base_url}}\/users\/:user_id",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -283,11 +283,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/users/:user_id",
+                            "raw": "{{base_url}}\/users\/:user_id",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -307,7 +307,7 @@
                     "response": []
                 }
             ],
-            "description": "API người dùng. Xóa là soft delete. Dùng `id` cho detail/update/delete.\n\n## Cấu trúc dữ liệu bảng `users`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của người dùng. |\n| `role_id` | bigint | Khóa ngoại liên kết tới bảng `roles`, xác định vai trò của user. |\n| `user_name` | varchar(255) | Tên đăng nhập duy nhất, có thể dùng để login. |\n| `full_name` | varchar(255) | Họ tên hiển thị của người dùng. |\n| `email` | varchar(255) | Email đăng nhập/liên hệ, duy nhất trong hệ thống. |\n| `phone` | varchar(20), nullable | Số điện thoại liên hệ. |\n| `password` | varchar(255) | Mật khẩu đã được hash. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` nghĩa là đã bị ẩn/khóa mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
+            "description": "API người dùng. Xóa là soft delete. Dùng `id` cho detail\/update\/delete.\n\n## Cấu trúc dữ liệu bảng `users`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của người dùng. |\n| `role_id` | bigint | Khóa ngoại liên kết tới bảng `roles`, xác định vai trò của user. |\n| `user_name` | varchar(255) | Tên đăng nhập duy nhất, có thể dùng để login. |\n| `full_name` | varchar(255) | Họ tên hiển thị của người dùng. |\n| `email` | varchar(255) | Email đăng nhập\/liên hệ, duy nhất trong hệ thống. |\n| `phone` | varchar(20), nullable | Số điện thoại liên hệ. |\n| `password` | varchar(255) | Mật khẩu đã được hash. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` nghĩa là đã bị ẩn\/khóa mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
         },
         {
             "name": "Roles",
@@ -319,11 +319,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/roles",
+                            "raw": "{{base_url}}\/roles",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -342,11 +342,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/roles/:role_code",
+                            "raw": "{{base_url}}\/roles\/:role_code",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -372,11 +372,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             },
                             {
                                 "key": "Content-Type",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "body": {
@@ -389,7 +389,7 @@
                             }
                         },
                         "url": {
-                            "raw": "{{base_url}}/roles",
+                            "raw": "{{base_url}}\/roles",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -408,11 +408,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             },
                             {
                                 "key": "Content-Type",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "body": {
@@ -425,7 +425,7 @@
                             }
                         },
                         "url": {
-                            "raw": "{{base_url}}/roles/:role_code",
+                            "raw": "{{base_url}}\/roles\/:role_code",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -451,11 +451,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/roles/:role_code",
+                            "raw": "{{base_url}}\/roles\/:role_code",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -475,7 +475,7 @@
                     "response": []
                 }
             ],
-            "description": "API vai trò. Xóa là soft delete. Detail/update/delete dùng `code` (không phải slug).\n\n## Cấu trúc dữ liệu bảng `roles`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của vai trò. |\n| `name` | varchar(255) | Tên hiển thị của vai trò, ví dụ Quản lý, Thu ngân. |\n| `code` | varchar(255) | Mã định danh duy nhất dùng trong API detail/update/delete (VD: `MANAGER`, `CASHIER`). |\n| `remark` | varchar(255), nullable | Ghi chú mô tả trách nhiệm hoặc phạm vi vai trò. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
+            "description": "API vai trò. Xóa là soft delete. Detail\/update\/delete dùng `code` (không phải slug).\n\n## Cấu trúc dữ liệu bảng `roles`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của vai trò. |\n| `name` | varchar(255) | Tên hiển thị của vai trò, ví dụ Quản lý, Thu ngân. |\n| `code` | varchar(255) | Mã định danh duy nhất dùng trong API detail\/update\/delete (VD: `MANAGER`, `CASHIER`). |\n| `remark` | varchar(255), nullable | Ghi chú mô tả trách nhiệm hoặc phạm vi vai trò. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
         },
         {
             "name": "Menu",
@@ -490,11 +490,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{base_url}}/menu/categories",
+                                    "raw": "{{base_url}}\/menu\/categories",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -514,11 +514,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{base_url}}/menu/categories/:category_slug",
+                                    "raw": "{{base_url}}\/menu\/categories\/:category_slug",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -545,11 +545,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     },
                                     {
                                         "key": "Content-Type",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "body": {
@@ -562,7 +562,7 @@
                                     }
                                 },
                                 "url": {
-                                    "raw": "{{base_url}}/menu/categories",
+                                    "raw": "{{base_url}}\/menu\/categories",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -582,11 +582,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     },
                                     {
                                         "key": "Content-Type",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "body": {
@@ -599,7 +599,7 @@
                                     }
                                 },
                                 "url": {
-                                    "raw": "{{base_url}}/menu/categories/:category_slug",
+                                    "raw": "{{base_url}}\/menu\/categories\/:category_slug",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -626,11 +626,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{base_url}}/menu/categories/:category_slug",
+                                    "raw": "{{base_url}}\/menu\/categories\/:category_slug",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -651,7 +651,7 @@
                             "response": []
                         }
                     ],
-                    "description": "API danh mục món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `categories`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của danh mục. |\n| `parent_id` | bigint, nullable | Khóa ngoại tự tham chiếu đến `categories.id`, dùng cho danh mục cha/con. |\n| `name` | varchar(150) | Tên danh mục hiển thị trên menu. |\n| `slug` | varchar(50) | Mã định danh duy nhất dùng trong API detail/update/delete. |\n| `description` | text, nullable | Mô tả ý nghĩa hoặc phạm vi của danh mục. |\n| `sort_order` | integer | Thứ tự sắp xếp danh mục trên giao diện hoặc trong danh sách. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm khỏi luồng sử dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
+                    "description": "API danh mục món ăn. Detail\/update\/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `categories`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của danh mục. |\n| `parent_id` | bigint, nullable | Khóa ngoại tự tham chiếu đến `categories.id`, dùng cho danh mục cha\/con. |\n| `name` | varchar(150) | Tên danh mục hiển thị trên menu. |\n| `slug` | varchar(50) | Mã định danh duy nhất dùng trong API detail\/update\/delete. |\n| `description` | text, nullable | Mô tả ý nghĩa hoặc phạm vi của danh mục. |\n| `sort_order` | integer | Thứ tự sắp xếp danh mục trên giao diện hoặc trong danh sách. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm khỏi luồng sử dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
                 },
                 {
                     "name": "Dishes",
@@ -663,11 +663,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{base_url}}/menu/dishes",
+                                    "raw": "{{base_url}}\/menu\/dishes",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -686,11 +686,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{base_url}}/menu/dishes/:dish_slug",
+                                    "raw": "{{base_url}}\/menu\/dishes\/:dish_slug",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -717,7 +717,7 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "body": {
@@ -737,7 +737,7 @@
                                     ]
                                 },
                                 "url": {
-                                    "raw": "{{base_url}}/menu/dishes",
+                                    "raw": "{{base_url}}\/menu\/dishes",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -746,7 +746,7 @@
                                         "dishes"
                                     ]
                                 },
-                                "description": "Tạo món ăn với `multipart/form-data`. Gửi file ảnh ở field `image` và gửi các field còn lại trong `data` dưới dạng JSON string."
+                                "description": "Tạo món ăn với `multipart\/form-data`. Gửi file ảnh ở field `image` và gửi các field còn lại trong `data` dưới dạng JSON string."
                             },
                             "response": []
                         },
@@ -757,7 +757,7 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "body": {
@@ -782,7 +782,7 @@
                                     ]
                                 },
                                 "url": {
-                                    "raw": "{{base_url}}/menu/dishes/:dish_slug",
+                                    "raw": "{{base_url}}\/menu\/dishes\/:dish_slug",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -798,7 +798,7 @@
                                         }
                                     ]
                                 },
-                                "description": "Cập nhật món ăn theo kiểu `PUT` với đầu vào giống create. Khi gửi file qua `multipart/form-data`, dùng `POST` và thêm field `_method=PUT` để backend xử lý đúng route `PUT`."
+                                "description": "Cập nhật món ăn theo kiểu `PUT` với đầu vào giống create. Khi gửi file qua `multipart\/form-data`, dùng `POST` và thêm field `_method=PUT` để backend xử lý đúng route `PUT`."
                             },
                             "response": []
                         },
@@ -809,11 +809,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{base_url}}/menu/dishes/:dish_slug",
+                                    "raw": "{{base_url}}\/menu\/dishes\/:dish_slug",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -834,7 +834,7 @@
                             "response": []
                         }
                     ],
-                    "description": "API món ăn. Detail/update/delete dùng slug.\n\nCreate dùng `multipart/form-data` với 2 field:\n- `image`: file ảnh (jpg, jpeg, png, webp, tối đa 5MB), không bắt buộc.\n- `data`: JSON string chứa các field như `category_id`, `name`, `price`, `original_price`, `cost_price`, `unit`, `is_featured`, `status`, `available_from`, `available_to`, `sort_order`, `options_json`, `tags_json`, `is_active`.\n\nUpdate dùng cùng đầu vào như create, nhưng theo ngữ nghĩa `PUT`. Với upload file, gửi `POST multipart/form-data` và thêm `_method=PUT`.\n\n**Lưu ý `is_new` (chỉ dùng khi Update):** Khi `is_new=true`, backend tự set `published_at = today`; khi `is_new=false`, set `published_at = null`.\n\nẢnh sau khi upload sẽ được backend convert sang `.webp` và response trả về metadata trong `image` theo dạng:\n`{\"size\":12345,\"name\":\"dish_xxxx.webp\",\"url\":\"storage/dishes/dish_xxxx.webp\"}`\n\n**Tất cả giá trị tiền tệ (`price`, `original_price`, `cost_price`) là INTEGER (VNĐ).**\n"
+                    "description": "API món ăn. Detail\/update\/delete dùng slug.\n\nCreate dùng `multipart\/form-data` với 2 field:\n- `image`: file ảnh (jpg, jpeg, png, webp, tối đa 5MB), không bắt buộc.\n- `data`: JSON string chứa các field như `category_id`, `name`, `price`, `original_price`, `cost_price`, `unit`, `is_featured`, `status`, `available_from`, `available_to`, `sort_order`, `options_json`, `tags_json`, `is_active`.\n\nUpdate dùng cùng đầu vào như create, nhưng theo ngữ nghĩa `PUT`. Với upload file, gửi `POST multipart\/form-data` và thêm `_method=PUT`.\n\n**Lưu ý `is_new` (chỉ dùng khi Update):** Khi `is_new=true`, backend tự set `published_at = today`; khi `is_new=false`, set `published_at = null`.\n\nẢnh sau khi upload sẽ được backend convert sang `.webp` và response trả về metadata trong `image` theo dạng:\n`{\"size\":12345,\"name\":\"dish_xxxx.webp\",\"url\":\"storage\/dishes\/dish_xxxx.webp\"}`\n\n**Tất cả giá trị tiền tệ (`price`, `original_price`, `cost_price`) là INTEGER (VNĐ).**\n"
                 },
                 {
                     "name": "Discounts",
@@ -846,11 +846,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{base_url}}/menu/discounts",
+                                    "raw": "{{base_url}}\/menu\/discounts",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -870,11 +870,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{base_url}}/menu/discounts/:discount_slug",
+                                    "raw": "{{base_url}}\/menu\/discounts\/:discount_slug",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -901,11 +901,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     },
                                     {
                                         "key": "Content-Type",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "body": {
@@ -919,7 +919,7 @@
                                     }
                                 },
                                 "url": {
-                                    "raw": "{{base_url}}/menu/discounts",
+                                    "raw": "{{base_url}}\/menu\/discounts",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -939,11 +939,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     },
                                     {
                                         "key": "Content-Type",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "body": {
@@ -956,7 +956,7 @@
                                     }
                                 },
                                 "url": {
-                                    "raw": "{{base_url}}/menu/discounts/:discount_slug",
+                                    "raw": "{{base_url}}\/menu\/discounts\/:discount_slug",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -983,11 +983,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{base_url}}/menu/discounts/:discount_slug",
+                                    "raw": "{{base_url}}\/menu\/discounts\/:discount_slug",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -1008,7 +1008,7 @@
                             "response": []
                         }
                     ],
-                    "description": "API khuyến mãi cho món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `discounts`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của discount. |\n| `is_active` | boolean | Trạng thái hoạt động của discount. |\n| `slug` | varchar(255) | Mã định danh duy nhất dùng cho detail/update/delete. |\n| `name` | varchar(255) | Tên hiển thị của chương trình giảm giá. |\n| `description` | text, nullable | Mô tả ngắn cho khuyến mãi. |\n| `scope` | enum | Hiện hướng tới `dish`, sau này có thể mở rộng `invoice`. |\n| `discount_type` | enum | Kiểu giảm giá: `percentage` hoặc `fixed`. |\n| `starts_at` | datetime, nullable | Thời điểm bắt đầu áp dụng. |\n| `ends_at` | datetime, nullable | Thời điểm kết thúc áp dụng. |\n| `quantity` | integer, nullable | Số lượng/giới hạn phát hành nếu cần. |\n| `max_use_times` | integer, nullable | Số lần sử dụng tối đa. |\n| `discount_value` | integer | Giá trị giảm giá (% nếu percentage, VNĐ nếu fixed). |\n| `min_order_value` | integer, nullable | Giá trị đơn tối thiểu để được áp dụng (VNĐ). |\n| `sort_order` | decimal(8,2), nullable | Thứ tự ưu tiên hiển thị/áp dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n\n## Pivot `dish_discount`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `dish_id` | bigint | Khóa ngoại tới `dishes`. |\n| `discount_id` | bigint | Khóa ngoại tới `discounts`. |\n| `created_at` | timestamp | Thời điểm gắn discount vào món. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
+                    "description": "API khuyến mãi cho món ăn. Detail\/update\/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `discounts`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của discount. |\n| `is_active` | boolean | Trạng thái hoạt động của discount. |\n| `slug` | varchar(255) | Mã định danh duy nhất dùng cho detail\/update\/delete. |\n| `name` | varchar(255) | Tên hiển thị của chương trình giảm giá. |\n| `description` | text, nullable | Mô tả ngắn cho khuyến mãi. |\n| `scope` | enum | Hiện hướng tới `dish`, sau này có thể mở rộng `invoice`. |\n| `discount_type` | enum | Kiểu giảm giá: `percentage` hoặc `fixed`. |\n| `starts_at` | datetime, nullable | Thời điểm bắt đầu áp dụng. |\n| `ends_at` | datetime, nullable | Thời điểm kết thúc áp dụng. |\n| `quantity` | integer, nullable | Số lượng\/giới hạn phát hành nếu cần. |\n| `max_use_times` | integer, nullable | Số lần sử dụng tối đa. |\n| `discount_value` | integer | Giá trị giảm giá (% nếu percentage, VNĐ nếu fixed). |\n| `min_order_value` | integer, nullable | Giá trị đơn tối thiểu để được áp dụng (VNĐ). |\n| `sort_order` | decimal(8,2), nullable | Thứ tự ưu tiên hiển thị\/áp dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n\n## Pivot `dish_discount`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `dish_id` | bigint | Khóa ngoại tới `dishes`. |\n| `discount_id` | bigint | Khóa ngoại tới `discounts`. |\n| `created_at` | timestamp | Thời điểm gắn discount vào món. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
                 },
                 {
                     "name": "Combos",
@@ -1020,11 +1020,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{base_url}}/menu/combos",
+                                    "raw": "{{base_url}}\/menu\/combos",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -1044,11 +1044,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{base_url}}/menu/combos/:combo_slug",
+                                    "raw": "{{base_url}}\/menu\/combos\/:combo_slug",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -1075,7 +1075,7 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "body": {
@@ -1095,7 +1095,7 @@
                                     ]
                                 },
                                 "url": {
-                                    "raw": "{{base_url}}/menu/combos",
+                                    "raw": "{{base_url}}\/menu\/combos",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -1104,7 +1104,7 @@
                                         "combos"
                                     ]
                                 },
-                                "description": "Tạo combo với `multipart/form-data`. Gửi file ảnh ở field `combo_image` và gửi các field còn lại trong `data` dưới dạng JSON string."
+                                "description": "Tạo combo với `multipart\/form-data`. Gửi file ảnh ở field `combo_image` và gửi các field còn lại trong `data` dưới dạng JSON string."
                             },
                             "response": []
                         },
@@ -1115,7 +1115,7 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "body": {
@@ -1140,7 +1140,7 @@
                                     ]
                                 },
                                 "url": {
-                                    "raw": "{{base_url}}/menu/combos/:combo_slug",
+                                    "raw": "{{base_url}}\/menu\/combos\/:combo_slug",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -1156,7 +1156,7 @@
                                         }
                                     ]
                                 },
-                                "description": "Cập nhật combo bằng `multipart/form-data`. Gửi POST + `_method=PATCH`, ảnh ở `combo_image`, dữ liệu ở `data` JSON string."
+                                "description": "Cập nhật combo bằng `multipart\/form-data`. Gửi POST + `_method=PATCH`, ảnh ở `combo_image`, dữ liệu ở `data` JSON string."
                             },
                             "response": []
                         },
@@ -1167,11 +1167,11 @@
                                 "header": [
                                     {
                                         "key": "Accept",
-                                        "value": "application/json"
+                                        "value": "application\/json"
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{base_url}}/menu/combos/:combo_slug",
+                                    "raw": "{{base_url}}\/menu\/combos\/:combo_slug",
                                     "host": [
                                         "{{base_url}}"
                                     ],
@@ -1192,14 +1192,225 @@
                             "response": []
                         }
                     ],
-                    "description": "API combo món ăn. Detail/update/delete dùng slug.\n\nCreate/update dùng `multipart/form-data` với:\n- `combo_image`: file upload ảnh combo\n- `data`: JSON string chứa các field còn lại\n\nBackend convert ảnh sang `.webp` và lưu metadata vào cột `combo_image` theo dạng `{ size, name, url }`.\n\n## ComboTag hợp lệ\n- `HOT`: combo nổi bật hoặc bán chạy\n- `SEASONAL`: combo theo mùa hoặc theo chiến dịch thời vụ\n- `FAST`: combo phục vụ nhanh, phù hợp bữa trưa/văn phòng\n- `RELAX`: combo nhẹ nhàng cho trà bánh, gặp gỡ hoặc thư giãn\n\n## Days In Week hợp lệ\n- `T2`: Thứ 2\n- `T3`: Thứ 3\n- `T4`: Thứ 4\n- `T5`: Thứ 5\n- `T6`: Thứ 6\n- `T7`: Thứ 7\n- `CN`: Chủ nhật\n\n## Cấu trúc dữ liệu bảng `combos`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của combo. |\n| `slug` | varchar(30) | Mã định danh duy nhất dùng cho detail/update/delete. |\n| `name` | varchar(150) | Tên combo hiển thị trên menu. |\n| `remark` | text, nullable | Ghi chú hoặc mô tả ngắn cho combo. |\n| `combo_image` | json, nullable | Metadata ảnh combo dạng `{ size, name, url }`. |\n| `discount_price` | integer | Số tiền giảm giá của combo (VNĐ, kiểu integer). |\n| `combo_price` | appends | Giá bán thực tế của combo, được tính bằng `selling_price - discount_price`. |\n| `is_active` | boolean | Trạng thái hoạt động của combo. |\n| `tag` | enum, nullable | Nhãn combo, nhận một trong các giá trị `HOT`, `SEASONAL`, `FAST`, `RELAX`. |\n| `days_in_week` | json, nullable | Danh sách ngày áp dụng, nhận các giá trị `T2`, `T3`, `T4`, `T5`, `T6`, `T7`, `CN`. |\n| `start_time` | time, nullable | Giờ bắt đầu áp dụng, định dạng `HH:mm`. |\n| `end_time` | time, nullable | Giờ kết thúc áp dụng, định dạng `HH:mm`. |\n| `start_at` | datetime, nullable | Thời điểm bắt đầu bán combo. |\n| `end_at` | datetime, nullable | Thời điểm kết thúc bán combo. |\n| `max_use_times` | integer, nullable | Giới hạn số lần sử dụng nếu cần; để `null` nếu không giới hạn. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n\n## Pivot `combo_dishes`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `combo_id` | bigint | Khóa ngoại tới `combos`. |\n| `dish_id` | bigint | Khóa ngoại tới `dishes`. |\n| `quantity` | integer | Số lượng món trong combo. |\n| `sort_order` | integer | Thứ tự hiển thị món trong combo. |\n| `is_active` | boolean | Trạng thái áp dụng của món trong combo. |\n| `created_at` | timestamp | Thời điểm thêm món vào combo. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
+                    "description": "API combo món ăn. Detail\/update\/delete dùng slug.\n\nCreate\/update dùng `multipart\/form-data` với:\n- `combo_image`: file upload ảnh combo\n- `data`: JSON string chứa các field còn lại\n\nBackend convert ảnh sang `.webp` và lưu metadata vào cột `combo_image` theo dạng `{ size, name, url }`.\n\n## ComboTag hợp lệ\n- `HOT`: combo nổi bật hoặc bán chạy\n- `SEASONAL`: combo theo mùa hoặc theo chiến dịch thời vụ\n- `FAST`: combo phục vụ nhanh, phù hợp bữa trưa\/văn phòng\n- `RELAX`: combo nhẹ nhàng cho trà bánh, gặp gỡ hoặc thư giãn\n\n## Days In Week hợp lệ\n- `T2`: Thứ 2\n- `T3`: Thứ 3\n- `T4`: Thứ 4\n- `T5`: Thứ 5\n- `T6`: Thứ 6\n- `T7`: Thứ 7\n- `CN`: Chủ nhật\n\n## Cấu trúc dữ liệu bảng `combos`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của combo. |\n| `slug` | varchar(30) | Mã định danh duy nhất dùng cho detail\/update\/delete. |\n| `name` | varchar(150) | Tên combo hiển thị trên menu. |\n| `remark` | text, nullable | Ghi chú hoặc mô tả ngắn cho combo. |\n| `combo_image` | json, nullable | Metadata ảnh combo dạng `{ size, name, url }`. |\n| `discount_price` | integer | Số tiền giảm giá của combo (VNĐ, kiểu integer). |\n| `combo_price` | appends | Giá bán thực tế của combo, được tính bằng `selling_price - discount_price`. |\n| `is_active` | boolean | Trạng thái hoạt động của combo. |\n| `tag` | enum, nullable | Nhãn combo, nhận một trong các giá trị `HOT`, `SEASONAL`, `FAST`, `RELAX`. |\n| `days_in_week` | json, nullable | Danh sách ngày áp dụng, nhận các giá trị `T2`, `T3`, `T4`, `T5`, `T6`, `T7`, `CN`. |\n| `start_time` | time, nullable | Giờ bắt đầu áp dụng, định dạng `HH:mm`. |\n| `end_time` | time, nullable | Giờ kết thúc áp dụng, định dạng `HH:mm`. |\n| `start_at` | datetime, nullable | Thời điểm bắt đầu bán combo. |\n| `end_at` | datetime, nullable | Thời điểm kết thúc bán combo. |\n| `max_use_times` | integer, nullable | Giới hạn số lần sử dụng nếu cần; để `null` nếu không giới hạn. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n\n## Pivot `combo_dishes`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `combo_id` | bigint | Khóa ngoại tới `combos`. |\n| `dish_id` | bigint | Khóa ngoại tới `dishes`. |\n| `quantity` | integer | Số lượng món trong combo. |\n| `sort_order` | integer | Thứ tự hiển thị món trong combo. |\n| `is_active` | boolean | Trạng thái áp dụng của món trong combo. |\n| `created_at` | timestamp | Thời điểm thêm món vào combo. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
+                },
+                {
+                    "name": "Reservations",
+                    "description": "API đặt bàn. Detail\/update\/delete dùng `reservation_code` trên URL.\n\nCác trạng thái hợp lệ của reservation: `pending`, `confirmed`, `completed`, `canceled`.\n\nLuồng hiện tại:\n- `store-by-customer`: khách gửi yêu cầu đặt bàn, chưa gán bàn.\n- `store`: nhân viên tạo đặt bàn và có thể gán `table_code`. Backend tự kiểm tra trùng lịch theo khoảng `hold_start_time`\/`hold_end_time`.\n- `update`: hỗ trợ cập nhật từng phần (`PATCH`). Dùng `isConfirmed=true` để xác nhận và `isCancelled=true` để hủy. Backend tự set `status`, `confirmed_at`, `confirmed_by_employee`, `cancelled_at`, `cancelled_by_employee`.\n- `destroy`: hủy mềm reservation bằng cách chuyển `status = canceled`, `is_active = false` và đồng bộ lại trạng thái bàn nếu có `table_code`.\n\nLưu ý:\n- Không gửi trực tiếp `status`, `confirmed_at`, `cancelled_at` trong API update; backend tự quản lý.\n- Khi có `table_code`, backend sẽ chặn nếu bàn bị trùng lịch với reservation `pending` hoặc `confirmed` khác.\n\n## Cấu trúc dữ liệu bảng `reservations`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là hủy mềm. |\n| `reservation_code` | varchar | Mã đặt bàn duy nhất, dùng cho detail\/update\/delete. |\n| `customer_name` | varchar | Tên khách đặt bàn. |\n| `customer_phone` | varchar, nullable | Số điện thoại khách. |\n| `guest_count` | integer | Số khách dự kiến. |\n| `reservation_time` | datetime | Giờ khách dự kiến đến. |\n| `remark` | text, nullable | Ghi chú thêm cho reservation. |\n| `status` | enum | `pending`, `confirmed`, `completed`, `canceled`. |\n| `deposit_amount` | integer | Tiền cọc, kiểu integer (VNĐ). |\n| `confirmed_at` | datetime, nullable | Thời điểm xác nhận reservation. |\n| `cancelled_at` | datetime, nullable | Thời điểm hủy reservation. |\n| `hold_start_time` | datetime, nullable | Thời điểm bắt đầu giữ bàn. |\n| `hold_end_time` | datetime, nullable | Thời điểm kết thúc giữ bàn. |\n| `created_by_employee` | varchar, nullable | Nhân viên tạo reservation. |\n| `confirmed_by_employee` | varchar, nullable | Nhân viên xác nhận reservation. |\n| `cancelled_by_employee` | varchar, nullable | Nhân viên hủy reservation. |\n| `table_code` | varchar, nullable | Bàn được gán trước, tham chiếu `restaurant_tables.slug`. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
+                    "item": [
+                        {
+                            "name": "Create Reservation By Customer",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application\/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application\/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}\/menu\/reservations\/store-by-customer",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "reservations",
+                                        "store-by-customer"
+                                    ]
+                                },
+                                "description": "Khách tự gửi yêu cầu đặt bàn. Endpoint này không yêu cầu đăng nhập và chưa gán `table_code`.",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"customer_name\": \"Nguyễn Văn A\",\n    \"customer_phone\": \"0900000001\",\n    \"guest_count\": 4,\n    \"reservation_time\": \"2026-04-09 18:00:00\",\n    \"remark\": \"Khách muốn ngồi gần cửa sổ\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "List Reservations",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application\/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}\/menu\/reservations",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "reservations"
+                                    ]
+                                },
+                                "description": "Lấy danh sách reservation. Yêu cầu đăng nhập."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Show Reservation",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application\/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}\/menu\/reservations\/:reservation_code",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "reservations",
+                                        ":reservation_code"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "reservation_code",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Lấy chi tiết reservation theo `reservation_code`. Trả `404` nếu không tìm thấy."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Reservation",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application\/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application\/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}\/menu\/reservations",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "reservations"
+                                    ]
+                                },
+                                "description": "Nhân viên tạo reservation. Nếu có `table_code`, backend sẽ kiểm tra trùng lịch theo khoảng giữ bàn.",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"customer_name\": \"Trần Thị B\",\n    \"customer_phone\": \"0900000002\",\n    \"guest_count\": 5,\n    \"reservation_time\": \"2026-04-09 19:00:00\",\n    \"hold_start_time\": \"2026-04-09 18:00:00\",\n    \"hold_end_time\": \"2026-04-09 19:15:00\",\n    \"deposit_amount\": 200000,\n    \"table_code\": \"a01\",\n    \"remark\": \"Khách có trẻ em đi cùng\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Reservation",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application\/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application\/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}\/menu\/reservations\/:reservation_code",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "reservations",
+                                        ":reservation_code"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "reservation_code",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Cập nhật từng phần reservation. Dùng `isConfirmed=true` để xác nhận hoặc `isCancelled=true` để hủy. Không gửi trực tiếp `status`, `confirmed_at`, `cancelled_at`.",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"guest_count\": 6,\n    \"reservation_time\": \"2026-04-09 19:30:00\",\n    \"table_code\": \"a02\",\n    \"remark\": \"Khách đến muộn khoảng 15 phút\",\n    \"isConfirmed\": true\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete Reservation",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application\/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}\/menu\/reservations\/:reservation_code",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "menu",
+                                        "reservations",
+                                        ":reservation_code"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "reservation_code",
+                                            "value": ""
+                                        }
+                                    ]
+                                },
+                                "description": "Hủy mềm reservation theo `reservation_code`. Backend sẽ chuyển `status = canceled`, `is_active = false` và đồng bộ lại trạng thái bàn nếu cần."
+                            },
+                            "response": []
+                        }
+                    ]
                 }
             ],
-            "description": "API thực đơn gồm `categories`, `dishes`, `discounts` và `combos`."
+            "description": "API thực đơn gồm `categories`, `dishes`, `discounts`, `combos` và `reservations`."
         },
         {
             "name": "Tables",
-            "description": "API bàn nhà hàng. Detail/update/delete dùng slug.\n\nCác trạng thái hợp lệ: `AVAILABLE`, `OCCUPIED`, `RESERVED`, `CLEANING`, `DISABLED`.\n\n## Cấu trúc dữ liệu bảng `restaurant_tables`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `slug` | varchar(20) | Mã định danh duy nhất, dùng cho detail/update/delete. |\n| `name` | varchar(50) | Tên bàn hiển thị (tối đa 50 ký tự). |\n| `capacity` | integer | Sức chứa của bàn (số người). |\n| `status` | enum | Trạng thái hiện tại: `AVAILABLE`, `OCCUPIED`, `RESERVED`, `CLEANING`, `DISABLED`. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n",
+            "description": "API bàn nhà hàng. Detail\/update\/delete dùng slug.\n\nCác trạng thái hợp lệ: `AVAILABLE`, `OCCUPIED`, `RESERVED`, `CLEANING`, `DISABLED`.\n\n## Cấu trúc dữ liệu bảng `restaurant_tables`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `slug` | varchar(20) | Mã định danh duy nhất, dùng cho detail\/update\/delete. |\n| `name` | varchar(50) | Tên bàn hiển thị (tối đa 50 ký tự). |\n| `capacity` | integer | Sức chứa của bàn (số người). |\n| `status` | enum | Trạng thái hiện tại: `AVAILABLE`, `OCCUPIED`, `RESERVED`, `CLEANING`, `DISABLED`. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n",
             "item": [
                 {
                     "name": "List Tables",
@@ -1208,11 +1419,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/table/tables",
+                            "raw": "{{base_url}}\/table\/tables",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -1232,11 +1443,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/table/tables/:table_slug",
+                            "raw": "{{base_url}}\/table\/tables\/:table_slug",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -1263,11 +1474,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             },
                             {
                                 "key": "Content-Type",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "body": {
@@ -1280,7 +1491,7 @@
                             }
                         },
                         "url": {
-                            "raw": "{{base_url}}/table/tables",
+                            "raw": "{{base_url}}\/table\/tables",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -1300,11 +1511,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             },
                             {
                                 "key": "Content-Type",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "body": {
@@ -1317,7 +1528,7 @@
                             }
                         },
                         "url": {
-                            "raw": "{{base_url}}/table/tables/:table_slug",
+                            "raw": "{{base_url}}\/table\/tables\/:table_slug",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -1344,11 +1555,11 @@
                         "header": [
                             {
                                 "key": "Accept",
-                                "value": "application/json"
+                                "value": "application\/json"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/table/tables/:table_slug",
+                            "raw": "{{base_url}}\/table\/tables\/:table_slug",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -1385,7 +1596,7 @@
         {
             "listen": "prerequest",
             "script": {
-                "type": "text/javascript",
+                "type": "text\/javascript",
                 "packages": [],
                 "requests": [],
                 "exec": [
@@ -1396,7 +1607,7 @@
         {
             "listen": "test",
             "script": {
-                "type": "text/javascript",
+                "type": "text\/javascript",
                 "packages": [],
                 "requests": [],
                 "exec": [
