@@ -22,10 +22,10 @@ Route::prefix('reservations')
     ->controller(ReservationController::class)
     ->group(function () {
         Route::post('/store-by-customer', 'storeByCustomer');
+        Route::get('/{slug}', 'show');
 
         Route::middleware(['auth:api'])->group(function () {
             Route::get('/', 'index');
-            Route::get('/{slug}', 'show');
             Route::post('/', 'store');
             Route::patch('/{slug}', 'update');
             Route::delete('/{slug}', 'destroy');
