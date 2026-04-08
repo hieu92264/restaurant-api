@@ -15,9 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ReservationController extends Controller
 {
-    public function __construct(protected ITableStatusService $tableStatusService)
-    {
-    }
+    public function __construct(protected ITableStatusService $tableStatusService) {}
 
     public function index(): JsonResponse
     {
@@ -31,7 +29,7 @@ class ReservationController extends Controller
         $reservation = Reservation::where('reservation_code', $reservationCode)->first();
 
         if (! $reservation) {
-            return $this->error(null, 'Khong tim thay yeu cau dat ban', Response::HTTP_NOT_FOUND);
+            return $this->error(null, 'Không tìm thấy yêu cầu đặt bàn', Response::HTTP_NOT_FOUND);
         }
 
         return $this->success($reservation);
@@ -51,7 +49,7 @@ class ReservationController extends Controller
 
         $result = Reservation::create($payload);
 
-        return $this->success($result, 'Tao dat ban thanh cong.', Response::HTTP_CREATED);
+        return $this->success($result, 'Tạo đặt bàn thành công.', Response::HTTP_CREATED);
     }
 
     protected function generateUniqueCode(string $customerName): string
@@ -90,7 +88,7 @@ class ReservationController extends Controller
         ) {
             return $this->error(
                 null,
-                'Ban hien tai dang duoc cho duyet cho mot yeu cau dat ban truoc hoac da duoc dat truoc',
+                'Bàn hiện tại đang được chờ duyệt cho một yêu cầu đặt bàn trước hoặc đã được đặt trước',
                 Response::HTTP_BAD_REQUEST
             );
         }
@@ -99,7 +97,7 @@ class ReservationController extends Controller
 
         if (!empty($payload['table_code'])) $this->tableStatusService->syncTableStatus($payload['table_code']);
 
-        return $this->success($result, 'Tao dat ban thanh cong.', Response::HTTP_CREATED);
+        return $this->success($result, 'Tạo đặt bàn thành công.', Response::HTTP_CREATED);
     }
 
     protected function checkAbleTable(
@@ -107,8 +105,7 @@ class ReservationController extends Controller
         mixed   $holdStartTime,
         mixed   $holdEndTime,
         ?string $ignoreReservationCode = null
-    ): bool
-    {
+    ): bool {
         $holdStartTime = Carbon::parse($holdStartTime)->format('Y-m-d H:i:s');
         $holdEndTime = Carbon::parse($holdEndTime)->format('Y-m-d H:i:s');
 
@@ -131,7 +128,7 @@ class ReservationController extends Controller
         $reservation = Reservation::where('reservation_code', $reservationCode)->first();
 
         if (! $reservation) {
-            return $this->error(null, 'Khong tim thay yeu cau dat ban', Response::HTTP_NOT_FOUND);
+            return $this->error(null, 'Không tìm thấy yêu cầu đặt bàn', Response::HTTP_NOT_FOUND);
         }
 
         $tableCode = $reservation->table_code;
@@ -147,7 +144,7 @@ class ReservationController extends Controller
             $this->tableStatusService->syncTableStatus($tableCode);
         }
 
-        return $this->success($reservation, 'Xoa dat ban thanh cong.', Response::HTTP_OK);
+        return $this->success($reservation, 'Xóa đặt bàn thành công.', Response::HTTP_OK);
     }
 
     public function update(UpdateReservationRequest $request, string $reservationCode): JsonResponse
@@ -156,7 +153,7 @@ class ReservationController extends Controller
         $exists = Reservation::where('reservation_code', $reservationCode)->first();
 
         if (!$exists) {
-            return $this->error(null, 'Khong tim thay yeu cau dat ban', Response::HTTP_NOT_FOUND);
+            return $this->error(null, 'Không tìm thấy yêu cầu đặt bàn', Response::HTTP_NOT_FOUND);
         }
 
         $oldTableCode = $exists->table_code;
@@ -199,7 +196,7 @@ class ReservationController extends Controller
             )) {
                 return $this->error(
                     null,
-                    'Ban hien tai dang duoc cho duyet cho mot yeu cau dat ban truoc hoac da duoc dat truoc',
+                    'Bàn hiện tại đang được chờ duyệt cho một yêu cầu đặt bàn trước hoặc đã được đặt trước',
                     Response::HTTP_BAD_REQUEST
                 );
             }
@@ -217,6 +214,6 @@ class ReservationController extends Controller
 
         if ($targetTableCode && $targetTableCode !== $oldTableCode) $this->tableStatusService->syncTableStatus($targetTableCode);
 
-        return $this->success($exists->fresh(), 'Cap nhat dat ban thanh cong.', Response::HTTP_OK);
+        return $this->success($exists->fresh(), 'Cập nhật đặt bàn thành công.', Response::HTTP_OK);
     }
 }
