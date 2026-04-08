@@ -24,8 +24,8 @@ class StoreTableSessionRequest extends FormRequest
     {
         return [
             'table_id' => ['integer', 'required', 'exists:restaurant_tables,id'],
-            'guest_count' => ['nullable', 'integer'],
-            'remark' => ['nullable', 'string'],
+            'guest_count' => ['nullable', 'integer', 'min:1'],
+            'remark' => ['nullable', 'string', 'max:1000'],
             'reservation_code' => ['nullable', 'string', 'exists:reservations,reservation_code'],
         ];
     }

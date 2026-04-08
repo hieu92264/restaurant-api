@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Common\Constants\TableSessionStatus;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateTableSessionRequest extends FormRequest
 {
@@ -12,7 +14,7 @@ class UpdateTableSessionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +25,10 @@ class UpdateTableSessionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'guest_count' => ['sometimes', 'nullable', 'integer', 'min:1'],
+            'remark' => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'reservation_code' => ['sometimes', 'nullable', 'string', 'exists:reservations,reservation_code'],
+            'status' => ['sometimes', 'required', 'string', Rule::in(TableSessionStatus::values())],
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Table\ReservationController;
 use App\Http\Controllers\Api\Table\RestaurantTableController;
+use App\Http\Controllers\Api\Table\TableSessionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('table')
@@ -15,6 +16,15 @@ Route::prefix('table')
                 Route::post('/', 'store');
                 Route::patch('/{slug}', 'update');
                 Route::delete('/{slug}', 'destroy');
+            });
+
+        Route::prefix('sessions')
+            ->controller(TableSessionController::class)
+            ->group(function () {
+                Route::get('/', 'index');
+                Route::get('/{tableSessionId}', 'show');
+                Route::post('/', 'store');
+                Route::patch('/{tableSessionId}', 'update');
             });
     });
 
