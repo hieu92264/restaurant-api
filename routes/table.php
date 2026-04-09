@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Table\CartOrderController;
 use App\Http\Controllers\Api\Table\ReservationController;
 use App\Http\Controllers\Api\Table\RestaurantTableController;
 use App\Http\Controllers\Api\Table\TableSessionController;
@@ -25,6 +26,16 @@ Route::prefix('table')
                 Route::get('/{tableSessionId}', 'show');
                 Route::post('/', 'store');
                 Route::patch('/{tableSessionId}', 'update');
+            });
+
+        Route::prefix('cart-orders')
+            ->controller(CartOrderController::class)
+            ->group(function () {
+                Route::get('/', 'index');
+                Route::get('/{cartOrderId}', 'show');
+                Route::post('/', 'store');
+                Route::patch('/{cartOrderId}', 'update');
+                Route::delete('/{cartOrderId}', 'destroy');
             });
     });
 
