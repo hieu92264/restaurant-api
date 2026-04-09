@@ -1364,6 +1364,126 @@
                     "response": []
                 }
             ]
+        },
+        {
+            "name": "Table Sessions",
+            "description": "API table sessions.\n\nRoutes:\n- `GET /table/sessions`\n- `GET /table/sessions/:table_session_id`\n- `POST /table/sessions`\n- `PATCH /table/sessions/:table_session_id`\n\nNote: backend blocks terminal status (`PAID`, `CLOSED`, `CANCELLED`) if there is an open cart order (`OPEN` or `LOCKED_FOR_PAYMENT`).",
+            "item": [
+                {
+                    "name": "List Sessions",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/table/sessions",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "sessions"]
+                        },
+                        "description": "List sessions. Optional filters: `table_id`, `reservation_code`, `status`, `is_active`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show Session",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/table/sessions/:table_session_id",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "sessions", ":table_session_id"],
+                            "variable": [
+                                {
+                                    "key": "table_session_id",
+                                    "value": "{{table_session_id}}"
+                                }
+                            ]
+                        },
+                        "description": "Show session by id."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Session",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"table_id\": {{table_id}},\n  \"guest_count\": 4,\n  \"remark\": \"Guest seated\",\n  \"reservation_code\": null\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/table/sessions",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "sessions"]
+                        },
+                        "description": "Create session. Backend auto sets `OPEN`, `opened_at`, `opened_by_employee`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Session",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"PAYMENT_PENDING\",\n  \"remark\": \"Waiting for payment\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/table/sessions/:table_session_id",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "sessions", ":table_session_id"],
+                            "variable": [
+                                {
+                                    "key": "table_session_id",
+                                    "value": "{{table_session_id}}"
+                                }
+                            ]
+                        },
+                        "description": "Update session by id."
+                    },
+                    "response": []
+                }
+            ]
         }
     ],
     "auth": {
@@ -1403,6 +1523,14 @@
         },
         {
             "key": "category_id",
+            "value": ""
+        },
+        {
+            "key": "table_id",
+            "value": ""
+        },
+        {
+            "key": "table_session_id",
             "value": ""
         }
     ]
