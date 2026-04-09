@@ -1367,7 +1367,7 @@
         },
         {
             "name": "Table Sessions",
-            "description": "API table sessions.\n\nRoutes:\n- `GET /table/sessions`\n- `GET /table/sessions/:table_session_id`\n- `POST /table/sessions`\n- `PATCH /table/sessions/:table_session_id`\n\nNote: backend blocks terminal status (`PAID`, `CLOSED`, `CANCELLED`) if there is an open cart order (`OPEN` or `LOCKED_FOR_PAYMENT`).",
+            "description": "API phiên bàn. Đây là thực thể đại diện cho toàn bộ một lượt phục vụ của một bàn, bắt đầu từ lúc mở bàn đến khi bàn được thanh toán/xong khách.\n\nRoute hiện có:\n- `GET /table/sessions`\n- `GET /table/sessions/:table_session_id`\n- `POST /table/sessions`\n- `PATCH /table/sessions/:table_session_id`\n\nCác trạng thái hợp lệ của `table_session`:\n- `OPEN`: bàn đang phục vụ, đang nhận món.\n- `PAYMENT_PENDING`: bàn đã chốt để chuẩn bị thanh toán.\n- `PAID`: đã thanh toán xong.\n- `CLOSED`: kết thúc phiên bàn.\n- `CANCELLED`: phiên bàn bị hủy.\n\nLuồng nghiệp vụ hiện tại:\n- `store`: mở một phiên bàn mới cho một bàn đang khả dụng.\n- `update`: cập nhật số khách, ghi chú, reservation, hoặc chuyển trạng thái phiên bàn.\n- Khi chuyển session sang trạng thái kết thúc (`PAID`, `CLOSED`, `CANCELLED`), backend sẽ chặn nếu vẫn còn `cart_order` ở trạng thái `OPEN` hoặc `LOCKED_FOR_PAYMENT`.\n\nLưu ý cho FE:\n- `table_session` là thực thể cha của `cart_orders` và `invoices`.\n- Một bàn tại một thời điểm chỉ nên có một `table_session` còn sống (`OPEN` hoặc `PAYMENT_PENDING`).\n- FE nên lấy `id` của `table_session` để tạo `cart_order` cho đúng phiên phục vụ hiện tại.\n\n## Cấu trúc dữ liệu bảng `table_sessions`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của phiên bàn. FE thường dùng giá trị này khi gọi API detail/update và khi tạo `cart_order`. |\n| `table_id` | bigint | ID bàn đang được phục vụ. Tham chiếu sang `restaurant_tables.id`. |\n| `opened_by_employee` | varchar | `user_name` của nhân viên mở bàn. Backend tự set khi tạo mới. |\n| `closed_by_employee` | varchar, nullable | `user_name` của nhân viên kết thúc phiên bàn. Chỉ có khi phiên được đóng/hủy/thanh toán xong. |\n| `guest_count` | integer, nullable | Số lượng khách ngồi trong phiên này. FE có thể cho phép cập nhật khi khách vào thêm/bớt. |\n| `status` | enum | Trạng thái nghiệp vụ của phiên bàn: `OPEN`, `PAYMENT_PENDING`, `PAID`, `CLOSED`, `CANCELLED`. |\n| `opened_at` | datetime | Thời điểm mở bàn. Backend tự set khi tạo mới. |\n| `closed_at` | datetime, nullable | Thời điểm kết thúc phiên bàn. Backend tự set khi session đi vào trạng thái kết thúc. |\n| `remark` | varchar(255), nullable | Ghi chú nghiệp vụ cho phiên bàn, ví dụ: khách ngồi ghép, bàn ưu tiên, yêu cầu đặc biệt. |\n| `is_active` | boolean | Cờ hoạt động của bản ghi. Thường vẫn là `true`; có thể dùng để ẩn mềm nếu hệ thống mở rộng sau này. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi trong DB. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
             "item": [
                 {
                     "name": "List Sessions",
@@ -1384,7 +1384,7 @@
                             "host": ["{{base_url}}"],
                             "path": ["table", "sessions"]
                         },
-                        "description": "List sessions. Optional filters: `table_id`, `reservation_code`, `status`, `is_active`."
+                        "description": "Lấy danh sách phiên bàn. Có thể lọc theo `table_id`, `reservation_code`, `status`, `is_active`."
                     },
                     "response": []
                 },
@@ -1409,7 +1409,7 @@
                                 }
                             ]
                         },
-                        "description": "Show session by id."
+                        "description": "Lấy chi tiết một phiên bàn theo `id`."
                     },
                     "response": []
                 },
@@ -1441,7 +1441,7 @@
                             "host": ["{{base_url}}"],
                             "path": ["table", "sessions"]
                         },
-                        "description": "Create session. Backend auto sets `OPEN`, `opened_at`, `opened_by_employee`."
+                        "description": "Mở phiên bàn mới. Backend tự gán `status = OPEN`, `opened_at`, `opened_by_employee`."
                     },
                     "response": []
                 },
@@ -1479,7 +1479,152 @@
                                 }
                             ]
                         },
-                        "description": "Update session by id."
+                        "description": "Cập nhật phiên bàn theo `id`, thường dùng để đổi trạng thái phục vụ, cập nhật số khách hoặc ghi chú."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Cart Orders",
+            "description": "API đơn tạm tính theo bàn. Đây là thực thể đại diện cho một lần gọi món/nhóm món nằm bên trong một `table_session`. Một phiên bàn có thể có một hoặc nhiều `cart_order` tùy cách vận hành của quán.\n\nRoute hiện có:\n- `GET /table/cart-orders`\n- `GET /table/cart-orders/:cart_order_id`\n- `POST /table/cart-orders`\n- `PATCH /table/cart-orders/:cart_order_id`\n- `DELETE /table/cart-orders/:cart_order_id`\n\nCác trạng thái hợp lệ của `cart_order`:\n- `OPEN`: đơn đang mở, còn có thể thêm/sửa món.\n- `LOCKED_FOR_PAYMENT`: đơn đã khóa để chuẩn bị thanh toán.\n- `CANCELLED`: đơn bị hủy.\n- `CONVERTED_TO_INVOICE`: đơn đã được chuyển thành hóa đơn.\n\nLuồng nghiệp vụ hiện tại:\n- `store`: tạo đơn tạm tính mới cho một `table_session` còn hoạt động.\n- `update`: cập nhật trạng thái, ghi chú, số tiền, bàn/phiên hoặc thay toàn bộ danh sách món.\n- `destroy`: ẩn mềm đơn bằng `is_active = false`.\n- `table_session` sẽ không được phép đóng nếu vẫn còn `cart_order` ở trạng thái `OPEN` hoặc `LOCKED_FOR_PAYMENT`.\n\nLưu ý cho FE:\n- `session_id` phải thuộc một `table_session` đang ở trạng thái `OPEN` hoặc `PAYMENT_PENDING`.\n- `table_id` phải khớp với bàn của `session_id`; backend có kiểm tra chéo hai giá trị này.\n- `order_no` được backend tự sinh, FE không cần gửi lên khi tạo mới.\n- Các cột tiền đều là `INTEGER`, đơn vị là VNĐ.\n- `items` trong payload create/update chính là dữ liệu cho bảng `cart_order_items`.\n\n## Cấu trúc dữ liệu bảng `cart_orders`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của đơn tạm tính. FE dùng để gọi detail/update/delete. |\n| `session_id` | bigint | ID của `table_session` mà đơn này thuộc về. Dùng để gắn đơn vào đúng phiên phục vụ. |\n| `table_id` | bigint | ID của bàn hiện tại. Backend dùng để đối chiếu với `session_id`. |\n| `order_no` | varchar(30) | Mã đơn nghiệp vụ duy nhất, backend tự sinh. FE nên hiển thị cho nhân viên tra cứu nếu cần. |\n| `created_by_employee` | varchar | `user_name` của nhân viên tạo đơn. Backend tự set theo tài khoản đăng nhập. |\n| `status` | enum | Trạng thái nghiệp vụ của đơn: `OPEN`, `LOCKED_FOR_PAYMENT`, `CANCELLED`, `CONVERTED_TO_INVOICE`. |\n| `subtotal_amount` | integer | Tổng tiền món trước giảm giá/phí/tax. |\n| `discount_amount` | integer | Tổng tiền giảm giá của đơn. |\n| `service_charge_amount` | integer | Phí dịch vụ áp cho đơn. |\n| `tax_amount` | integer | Thuế áp cho đơn. |\n| `total_amount` | integer | Tổng tiền cuối cùng của đơn sau khi cộng/trừ các thành phần liên quan. |\n| `remark` | varchar(255), nullable | Ghi chú chung cho cả đơn. |\n| `is_active` | boolean | Cờ hoạt động của đơn. `false` nghĩa là đơn bị ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo đơn. |\n| `updated_at` | timestamp | Thời điểm cập nhật đơn gần nhất. |\n\n## Cấu trúc dữ liệu bảng `cart_order_items`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của dòng món trong đơn. |\n| `cart_order_id` | bigint | ID đơn tạm tính cha. Backend tự gắn khi tạo item qua quan hệ của `cart_order`. |\n| `combo_id` | bigint, nullable | ID combo nếu dòng này là combo; có thể `null` với món lẻ. |\n| `item_name_snapshot` | varchar(150) | Tên món/combo tại thời điểm chốt vào đơn. Dùng kiểu snapshot để giữ lịch sử ngay cả khi menu thay đổi sau đó. |\n| `variant_name_snapshot` | varchar(150), nullable | Tên phân loại/size tại thời điểm chốt đơn, ví dụ: nhỏ, vừa, lớn. |\n| `quantity` | decimal(10,2) | Số lượng của dòng món. Hỗ trợ cả số lẻ nếu nghiệp vụ cần. |\n| `base_unit_price` | integer | Đơn giá gốc của món trước option. |\n| `option_total_price` | integer | Tổng tiền cộng thêm từ option/topping/add-on cho 1 đơn vị món. |\n| `unit_final_price` | integer | Giá cuối cùng của 1 đơn vị món sau khi cộng option. |\n| `line_total` | integer | Thành tiền của dòng món = `quantity * unit_final_price` (theo dữ liệu backend đang lưu). |\n| `item_note` | varchar(255), nullable | Ghi chú riêng cho từng món, ví dụ: ít đá, không hành, thêm sốt. |\n| `line_status` | enum | Trạng thái của dòng món: `ACTIVE`, `CANCELLED`, `SERVED`. |\n| `is_active` | boolean | Cờ hoạt động của dòng món. |\n| `created_at` | timestamp | Thời điểm tạo dòng món. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
+            "item": [
+                {
+                    "name": "List Cart Orders",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/table/cart-orders",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "cart-orders"]
+                        },
+                        "description": "Lấy danh sách đơn tạm tính. Có thể lọc theo `session_id`, `table_id`, `status`, `is_active`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show Cart Order",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/table/cart-orders/:cart_order_id",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "cart-orders", ":cart_order_id"],
+                            "variable": [
+                                {
+                                    "key": "cart_order_id",
+                                    "value": "{{cart_order_id}}"
+                                }
+                            ]
+                        },
+                        "description": "Lấy chi tiết một đơn tạm tính theo `id`, kèm danh sách `items`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Cart Order",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"session_id\": {{table_session_id}},\n  \"table_id\": {{table_id}},\n  \"subtotal_amount\": 120000,\n  \"discount_amount\": 0,\n  \"service_charge_amount\": 0,\n  \"tax_amount\": 0,\n  \"total_amount\": 120000,\n  \"remark\": \"Order mới\",\n  \"items\": [\n    {\n      \"item_name_snapshot\": \"Cơm sườn\",\n      \"variant_name_snapshot\": \"Lớn\",\n      \"quantity\": 2,\n      \"base_unit_price\": 60000,\n      \"option_total_price\": 0,\n      \"unit_final_price\": 60000,\n      \"line_total\": 120000,\n      \"item_note\": \"Ít hành\"\n    }\n  ]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/table/cart-orders",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "cart-orders"]
+                        },
+                        "description": "Tạo đơn tạm tính mới cho một phiên bàn còn hoạt động. Backend tự sinh `order_no`, tự gán `created_by_employee` và mặc định `status = OPEN`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Cart Order",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"LOCKED_FOR_PAYMENT\",\n  \"remark\": \"Chờ thanh toán\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/table/cart-orders/:cart_order_id",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "cart-orders", ":cart_order_id"],
+                            "variable": [
+                                {
+                                    "key": "cart_order_id",
+                                    "value": "{{cart_order_id}}"
+                                }
+                            ]
+                        },
+                        "description": "Cập nhật đơn tạm tính theo `id`. Có thể đổi trạng thái, số tiền, ghi chú, chuyển session/bàn hợp lệ hoặc thay toàn bộ danh sách `items`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Cart Order",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/table/cart-orders/:cart_order_id",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "cart-orders", ":cart_order_id"],
+                            "variable": [
+                                {
+                                    "key": "cart_order_id",
+                                    "value": "{{cart_order_id}}"
+                                }
+                            ]
+                        },
+                        "description": "Ẩn mềm đơn tạm tính bằng cách cập nhật `is_active = false`."
                     },
                     "response": []
                 }
@@ -1531,6 +1676,10 @@
         },
         {
             "key": "table_session_id",
+            "value": ""
+        },
+        {
+            "key": "cart_order_id",
             "value": ""
         }
     ]
