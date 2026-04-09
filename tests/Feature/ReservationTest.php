@@ -5,12 +5,14 @@ namespace Tests\Feature;
 use App\Common\Constants\ReservationStatus;
 use App\Common\Constants\RestaurantTableStatus;
 use App\Http\interfaces\ITableStatusService;
+use App\Mail\CustomerReservationCreatedMail;
 use App\Models\Reservation;
 use App\Models\RestaurantTable;
 use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class ReservationTest extends TestCase
@@ -27,7 +29,7 @@ class ReservationTest extends TestCase
 
         $reservationTime = Carbon::now()->addDay()->setTime(18, 0);
 
-        $response = $this->actingAs($user, 'api')->postJson('/api/v1/menu/reservations', [
+        $response = $this->actingAs($user, 'api')->postJson('/api/v1/reservations', [
             'customer_name' => 'Nguyen Van A',
             'customer_phone' => '0900000001',
             'guest_count' => 4,
@@ -37,7 +39,7 @@ class ReservationTest extends TestCase
         ]);
 
         $response->assertCreated()
-            ->assertJsonPath('message', 'Tao dat ban thanh cong.')
+            ->assertJsonPath('message', 'Tạo đặt bàn thành công.')
             ->assertJsonPath('metadata.customer_name', 'Nguyen Van A')
             ->assertJsonPath('metadata.table_code', $table->slug)
             ->assertJsonPath('metadata.created_by_employee', $user->user_name);
@@ -51,6 +53,47 @@ class ReservationTest extends TestCase
         ]);
 
         $this->assertSame([$table->slug], $spy->syncedTableCodes);
+    }
+
+    public function test_customer_store_by_customer_sends_email_to_managers(): void
+    {
+        Mail::fake();
+
+        $managerRole = Role::query()->create([
+            'name' => 'Manager',
+            'code' => 'MANAGER',
+            'remark' => 'Reservation manager role',
+        ]);
+
+        User::query()->create([
+            'is_active' => true,
+            'user_name' => 'reservation.manager',
+            'full_name' => 'Reservation Manager',
+            'email' => 'manager@example.com',
+            'password' => 'password',
+            'role_id' => $managerRole->id,
+        ]);
+
+        $reservationTime = Carbon::now()->addDay()->setTime(19, 0);
+
+        $response = $this->postJson('/api/v1/reservations/store-by-customer', [
+            'customer_name' => 'Tran Thi B',
+            'customer_phone' => '0900000999',
+            'guest_count' => 6,
+            'reservation_time' => $reservationTime->format('Y-m-d H:i:s'),
+            'remark' => 'Khach dat sinh nhat',
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('metadata.customer_name', 'Tran Thi B')
+            ->assertJsonPath('metadata.customer_phone', '0900000999')
+            ->assertJsonPath('metadata.status', ReservationStatus::PENDING);
+
+        Mail::assertQueued(CustomerReservationCreatedMail::class, function (CustomerReservationCreatedMail $mail) {
+            return $mail->hasTo('manager@example.com')
+                && $mail->reservation->customer_name === 'Tran Thi B'
+                && $mail->reservation->customer_phone === '0900000999';
+        });
     }
 
     public function test_authenticated_user_cannot_store_reservation_when_table_time_overlaps(): void
@@ -76,7 +119,7 @@ class ReservationTest extends TestCase
             'table_code' => $table->slug,
         ]);
 
-        $response = $this->actingAs($user, 'api')->postJson('/api/v1/menu/reservations', [
+        $response = $this->actingAs($user, 'api')->postJson('/api/v1/reservations', [
             'customer_name' => 'Khach moi',
             'customer_phone' => '0900000003',
             'guest_count' => 2,
@@ -89,7 +132,7 @@ class ReservationTest extends TestCase
         $response->assertBadRequest()
             ->assertJsonPath(
                 'message',
-                'Ban hien tai dang duoc cho duyet cho mot yeu cau dat ban truoc hoac da duoc dat truoc'
+                'Bàn hiện tại đang được chờ duyệt cho một yêu cầu đặt bàn trước hoặc đã được đặt trước'
             );
 
         $this->assertCount(0, $spy->syncedTableCodes);
@@ -105,12 +148,12 @@ class ReservationTest extends TestCase
         $table = $this->createTable('a03');
         $reservation = $this->createReservation($table->slug, $user->user_name);
 
-        $response = $this->actingAs($user, 'api')->patchJson('/api/v1/menu/reservations/' . $reservation->reservation_code, [
+        $response = $this->actingAs($user, 'api')->patchJson('/api/v1/reservations/' . $reservation->reservation_code, [
             'remark' => 'Khach doi them 10 phut',
         ]);
 
         $response->assertOk()
-            ->assertJsonPath('message', 'Cap nhat dat ban thanh cong.')
+            ->assertJsonPath('message', 'Cập nhật đặt bàn thành công.')
             ->assertJsonPath('metadata.remark', 'Khach doi them 10 phut');
 
         $reservation->refresh();
@@ -128,10 +171,10 @@ class ReservationTest extends TestCase
         $table = $this->createTable('a04');
         $reservation = $this->createReservation($table->slug, $user->user_name);
 
-        $response = $this->actingAs($user, 'api')->deleteJson('/api/v1/menu/reservations/' . $reservation->reservation_code);
+        $response = $this->actingAs($user, 'api')->deleteJson('/api/v1/reservations/' . $reservation->reservation_code);
 
         $response->assertOk()
-            ->assertJsonPath('message', 'Xoa dat ban thanh cong.')
+            ->assertJsonPath('message', 'Xóa đặt bàn thành công.')
             ->assertJsonPath('metadata.status', ReservationStatus::CANCELED)
             ->assertJsonPath('metadata.is_active', false);
 
@@ -152,9 +195,9 @@ class ReservationTest extends TestCase
         $user = $this->createAuthenticatedUser();
 
         $this->actingAs($user, 'api')
-            ->getJson('/api/v1/menu/reservations/NOT-FOUND')
+            ->getJson('/api/v1/reservations/NOT-FOUND')
             ->assertNotFound()
-            ->assertJsonPath('message', 'Khong tim thay yeu cau dat ban');
+            ->assertJsonPath('message', 'Không tìm thấy yêu cầu đặt bàn');
     }
 
     private function createAuthenticatedUser(): User

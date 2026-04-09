@@ -91,7 +91,7 @@ class CartOrderTest extends TestCase
         ]);
 
         $response->assertBadRequest()
-            ->assertJsonPath('message', 'Phien ban khong hop le hoac da ket thuc');
+            ->assertJsonPath('message', 'Phiên bản không hợp lệ hoặc đã kết thúc');
 
         $this->assertDatabaseCount('cart_orders', 0);
     }
@@ -129,7 +129,7 @@ class CartOrderTest extends TestCase
         $this->actingAs($user, 'api')
             ->deleteJson('/api/v1/table/cart-orders/' . $cartOrder->id)
             ->assertOk()
-            ->assertJsonPath('message', 'An don tam tinh thanh cong.');
+            ->assertJsonPath('message', 'Ẩn đơn tạm tính thành công.');
 
         $this->assertDatabaseHas('cart_orders', [
             'id' => $cartOrder->id,
