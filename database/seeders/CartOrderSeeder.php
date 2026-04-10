@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Common\Constants\CartOrderStatus;
+use App\Common\Constants\TableSessionStatus;
 use App\Models\CartOrder;
 use App\Models\RestaurantTable;
 use App\Models\TableSession;
@@ -11,16 +12,23 @@ use Illuminate\Database\Seeder;
 
 class CartOrderSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $waiter = User::where('user_name', 'waiter')->first();
+        $waiter = User::withoutGlobalScopes()->where('user_name', 'waiter')->first();
         $tableA01 = RestaurantTable::withoutGlobalScopes()->where('slug', 'A01')->first();
         $tableG01 = RestaurantTable::withoutGlobalScopes()->where('slug', 'G01')->first();
-        $openSession = TableSession::withoutGlobalScopes()->where('table_id', $tableA01?->id)->where('opened_at', '2026-03-20 18:30:00')->first();
-        $closedSession = TableSession::withoutGlobalScopes()->where('table_id', $tableG01?->id)->where('opened_at', '2026-03-20 11:45:00')->first();
+
+        $openSession = TableSession::withoutGlobalScopes()
+            ->where('table_id', $tableA01?->id)
+            ->where('status', TableSessionStatus::OPEN)
+            ->latest('opened_at')
+            ->first();
+
+        $closedSession = TableSession::withoutGlobalScopes()
+            ->where('table_id', $tableG01?->id)
+            ->where('status', TableSessionStatus::CLOSED)
+            ->latest('opened_at')
+            ->first();
 
         $orders = [
             [
@@ -34,7 +42,7 @@ class CartOrderSeeder extends Seeder
                 'service_charge_amount' => 0,
                 'tax_amount' => 0,
                 'total_amount' => 126000,
-                'remark' => 'Bàn đang phục vụ',
+                'remark' => 'Ban dang phuc vu',
             ],
             [
                 'order_no' => 'ORD20260320-0002',
@@ -47,7 +55,7 @@ class CartOrderSeeder extends Seeder
                 'service_charge_amount' => 0,
                 'tax_amount' => 0,
                 'total_amount' => 92000,
-                'remark' => 'Đã chuyển sang hóa đơn',
+                'remark' => 'Da chuyen sang hoa don',
             ],
         ];
 
