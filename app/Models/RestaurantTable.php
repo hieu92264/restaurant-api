@@ -2,6 +2,11 @@
 
 namespace App\Models;
 
+use App\Common\Constants\ReservationStatus;
+use App\Common\Constants\RestaurantTableStatus;
+use App\Common\Constants\TableSessionStatus;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -30,17 +35,24 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereIsActive($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RestaurantTable whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class RestaurantTable extends BaseModel
 {
+    protected $appends = [
+        'status',
+    ];
+
+    protected $hidden = [
+        'has_live_session',
+        'has_holding_reservation',
+    ];
+
     protected $fillable = [
         'slug',
         'name',
         'capacity',
-        'status',
         'is_active',
     ];
 
@@ -48,9 +60,32 @@ class RestaurantTable extends BaseModel
     {
         return [
             'capacity' => 'integer',
-            'status' => 'string',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function scopeWithComputedStatus(Builder $query): Builder
+    {
+        $now = now();
+
+        return $query->withExists([
+            'sessions as has_live_session' => fn (Builder $builder) => $builder
+                ->where('is_active', true)
+                ->whereIn('status', [
+                    TableSessionStatus::OPEN,
+                    TableSessionStatus::PAYMENT_PENDING,
+                ]),
+            'reservations as has_holding_reservation' => fn (Builder $builder) => $builder
+                ->where('is_active', true)
+                ->whereIn('status', [
+                    ReservationStatus::PENDING,
+                    ReservationStatus::CONFIRMED,
+                ])
+                ->whereNotNull('hold_start_time')
+                ->whereNotNull('hold_end_time')
+                ->where('hold_start_time', '<=', $now)
+                ->where('hold_end_time', '>=', $now),
+        ]);
     }
 
     public function sessions(): HasMany
@@ -76,5 +111,81 @@ class RestaurantTable extends BaseModel
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    protected function status(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->resolveStatus()
+        );
+    }
+
+    public function resolveStatus(): string
+    {
+        if ($this->hasLiveSession()) {
+            return RestaurantTableStatus::OCCUPIED;
+        }
+
+        if ($this->hasHoldingReservation()) {
+            return RestaurantTableStatus::RESERVED;
+        }
+
+        return RestaurantTableStatus::AVAILABLE;
+    }
+
+    protected function hasLiveSession(): bool
+    {
+        if (array_key_exists('has_live_session', $this->attributes)) {
+            return (bool) $this->attributes['has_live_session'];
+        }
+
+        if ($this->relationLoaded('sessions')) {
+            return $this->sessions->contains(fn (TableSession $session) => $session->is_active
+                && in_array($session->status, [
+                    TableSessionStatus::OPEN,
+                    TableSessionStatus::PAYMENT_PENDING,
+                ], true));
+        }
+
+        return $this->sessions()
+            ->where('is_active', true)
+            ->whereIn('status', [
+                TableSessionStatus::OPEN,
+                TableSessionStatus::PAYMENT_PENDING,
+            ])
+            ->exists();
+    }
+
+    protected function hasHoldingReservation(): bool
+    {
+        $now = now();
+
+        if (array_key_exists('has_holding_reservation', $this->attributes)) {
+            return (bool) $this->attributes['has_holding_reservation'];
+        }
+
+        if ($this->relationLoaded('reservations')) {
+            return $this->reservations->contains(fn (Reservation $reservation) => $reservation->is_active
+                && in_array($reservation->status, [
+                    ReservationStatus::PENDING,
+                    ReservationStatus::CONFIRMED,
+                ], true)
+                && $reservation->hold_start_time !== null
+                && $reservation->hold_end_time !== null
+                && $reservation->hold_start_time->lessThanOrEqualTo($now)
+                && $reservation->hold_end_time->greaterThanOrEqualTo($now));
+        }
+
+        return $this->reservations()
+            ->where('is_active', true)
+            ->whereIn('status', [
+                ReservationStatus::PENDING,
+                ReservationStatus::CONFIRMED,
+            ])
+            ->whereNotNull('hold_start_time')
+            ->whereNotNull('hold_end_time')
+            ->where('hold_start_time', '<=', $now)
+            ->where('hold_end_time', '>=', $now)
+            ->exists();
     }
 }

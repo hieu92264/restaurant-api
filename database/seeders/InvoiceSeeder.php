@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Common\Constants\InvoicePaymentStatus;
 use App\Common\Constants\PaymentMethod;
+use App\Common\Constants\TableSessionStatus;
 use App\Models\CartOrder;
 use App\Models\Invoice;
 use App\Models\RestaurantTable;
@@ -13,15 +14,19 @@ use Illuminate\Database\Seeder;
 
 class InvoiceSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $cashier = User::where('user_name', 'cashier')->first();
+        $cashier = User::withoutGlobalScopes()->where('user_name', 'cashier')->first();
         $order = CartOrder::withoutGlobalScopes()->where('order_no', 'ORD20260320-0002')->first();
         $table = RestaurantTable::withoutGlobalScopes()->where('slug', 'G01')->first();
-        $session = TableSession::withoutGlobalScopes()->where('table_id', $table?->id)->where('opened_at', '2026-03-20 11:45:00')->first();
+        $session = TableSession::withoutGlobalScopes()
+            ->where('table_id', $table?->id)
+            ->where('status', TableSessionStatus::CLOSED)
+            ->latest('opened_at')
+            ->first();
+
+        $issuedAt = now()->copy()->subDay()->setTime(12, 30);
+        $paidAt = now()->copy()->subDay()->setTime(12, 35);
 
         Invoice::withoutGlobalScopes()->updateOrCreate(
             ['no' => 'INV-20260320-000001'],
@@ -44,8 +49,8 @@ class InvoiceSeeder extends Seeder
                 'change_amount' => 8000,
                 'payment_method' => PaymentMethod::CASH,
                 'payment_status' => InvoicePaymentStatus::PAID,
-                'issued_at' => '2026-03-20 12:30:00',
-                'paid_at' => '2026-03-20 12:35:00',
+                'issued_at' => $issuedAt,
+                'paid_at' => $paidAt,
                 'note' => 'Khach thanh toan mot lan',
                 'is_active' => true,
             ]

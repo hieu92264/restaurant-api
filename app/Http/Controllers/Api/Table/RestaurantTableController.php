@@ -15,6 +15,7 @@ class RestaurantTableController extends Controller
     public function index(): JsonResponse
     {
         $tables = RestaurantTable::query()
+            ->withComputedStatus()
             ->orderBy('name')
             ->get();
 
@@ -24,6 +25,7 @@ class RestaurantTableController extends Controller
     public function show(string $slug): JsonResponse
     {
         $table = RestaurantTable::query()
+            ->withComputedStatus()
             ->where('slug', $slug)
             ->firstOrFail();
 

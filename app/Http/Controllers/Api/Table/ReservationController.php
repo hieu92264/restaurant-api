@@ -12,6 +12,7 @@ use App\Models\Reservation;
 use App\Support\ReservationManagerNotifier;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class ReservationController extends Controller
@@ -33,7 +34,7 @@ class ReservationController extends Controller
         $reservation = Reservation::where('reservation_code', $reservationCode)->first();
 
         if (! $reservation) {
-            return $this->error(null, 'Không tìm thấy yêu cầu đặt bàn', Response::HTTP_NOT_FOUND);
+            return $this->error(null, 'KhÃ´ng tÃ¬m tháº¥y yÃªu cáº§u Ä‘áº·t bÃ n', Response::HTTP_NOT_FOUND);
         }
 
         return $this->success($reservation);
@@ -42,7 +43,7 @@ class ReservationController extends Controller
     public function storeByCustomer(StoreReservationByCustomerRequest $request): JsonResponse
     {
         $payload = $request->validated();
-        $payload['reservation_code'] = $this->generateUniqueCode($payload['customer_name']);
+        $payload['reservation_code'] = $this->generateUniqueCode();
         $payload['is_active'] = true;
         $payload['status'] = ReservationStatus::PENDING;
         $payload['deposit_amount'] = 0;
@@ -56,17 +57,17 @@ class ReservationController extends Controller
         $result = Reservation::create($payload);
         $this->reservationManagerNotifier->notifyCustomerReservationCreated($result);
 
-        return $this->success($result, 'Tạo đặt bàn thành công.', Response::HTTP_CREATED);
+        return $this->success($result, 'Táº¡o Ä‘áº·t bÃ n thÃ nh cÃ´ng.', Response::HTTP_CREATED);
     }
 
-    protected function generateUniqueCode(string $customerName): string
+    protected function generateUniqueCode(): string
     {
-        $code = now()->format('YmdHis') . '-' . strtoupper($customerName);
+        $code = Str::upper(Str::random(6));
 
         $exists = Reservation::where('reservation_code', $code)->first();
 
         if ($exists) {
-            return $this->generateUniqueCode($customerName);
+            return $this->generateUniqueCode();
         }
 
         return $code;
@@ -75,7 +76,7 @@ class ReservationController extends Controller
     public function store(StoreReservationRequest $request): JsonResponse
     {
         $payload = $request->validated();
-        $payload['reservation_code'] = $this->generateUniqueCode($payload['customer_name']);
+        $payload['reservation_code'] = $this->generateUniqueCode();
         $payload['is_active'] = true;
         $payload['hold_start_time'] = $payload['hold_start_time'] ?? Carbon::parse($payload['reservation_time'])
             ->subHour()
@@ -86,7 +87,7 @@ class ReservationController extends Controller
         $payload['created_by_employee'] = $this->getUserName();
 
         if (
-            !empty($payload['table_code'])
+            ! empty($payload['table_code'])
             && $this->checkAbleTable(
                 $payload['table_code'],
                 $payload['hold_start_time'],
@@ -95,22 +96,24 @@ class ReservationController extends Controller
         ) {
             return $this->error(
                 null,
-                'Bàn hiện tại đang được chờ duyệt cho một yêu cầu đặt bàn trước hoặc đã được đặt trước',
+                'BÃ n hiá»‡n táº¡i Ä‘ang Ä‘Æ°á»£c chá» duyá»‡t cho má»™t yÃªu cáº§u Ä‘áº·t bÃ n trÆ°á»›c hoáº·c Ä‘Ã£ Ä‘Æ°á»£c Ä‘áº·t trÆ°á»›c',
                 Response::HTTP_BAD_REQUEST
             );
         }
 
         $result = Reservation::create($payload);
 
-        if (!empty($payload['table_code'])) $this->tableStatusService->syncTableStatus($payload['table_code']);
+        if (! empty($payload['table_code'])) {
+            $this->tableStatusService->syncTableStatus($payload['table_code']);
+        }
 
-        return $this->success($result, 'Tạo đặt bàn thành công.', Response::HTTP_CREATED);
+        return $this->success($result, 'Táº¡o Ä‘áº·t bÃ n thÃ nh cÃ´ng.', Response::HTTP_CREATED);
     }
 
     protected function checkAbleTable(
-        string  $tableCode,
-        mixed   $holdStartTime,
-        mixed   $holdEndTime,
+        string $tableCode,
+        mixed $holdStartTime,
+        mixed $holdEndTime,
         ?string $ignoreReservationCode = null
     ): bool {
         $holdStartTime = Carbon::parse($holdStartTime)->format('Y-m-d H:i:s');
@@ -121,7 +124,7 @@ class ReservationController extends Controller
             ->whereIn('status', [ReservationStatus::PENDING, ReservationStatus::CONFIRMED])
             ->when(
                 $ignoreReservationCode,
-                fn($query) => $query->where('reservation_code', '!=', $ignoreReservationCode)
+                fn ($query) => $query->where('reservation_code', '!=', $ignoreReservationCode)
             )
             ->where('hold_start_time', '<', $holdEndTime)
             ->where('hold_end_time', '>', $holdStartTime)
@@ -135,7 +138,7 @@ class ReservationController extends Controller
         $reservation = Reservation::where('reservation_code', $reservationCode)->first();
 
         if (! $reservation) {
-            return $this->error(null, 'Không tìm thấy yêu cầu đặt bàn', Response::HTTP_NOT_FOUND);
+            return $this->error(null, 'KhÃ´ng tÃ¬m tháº¥y yÃªu cáº§u Ä‘áº·t bÃ n', Response::HTTP_NOT_FOUND);
         }
 
         $tableCode = $reservation->table_code;
@@ -151,7 +154,7 @@ class ReservationController extends Controller
             $this->tableStatusService->syncTableStatus($tableCode);
         }
 
-        return $this->success($reservation, 'Xóa đặt bàn thành công.', Response::HTTP_OK);
+        return $this->success($reservation, 'XÃ³a Ä‘áº·t bÃ n thÃ nh cÃ´ng.', Response::HTTP_OK);
     }
 
     public function update(UpdateReservationRequest $request, string $reservationCode): JsonResponse
@@ -159,8 +162,8 @@ class ReservationController extends Controller
         $payload = $request->validated();
         $exists = Reservation::where('reservation_code', $reservationCode)->first();
 
-        if (!$exists) {
-            return $this->error(null, 'Không tìm thấy yêu cầu đặt bàn', Response::HTTP_NOT_FOUND);
+        if (! $exists) {
+            return $this->error(null, 'KhÃ´ng tÃ¬m tháº¥y yÃªu cáº§u Ä‘áº·t bÃ n', Response::HTTP_NOT_FOUND);
         }
 
         $oldTableCode = $exists->table_code;
@@ -203,7 +206,7 @@ class ReservationController extends Controller
             )) {
                 return $this->error(
                     null,
-                    'Bàn hiện tại đang được chờ duyệt cho một yêu cầu đặt bàn trước hoặc đã được đặt trước',
+                    'BÃ n hiá»‡n táº¡i Ä‘ang Ä‘Æ°á»£c chá» duyá»‡t cho má»™t yÃªu cáº§u Ä‘áº·t bÃ n trÆ°á»›c hoáº·c Ä‘Ã£ Ä‘Æ°á»£c Ä‘áº·t trÆ°á»›c',
                     Response::HTTP_BAD_REQUEST
                 );
             }
@@ -217,10 +220,14 @@ class ReservationController extends Controller
 
         $exists->update($payload);
 
-        if ($oldTableCode) $this->tableStatusService->syncTableStatus($oldTableCode);
+        if ($oldTableCode) {
+            $this->tableStatusService->syncTableStatus($oldTableCode);
+        }
 
-        if ($targetTableCode && $targetTableCode !== $oldTableCode) $this->tableStatusService->syncTableStatus($targetTableCode);
+        if ($targetTableCode && $targetTableCode !== $oldTableCode) {
+            $this->tableStatusService->syncTableStatus($targetTableCode);
+        }
 
-        return $this->success($exists->fresh(), 'Cập nhật đặt bàn thành công.', Response::HTTP_OK);
+        return $this->success($exists->fresh(), 'Cáº­p nháº­t Ä‘áº·t bÃ n thÃ nh cÃ´ng.', Response::HTTP_OK);
     }
 }

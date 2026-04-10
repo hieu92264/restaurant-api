@@ -23,7 +23,7 @@
                                 "exec": [
                                     "const json = pm.response.json();",
                                     "const token = json?.metadata?.access_token;",
-                                    "if (token) pm.environment.set('access_token', token); // Set access token base on current environment"
+                                    "if (token) pm.environment.set('access_token', token); // Set access token dựa trên môi trường hiện tại"
                                 ]
                             }
                         }
@@ -432,7 +432,7 @@
                                     "host": ["{{base_url}}"],
                                     "path": ["menu", "categories"]
                                 },
-                                "description": "Lấy danh sách category."
+                                "description": "Lấy danh sách danh mục."
                             },
                             "response": []
                         },
@@ -461,7 +461,7 @@
                                         }
                                     ]
                                 },
-                                "description": "Lấy chi tiết category theo slug."
+                                "description": "Lấy chi tiết danh mục theo slug."
                             },
                             "response": []
                         },
@@ -493,7 +493,7 @@
                                     "host": ["{{base_url}}"],
                                     "path": ["menu", "categories"]
                                 },
-                                "description": "Tạo category mới. Backend tự sinh slug từ name nếu đang xử lý như hiện tại."
+                                "description": "Tạo danh mục mới. Backend tự sinh slug từ tên nếu đang xử lý như hiện tại."
                             },
                             "response": []
                         },
@@ -535,7 +535,7 @@
                                         }
                                     ]
                                 },
-                                "description": "Cập nhật category theo slug."
+                                "description": "Cập nhật danh mục theo slug."
                             },
                             "response": []
                         },
@@ -564,7 +564,7 @@
                                         }
                                     ]
                                 },
-                                "description": "Ẩn category. Backend sẽ chặn nếu category còn danh mục con hoặc còn món ăn."
+                                "description": "Ẩn danh mục. Backend sẽ chặn nếu danh mục còn danh mục con hoặc còn món ăn."
                             },
                             "response": []
                         }
@@ -588,7 +588,8 @@
                                     "raw": "{{base_url}}/menu/dishes",
                                     "host": ["{{base_url}}"],
                                     "path": ["menu", "dishes"]
-                                }
+                                },
+                                "description": "Lấy danh sách món ăn."
                             },
                             "response": []
                         },
@@ -638,7 +639,7 @@
                                         {
                                             "key": "data",
                                             "value": "{\n  \"category_id\": {{category_id}},\n  \"name\": \"Cơm gà xối mỡ\",\n  \"description\": \"Cơm gà giòn, ăn kèm dưa leo và nước mắm gừng\",\n  \"price\": 58000,\n  \"original_price\": 65000,\n  \"cost_price\": 28000,\n  \"unit\": \"phần\",\n  \"is_featured\": true,\n  \"status\": \"active\",\n  \"available_from\": \"06:00\",\n  \"available_to\": \"21:30\",\n  \"sort_order\": 1,\n  \"options_json\": [\n    {\n      \"name\": \"Size\",\n      \"type\": \"single\",\n      \"options\": [\n        {\n          \"label\": \"Thường\",\n          \"price_delta\": 0\n        },\n        {\n          \"label\": \"Lớn\",\n          \"price_delta\": 10000\n        }\n      ]\n    }\n  ],\n  \"tags_json\": [\"best_seller\", \"new\"],\n  \"is_active\": true\n}",
-                                            "description": "Tất cả giá trị tiền tệ (price, original_price, cost_price) là INTEGER (VNĐ).",
+                                            "description": "Tất cả giá trị tiền tệ (price, original_price, cost_price) là kiểu INTEGER (VNĐ).",
                                             "type": "text"
                                         }
                                     ]
@@ -648,7 +649,7 @@
                                     "host": ["{{base_url}}"],
                                     "path": ["menu", "dishes"]
                                 },
-                                "description": "Tạo món ăn với `multipart/form-data`. Gửi file ảnh ở field `image` và gửi các field còn lại trong `data` dưới dạng JSON string."
+                                "description": "Tạo món ăn với `multipart/form-data`. Gửi file ảnh ở trường `image` và gửi các trường còn lại trong `data` dưới dạng JSON string."
                             },
                             "response": []
                         },
@@ -679,7 +680,7 @@
                                             "key": "data",
                                             "type": "text",
                                             "value": "{\n  \"category_id\": {{category_id}},\n  \"name\": \"Cơm gà xối mỡ đặc biệt\",\n  \"description\": \"Cơm gà giòn, ăn kèm dưa leo và nước mắm gừng\",\n  \"price\": 62000,\n  \"original_price\": 70000,\n  \"cost_price\": 30000,\n  \"unit\": \"phần\",\n  \"is_featured\": true,\n  \"is_new\": true,\n  \"status\": \"active\",\n  \"available_from\": \"06:00\",\n  \"available_to\": \"21:30\",\n  \"sort_order\": 2,\n  \"options_json\": [\n    {\n      \"name\": \"Size\",\n      \"type\": \"single\",\n      \"options\": [\n        {\n          \"label\": \"Thường\",\n          \"price_delta\": 0\n        },\n        {\n          \"label\": \"Lớn\",\n          \"price_delta\": 10000\n        }\n      ]\n    }\n  ],\n  \"tags_json\": [\"best_seller\", \"signature\"],\n  \"is_active\": true\n}",
-                                            "description": "Gửi POST + _method=PUT. is_new=true sẽ set published_at=today, false sẽ set null."
+                                            "description": "Gửi POST + _method=PUT. is_new=true sẽ đặt published_at=hôm nay, false sẽ đặt null."
                                         }
                                     ]
                                 },
@@ -694,7 +695,7 @@
                                         }
                                     ]
                                 },
-                                "description": "Cập nhật món ăn theo kiểu `PUT` với đầu vào giống create. Khi gửi file qua `multipart/form-data`, dùng `POST` và thêm field `_method=PUT` để backend xử lý đúng route `PUT`."
+                                "description": "Cập nhật món ăn theo kiểu `PUT` với đầu vào giống tạo mới. Khi gửi file qua `multipart/form-data`, dùng `POST` và thêm trường `_method=PUT` để backend xử lý đúng route `PUT`."
                             },
                             "response": []
                         },
@@ -724,7 +725,7 @@
                             "response": []
                         }
                     ],
-                    "description": "API món ăn. Detail/update/delete dùng slug.\n\nCreate dùng `multipart/form-data` với 2 field:\n- `image`: file ảnh (jpg, jpeg, png, webp, tối đa 5MB), không bắt buộc.\n- `data`: JSON string chứa các field như `category_id`, `name`, `price`, `original_price`, `cost_price`, `unit`, `is_featured`, `status`, `available_from`, `available_to`, `sort_order`, `options_json`, `tags_json`, `is_active`.\n\nUpdate dùng cùng đầu vào như create, nhưng theo ngữ nghĩa `PUT`. Với upload file, gửi `POST multipart/form-data` và thêm `_method=PUT`.\n\n**Lưu ý `is_new` (chỉ dùng khi Update):** Khi `is_new=true`, backend tự set `published_at = today`; khi `is_new=false`, set `published_at = null`.\n\nẢnh sau khi upload sẽ được backend convert sang `.webp` và response trả về metadata trong `image` theo dạng:\n`{\"size\":12345,\"name\":\"dish_xxxx.webp\",\"url\":\"storage/dishes/dish_xxxx.webp\"}`\n\n**Tất cả giá trị tiền tệ (`price`, `original_price`, `cost_price`) là INTEGER (VNĐ).**\n"
+                    "description": "API món ăn. Detail/update/delete dùng slug.\n\nTạo mới dùng `multipart/form-data` với 2 trường:\n- `image`: file ảnh (jpg, jpeg, png, webp, tối đa 5MB), không bắt buộc.\n- `data`: JSON string chứa các trường như `category_id`, `name`, `price`, `original_price`, `cost_price`, `unit`, `is_featured`, `status`, `available_from`, `available_to`, `sort_order`, `options_json`, `tags_json`, `is_active`.\n\nCập nhật dùng cùng đầu vào như tạo mới, nhưng theo ngữ nghĩa `PUT`. Với upload file, gửi `POST multipart/form-data` và thêm `_method=PUT`.\n\n**Lưu ý `is_new` (chỉ dùng khi Cập nhật):** Khi `is_new=true`, backend tự đặt `published_at = hôm nay`; khi `is_new=false`, đặt `published_at = null`.\n\nẢnh sau khi upload sẽ được backend convert sang `.webp` và response trả về metadata trong `image` theo dạng:\n`{\"size\":12345,\"name\":\"dish_xxxx.webp\",\"url\":\"storage/dishes/dish_xxxx.webp\"}`\n\n**Tất cả giá trị tiền tệ (`price`, `original_price`, `cost_price`) là kiểu INTEGER (VNĐ).**\n"
                 },
                 {
                     "name": "Discounts",
@@ -744,7 +745,7 @@
                                     "host": ["{{base_url}}"],
                                     "path": ["menu", "discounts"]
                                 },
-                                "description": "Lấy danh sách discount và các món ăn đang được gắn."
+                                "description": "Lấy danh sách khuyến mãi và các món ăn đang được gắn."
                             },
                             "response": []
                         },
@@ -773,7 +774,7 @@
                                         }
                                     ]
                                 },
-                                "description": "Lấy chi tiết discount theo slug."
+                                "description": "Lấy chi tiết khuyến mãi theo slug."
                             },
                             "response": []
                         },
@@ -806,7 +807,7 @@
                                     "host": ["{{base_url}}"],
                                     "path": ["menu", "discounts"]
                                 },
-                                "description": "Tạo discount và gắn danh sách món qua `dish_slugs`."
+                                "description": "Tạo khuyến mãi và gắn danh sách món qua `dish_slugs`."
                             },
                             "response": []
                         },
@@ -848,7 +849,7 @@
                                         }
                                     ]
                                 },
-                                "description": "Cập nhật discount và gắn lại danh sách món qua `dish_slugs`."
+                                "description": "Cập nhật khuyến mãi và gắn lại danh sách món qua `dish_slugs`."
                             },
                             "response": []
                         },
@@ -877,12 +878,12 @@
                                         }
                                     ]
                                 },
-                                "description": "Ẩn discount bằng `is_active = false`."
+                                "description": "Ẩn khuyến mãi bằng `is_active = false`."
                             },
                             "response": []
                         }
                     ],
-                    "description": "API khuyến mãi cho món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `discounts`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của discount. |\n| `is_active` | boolean | Trạng thái hoạt động của discount. |\n| `slug` | varchar(255) | Mã định danh duy nhất dùng cho detail/update/delete. |\n| `name` | varchar(255) | Tên hiển thị của chương trình giảm giá. |\n| `description` | text, nullable | Mô tả ngắn cho khuyến mãi. |\n| `scope` | enum | Hiện hướng tới `dish`, sau này có thể mở rộng `invoice`. |\n| `discount_type` | enum | Kiểu giảm giá: `percentage` hoặc `fixed`. |\n| `starts_at` | datetime, nullable | Thời điểm bắt đầu áp dụng. |\n| `ends_at` | datetime, nullable | Thời điểm kết thúc áp dụng. |\n| `quantity` | integer, nullable | Số lượng/giới hạn phát hành nếu cần. |\n| `max_use_times` | integer, nullable | Số lần sử dụng tối đa. |\n| `discount_value` | integer | Giá trị giảm giá (% nếu percentage, VNĐ nếu fixed). |\n| `min_order_value` | integer, nullable | Giá trị đơn tối thiểu để được áp dụng (VNĐ). |\n| `sort_order` | decimal(8,2), nullable | Thứ tự ưu tiên hiển thị/áp dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
+                    "description": "API khuyến mãi cho món ăn. Detail/update/delete dùng slug.\n\n## Cấu trúc dữ liệu bảng `discounts`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của khuyến mãi. |\n| `is_active` | boolean | Trạng thái hoạt động của khuyến mãi. |\n| `slug` | varchar(255) | Mã định danh duy nhất dùng cho detail/update/delete. |\n| `name` | varchar(255) | Tên hiển thị của chương trình giảm giá. |\n| `description` | text, nullable | Mô tả ngắn cho khuyến mãi. |\n| `scope` | enum | Hiện hướng tới `dish`, sau này có thể mở rộng `invoice`. |\n| `discount_type` | enum | Kiểu giảm giá: `percentage` (phần trăm) hoặc `fixed` (số tiền cố định). |\n| `starts_at` | datetime, nullable | Thời điểm bắt đầu áp dụng. |\n| `ends_at` | datetime, nullable | Thời điểm kết thúc áp dụng. |\n| `quantity` | integer, nullable | Số lượng/giới hạn phát hành nếu cần. |\n| `max_use_times` | integer, nullable | Số lần sử dụng tối đa. |\n| `discount_value` | integer | Giá trị giảm giá (% nếu là percentage, VNĐ nếu là fixed). |\n| `min_order_value` | integer, nullable | Giá trị đơn tối thiểu để được áp dụng (VNĐ). |\n| `sort_order` | decimal(8,2), nullable | Thứ tự ưu tiên hiển thị/áp dụng. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
                 },
                 {
                     "name": "Combos",
@@ -953,7 +954,7 @@
                                             "key": "data",
                                             "type": "text",
                                             "value": "{\n  \"name\": \"Combo trưa văn phòng\",\n  \"remark\": \"Combo cơ bản cho 2 người\",\n  \"discount_price\": 16000,\n  \"is_active\": true,\n  \"tag\": \"HOT\",\n  \"days_in_week\": [\"T2\", \"T3\"],\n  \"start_time\": \"10:00\",\n  \"end_time\": \"14:00\",\n  \"start_at\": \"2026-04-02 00:00:00\",\n  \"end_at\": \"2026-04-30 23:59:59\",\n  \"max_use_times\": null,\n  \"dishes\": [\n    {\n      \"dish_slug\": \"com-suon-nuong\",\n      \"quantity\": 1,\n      \"sort_order\": 1,\n      \"is_active\": true\n    },\n    {\n      \"dish_slug\": \"bun-bo-hue\",\n      \"quantity\": 1,\n      \"sort_order\": 2,\n      \"is_active\": true\n    }\n  ]\n}",
-                                            "description": "Gửi file ảnh ở `combo_image`; các field còn lại truyền trong `data` dưới dạng JSON string."
+                                            "description": "Gửi file ảnh ở trường `combo_image`; các trường còn lại truyền trong `data` dưới dạng JSON string."
                                         }
                                     ]
                                 },
@@ -962,7 +963,7 @@
                                     "host": ["{{base_url}}"],
                                     "path": ["menu", "combos"]
                                 },
-                                "description": "Tạo combo với `multipart/form-data`. Gửi file ảnh ở field `combo_image` và gửi các field còn lại trong `data` dưới dạng JSON string."
+                                "description": "Tạo combo với `multipart/form-data`. Gửi file ảnh ở trường `combo_image` và gửi các trường còn lại trong `data` dưới dạng JSON string."
                             },
                             "response": []
                         },
@@ -1038,14 +1039,14 @@
                             "response": []
                         }
                     ],
-                    "description": "API combo món ăn. Detail/update/delete dùng slug.\n\nCreate/update dùng `multipart/form-data` với:\n- `combo_image`: file upload ảnh combo\n- `data`: JSON string chứa các field còn lại\n\nBackend convert ảnh sang `.webp` và lưu metadata vào cột `combo_image` theo dạng `{ size, name, url }`.\n\n## ComboTag hợp lệ\n- `HOT`: combo nổi bật hoặc bán chạy\n- `SEASONAL`: combo theo mùa hoặc theo chiến dịch thời vụ\n- `FAST`: combo phục vụ nhanh, phù hợp bữa trưa/văn phòng\n- `RELAX`: combo nhẹ nhàng cho trà bánh, gặp gỡ hoặc thư giãn\n\n## Days In Week hợp lệ\n- `T2`: Thứ 2\n- `T3`: Thứ 3\n- `T4`: Thứ 4\n- `T5`: Thứ 5\n- `T6`: Thứ 6\n- `T7`: Thứ 7\n- `CN`: Chủ nhật\n\n## Cấu trúc dữ liệu bảng `combos`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của combo. |\n| `slug` | varchar(30) | Mã định danh duy nhất dùng cho detail/update/delete. |\n| `name` | varchar(150) | Tên combo hiển thị trên menu. |\n| `remark` | text, nullable | Ghi chú hoặc mô tả ngắn cho combo. |\n| `combo_image` | json, nullable | Metadata ảnh combo dạng `{ size, name, url }`. |\n| `discount_price` | integer | Số tiền giảm giá của combo (VNĐ, kiểu integer). |\n| `combo_price` | appends | Giá bán thực tế của combo, được tính bằng `selling_price - discount_price`. |\n| `is_active` | boolean | Trạng thái hoạt động của combo. |\n| `tag` | enum, nullable | Nhãn combo, nhận một trong các giá trị `HOT`, `SEASONAL`, `FAST`, `RELAX`. |\n| `days_in_week` | json, nullable | Danh sách ngày áp dụng, nhận các giá trị `T2`, `T3`, `T4`, `T5`, `T6`, `T7`, `CN`. |\n| `start_time` | time, nullable | Giờ bắt đầu áp dụng, định dạng `HH:mm`. |\n| `end_time` | time, nullable | Giờ kết thúc áp dụng, định dạng `HH:mm`. |\n| `start_at` | datetime, nullable | Thời điểm bắt đầu bán combo. |\n| `end_at` | datetime, nullable | Thời điểm kết thúc bán combo. |\n| `max_use_times` | integer, nullable | Giới hạn số lần sử dụng nếu cần; để `null` nếu không giới hạn. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
+                    "description": "API combo món ăn. Detail/update/delete dùng slug.\n\nTạo mới/Cập nhật dùng `multipart/form-data` với:\n- `combo_image`: file upload ảnh combo\n- `data`: JSON string chứa các trường còn lại\n\nBackend convert ảnh sang `.webp` và lưu metadata vào cột `combo_image` theo dạng `{ size, name, url }`.\n\n## ComboTag hợp lệ\n- `HOT`: combo nổi bật hoặc bán chạy\n- `SEASONAL`: combo theo mùa hoặc theo chiến dịch thời vụ\n- `FAST`: combo phục vụ nhanh, phù hợp bữa trưa/văn phòng\n- `RELAX`: combo nhẹ nhàng cho trà bánh, gặp gỡ hoặc thư giãn\n\n## Days In Week hợp lệ\n- `T2`: Thứ 2\n- `T3`: Thứ 3\n- `T4`: Thứ 4\n- `T5`: Thứ 5\n- `T6`: Thứ 6\n- `T7`: Thứ 7\n- `CN`: Chủ nhật\n\n## Cấu trúc dữ liệu bảng `combos`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của combo. |\n| `slug` | varchar(30) | Mã định danh duy nhất dùng cho detail/update/delete. |\n| `name` | varchar(150) | Tên combo hiển thị trên menu. |\n| `remark` | text, nullable | Ghi chú hoặc mô tả ngắn cho combo. |\n| `combo_image` | json, nullable | Metadata ảnh combo dạng `{ size, name, url }`. |\n| `discount_price` | integer | Số tiền giảm giá của combo (VNĐ, kiểu integer). |\n| `combo_price` | appends | Giá bán thực tế của combo, được tính bằng `selling_price - discount_price`. |\n| `is_active` | boolean | Trạng thái hoạt động của combo. |\n| `tag` | enum, nullable | Nhãn combo, nhận một trong các giá trị `HOT`, `SEASONAL`, `FAST`, `RELAX`. |\n| `days_in_week` | json, nullable | Danh sách ngày áp dụng, nhận các giá trị `T2`, `T3`, `T4`, `T5`, `T6`, `T7`, `CN`. |\n| `start_time` | time, nullable | Giờ bắt đầu áp dụng, định dạng `HH:mm`. |\n| `end_time` | time, nullable | Giờ kết thúc áp dụng, định dạng `HH:mm`. |\n| `start_at` | datetime, nullable | Thời điểm bắt đầu bán combo. |\n| `end_at` | datetime, nullable | Thời điểm kết thúc bán combo. |\n| `max_use_times` | integer, nullable | Giới hạn số lần sử dụng nếu cần; để `null` nếu không giới hạn. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n"
                 }
             ],
             "description": "API thực đơn gồm `categories`, `dishes`, `discounts` và `combos`."
         },
         {
             "name": "Reservations",
-            "description": "API ??t b?n. Detail/update/delete d?ng `reservation_code` tr?n URL.\n\nC?c tr?ng th?i h?p l? c?a reservation: `pending`, `confirmed`, `completed`, `canceled`.\n\nLu?ng hi?n t?i:\n- `store-by-customer`: kh?ch t? g?i y?u c?u ??t b?n, ch?a g?n b?n. Backend t? set `status = pending`, `deposit_amount = 0`, t? t?nh `hold_start_time`/`hold_end_time`, r?i queue email th?ng b?o cho qu?n l? ?? ch? ??ng li?n h? l?i v?i kh?ch.\n- `store`: nh?n vi?n t?o ??t b?n v? c? th? g?n `table_code`. Backend t? ki?m tra tr?ng l?ch theo kho?ng `hold_start_time`/`hold_end_time`.\n- `update`: h? tr? c?p nh?t t?ng ph?n (`PATCH`). D?ng `isConfirmed=true` ?? x?c nh?n v? `isCancelled=true` ?? h?y. Backend t? set `status`, `confirmed_at`, `confirmed_by_employee`, `cancelled_at`, `cancelled_by_employee`.\n- `destroy`: h?y m?m reservation b?ng c?ch chuy?n `status = canceled`, `is_active = false` v? ??ng b? l?i tr?ng th?i b?n n?u c? `table_code`.\n\nL?u ?:\n- `store-by-customer` kh?ng y?u c?u ??ng nh?p.\n- Sau khi kh?ch t?o y?u c?u th?nh c?ng, h? th?ng s? ??a email th?ng b?o v?o queue `mail`; email kh?ng g?i ??ng b? trong request.\n- Kh?ng g?i tr?c ti?p `status`, `confirmed_at`, `cancelled_at` trong API update; backend t? qu?n l?.\n- Khi c? `table_code`, backend s? ch?n n?u b?n b? tr?ng l?ch v?i reservation `pending` ho?c `confirmed` kh?c.\n\n## C?u tr?c d? li?u b?ng `reservations`\n\n| T?n c?t | Ki?u d? li?u | Ghi ch? |\n| --- | --- | --- |\n| `id` | bigint | Kh?a ch?nh. |\n| `is_active` | boolean | Tr?ng th?i ho?t ??ng; `false` l? h?y m?m. |\n| `reservation_code` | varchar | M? ??t b?n duy nh?t, d?ng cho detail/update/delete. |\n| `customer_name` | varchar | T?n kh?ch ??t b?n. |\n| `customer_phone` | varchar, nullable | S? ?i?n tho?i kh?ch. |\n| `guest_count` | integer | S? kh?ch d? ki?n. |\n| `reservation_time` | datetime | Gi? kh?ch d? ki?n ??n. |\n| `remark` | text, nullable | Ghi ch? th?m cho reservation. |\n| `status` | enum | `pending`, `confirmed`, `completed`, `canceled`. |\n| `deposit_amount` | integer | Ti?n c?c, ki?u integer (VN?). V?i `store-by-customer`, backend hi?n t? set m?c ??nh l? `0`. |\n| `confirmed_at` | datetime, nullable | Th?i ?i?m x?c nh?n reservation. |\n| `cancelled_at` | datetime, nullable | Th?i ?i?m h?y reservation. |\n| `hold_start_time` | datetime, nullable | Th?i ?i?m b?t ??u gi? b?n. V?i `store-by-customer`, backend t? t?nh b?ng `reservation_time - 1 gi?`. |\n| `hold_end_time` | datetime, nullable | Th?i ?i?m k?t th?c gi? b?n. V?i `store-by-customer`, backend t? t?nh b?ng `reservation_time + 15 ph?t`. |\n| `created_by_employee` | varchar, nullable | Nh?n vi?n t?o reservation. `store-by-customer` s? kh?ng c? gi? tr? n?y. |\n| `confirmed_by_employee` | varchar, nullable | Nh?n vi?n x?c nh?n reservation. |\n| `cancelled_by_employee` | varchar, nullable | Nh?n vi?n h?y reservation. |\n| `table_code` | varchar, nullable | B?n ???c g?n tr??c, tham chi?u `restaurant_tables.slug`. |\n| `created_at` | timestamp | Th?i ?i?m t?o b?n ghi. |\n| `updated_at` | timestamp | Th?i ?i?m c?p nh?t g?n nh?t. |",
+            "description": "API đặt bàn. Detail/update/delete dùng `reservation_code` trên URL.\n\nCác trạng thái hợp lệ của reservation: `pending`, `confirmed`, `completed`, `canceled`.\n\nLuồng hiện tại:\n- `store-by-customer`: khách tự gửi yêu cầu đặt bàn, chưa gán bàn. Backend tự sinh `reservation_code` gồm 6 ký tự chữ-số in hoa, đặt `status = pending`, `deposit_amount = 0`, tự tính `hold_start_time`/`hold_end_time`, rồi đưa vào hàng đợi email thông báo cho quản lý.\n- `store`: nhân viên tạo đặt bàn và có thể gán `table_code`. Backend tự sinh `reservation_code` 6 ký tự và kiểm tra trùng lịch theo khoảng `hold_start_time`/`hold_end_time`.\n- `update`: hỗ trợ cập nhật từng phần (`PATCH`). Dùng `isConfirmed=true` để xác nhận và `isCancelled=true` để hủy. Backend tự đặt `status`, `confirmed_at`, `confirmed_by_employee`, `cancelled_at`, `cancelled_by_employee`.\n- `destroy`: hủy mềm đặt bàn bằng cách chuyển `status = canceled`, `is_active = false`. Trạng thái bàn thay đổi tự động vì được suy ra từ `table_session` và `reservation`.\n\nLưu ý:\n- `store-by-customer` không yêu cầu đăng nhập.\n- `reservation_code` do backend tự sinh, định dạng `6` ký tự chữ-số in hoa, ví dụ `A02RSV` hoặc `VIP123`.\n- Sau khi khách tạo yêu cầu thành công, hệ thống sẽ đưa email thông báo vào hàng đợi `mail`; email không gửi đồng bộ trong request.\n- Không gửi trực tiếp `status`, `confirmed_at`, `cancelled_at` trong API update; backend tự quản lý.\n- Khi có `table_code`, backend sẽ chặn nếu bàn bị trùng lịch với reservation `pending` hoặc `confirmed` khác.\n\n## Cấu trúc dữ liệu bảng `reservations`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là hủy mềm. |\n| `reservation_code` | varchar | Mã đặt bàn duy nhất do backend tự sinh, định dạng 6 ký tự chữ-số in hoa. |\n| `customer_name` | varchar | Tên khách đặt bàn. |\n| `customer_phone` | varchar, nullable | Số điện thoại khách. |\n| `guest_count` | integer | Số khách dự kiến. |\n| `reservation_time` | datetime | Giờ khách dự kiến đến. |\n| `remark` | text, nullable | Ghi chú thêm cho đặt bàn. |\n| `status` | enum | `pending`, `confirmed`, `completed`, `canceled`. |\n| `deposit_amount` | integer | Tiền cọc, kiểu integer. Với `store-by-customer`, backend hiện tại đặt mặc định là `0`. |\n| `confirmed_at` | datetime, nullable | Thời điểm xác nhận đặt bàn. |\n| `cancelled_at` | datetime, nullable | Thời điểm hủy đặt bàn. |\n| `hold_start_time` | datetime, nullable | Thời điểm bắt đầu giữ bàn. Với `store-by-customer`, backend tự tính bằng `reservation_time - 1 giờ`. |\n| `hold_end_time` | datetime, nullable | Thời điểm kết thúc giữ bàn. Với `store-by-customer`, backend tự tính bằng `reservation_time + 15 phút`. |\n| `created_by_employee` | varchar, nullable | Nhân viên tạo đặt bàn. `store-by-customer` sẽ không có giá trị này. |\n| `confirmed_by_employee` | varchar, nullable | Nhân viên xác nhận đặt bàn. |\n| `cancelled_by_employee` | varchar, nullable | Nhân viên hủy đặt bàn. |\n| `table_code` | varchar, nullable | Bàn được gán trước, tham chiếu `restaurant_tables.slug`. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
             "item": [
                 {
                     "name": "Create Reservation By Customer",
@@ -1066,7 +1067,7 @@
                             "host": ["{{base_url}}"],
                             "path": ["reservations", "store-by-customer"]
                         },
-                        "description": "Kh?ch t? g?i y?u c?u ??t b?n. Endpoint n?y kh?ng y?u c?u ??ng nh?p v? ch?a g?n `table_code`. Backend s? t? set `status = pending`, `deposit_amount = 0`, t? t?nh kho?ng gi? b?n v? queue email th?ng b?o cho qu?n l?.",
+                        "description": "Khách tự gửi yêu cầu đặt bàn. Endpoint này không yêu cầu đăng nhập và chưa gán `table_code`. Backend sẽ tự sinh `reservation_code` 6 ký tự, đặt `status = pending`, `deposit_amount = 0`, tự tính khoảng giữ bàn và đưa vào hàng đợi email thông báo cho quản lý.",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"customer_name\": \"Nguyễn Văn A\",\n    \"customer_phone\": \"0900000001\",\n    \"guest_count\": 4,\n    \"reservation_time\": \"2026-04-09 18:00:00\",\n    \"remark\": \"Khách muốn ngồi gần cửa sổ\"\n}",
@@ -1094,7 +1095,7 @@
                             "host": ["{{base_url}}"],
                             "path": ["reservations"]
                         },
-                        "description": "Lấy danh sách reservation. Yêu cầu đăng nhập."
+                        "description": "Lấy danh sách đặt bàn. Yêu cầu đăng nhập."
                     },
                     "response": []
                 },
@@ -1115,11 +1116,11 @@
                             "variable": [
                                 {
                                     "key": "reservation_code",
-                                    "value": ""
+                                    "value": "A02RSV"
                                 }
                             ]
                         },
-                        "description": "Lấy chi tiết reservation theo `reservation_code`. Trả `404` nếu không tìm thấy."
+                        "description": "Lấy chi tiết đặt bàn theo `reservation_code`. Trả về `404` nếu không tìm thấy."
                     },
                     "response": []
                 },
@@ -1142,7 +1143,7 @@
                             "host": ["{{base_url}}"],
                             "path": ["reservations"]
                         },
-                        "description": "Nhân viên tạo reservation. Nếu có `table_code`, backend sẽ kiểm tra trùng lịch theo khoảng giữ bàn.",
+                        "description": "Nhân viên tạo đặt bàn. Backend tự sinh `reservation_code` 6 ký tự. Nếu có `table_code`, backend sẽ kiểm tra trùng lịch theo khoảng giữ bàn.",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"customer_name\": \"Trần Thị B\",\n    \"customer_phone\": \"0900000002\",\n    \"guest_count\": 5,\n    \"reservation_time\": \"2026-04-09 19:00:00\",\n    \"hold_start_time\": \"2026-04-09 18:00:00\",\n    \"hold_end_time\": \"2026-04-09 19:15:00\",\n    \"deposit_amount\": 200000,\n    \"table_code\": \"a01\",\n    \"remark\": \"Khách có trẻ em đi cùng\"\n}",
@@ -1176,11 +1177,11 @@
                             "variable": [
                                 {
                                     "key": "reservation_code",
-                                    "value": ""
+                                    "value": "A02RSV"
                                 }
                             ]
                         },
-                        "description": "Cập nhật từng phần reservation. Dùng `isConfirmed=true` để xác nhận hoặc `isCancelled=true` để hủy. Không gửi trực tiếp `status`, `confirmed_at`, `cancelled_at`.",
+                        "description": "Cập nhật từng phần đặt bàn. Dùng `isConfirmed=true` để xác nhận hoặc `isCancelled=true` để hủy. Không gửi trực tiếp `status`, `confirmed_at`, `cancelled_at`.",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"guest_count\": 6,\n    \"reservation_time\": \"2026-04-09 19:30:00\",\n    \"table_code\": \"a02\",\n    \"remark\": \"Khách đến muộn khoảng 15 phút\",\n    \"isConfirmed\": true\n}",
@@ -1210,11 +1211,11 @@
                             "variable": [
                                 {
                                     "key": "reservation_code",
-                                    "value": ""
+                                    "value": "A02RSV"
                                 }
                             ]
                         },
-                        "description": "Hủy mềm reservation theo `reservation_code`. Backend sẽ chuyển `status = canceled`, `is_active = false` và đồng bộ lại trạng thái bàn nếu cần."
+                        "description": "Hủy mềm đặt bàn theo `reservation_code`. Backend sẽ chuyển `status = canceled`, `is_active = false`; trạng thái bàn sẽ đổi tự động theo dữ liệu `reservation` và `table_session` hiện có."
                     },
                     "response": []
                 }
@@ -1222,7 +1223,7 @@
         },
         {
             "name": "Tables",
-            "description": "API bàn nhà hàng. Detail/update/delete dùng slug.\n\nCác trạng thái hợp lệ: `AVAILABLE`, `OCCUPIED`, `RESERVED`, `CLEANING`, `DISABLED`.\n\n## Cấu trúc dữ liệu bảng `restaurant_tables`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `slug` | varchar(20) | Mã định danh duy nhất, dùng cho detail/update/delete. |\n| `name` | varchar(50) | Tên bàn hiển thị (tối đa 50 ký tự). |\n| `capacity` | integer | Sức chứa của bàn (số người). |\n| `status` | enum | Trạng thái hiện tại: `AVAILABLE`, `OCCUPIED`, `RESERVED`, `CLEANING`, `DISABLED`. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |\n",
+            "description": "API bàn nhà hàng. Detail/update/delete dùng slug.\n\n`status` là trường được tính toán (computed) trong response, không còn là cột trong DB. Backend suy ra theo thứ tự ưu tiên:\n- `OCCUPIED`: có `table_session` đang hoạt động với trạng thái `OPEN` hoặc `PAYMENT_PENDING`.\n- `RESERVED`: không có phiên hoạt động, nhưng có `reservation` (đặt bàn) trạng thái `pending`/`confirmed` đang nằm trong khoảng `hold_start_time`/`hold_end_time`.\n- `AVAILABLE`: không rơi vào 2 trường hợp trên.\n\n## Cấu trúc dữ liệu bảng `restaurant_tables`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `slug` | varchar(20) | Mã định danh duy nhất, dùng cho detail/update/delete. |\n| `name` | varchar(50) | Tên bàn hiển thị (tối đa 50 ký tự). |\n| `capacity` | integer | Sức chứa của bàn (số người). |\n| `status` | string/appends | Trạng thái suy diễn trong response: `AVAILABLE`, `OCCUPIED`, `RESERVED`. Không lưu trong DB. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
             "item": [
                 {
                     "name": "List Tables",
@@ -1284,7 +1285,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Bàn sân vườn 01\",\n  \"capacity\": 4,\n  \"status\": \"AVAILABLE\",\n  \"is_active\": true\n}",
+                            "raw": "{\n  \"name\": \"Bàn sân vườn 01\",\n  \"capacity\": 4,\n  \"is_active\": true\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1296,7 +1297,7 @@
                             "host": ["{{base_url}}"],
                             "path": ["table", "tables"]
                         },
-                        "description": "Tạo bàn mới."
+                        "description": "Tạo bàn mới. Không gửi `status`; backend sẽ trả về `status` suy diễn trong response."
                     },
                     "response": []
                 },
@@ -1316,7 +1317,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Bàn sân vườn VIP 01\",\n  \"capacity\": 6,\n  \"status\": \"RESERVED\"\n}",
+                            "raw": "{\n  \"name\": \"Bàn sân vườn VIP 01\",\n  \"capacity\": 6\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1334,7 +1335,7 @@
                                 }
                             ]
                         },
-                        "description": "Cập nhật thông tin bàn theo slug."
+                        "description": "Cập nhật thông tin bàn theo slug. Không đặt `status` thủ công."
                     },
                     "response": []
                 },
@@ -1367,7 +1368,7 @@
         },
         {
             "name": "Table Sessions",
-            "description": "API phiên bàn. Đây là thực thể đại diện cho toàn bộ một lượt phục vụ của một bàn, bắt đầu từ lúc mở bàn đến khi bàn được thanh toán/xong khách.\n\nRoute hiện có:\n- `GET /table/sessions`\n- `GET /table/sessions/:table_session_id`\n- `POST /table/sessions`\n- `PATCH /table/sessions/:table_session_id`\n\nCác trạng thái hợp lệ của `table_session`:\n- `OPEN`: bàn đang phục vụ, đang nhận món.\n- `PAYMENT_PENDING`: bàn đã chốt để chuẩn bị thanh toán.\n- `PAID`: đã thanh toán xong.\n- `CLOSED`: kết thúc phiên bàn.\n- `CANCELLED`: phiên bàn bị hủy.\n\nLuồng nghiệp vụ hiện tại:\n- `store`: mở một phiên bàn mới cho một bàn đang khả dụng.\n- `update`: cập nhật số khách, ghi chú, reservation, hoặc chuyển trạng thái phiên bàn.\n- Khi chuyển session sang trạng thái kết thúc (`PAID`, `CLOSED`, `CANCELLED`), backend sẽ chặn nếu vẫn còn `cart_order` ở trạng thái `OPEN` hoặc `LOCKED_FOR_PAYMENT`.\n\nLưu ý cho FE:\n- `table_session` là thực thể cha của `cart_orders` và `invoices`.\n- Một bàn tại một thời điểm chỉ nên có một `table_session` còn sống (`OPEN` hoặc `PAYMENT_PENDING`).\n- FE nên lấy `id` của `table_session` để tạo `cart_order` cho đúng phiên phục vụ hiện tại.\n\n## Cấu trúc dữ liệu bảng `table_sessions`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của phiên bàn. FE thường dùng giá trị này khi gọi API detail/update và khi tạo `cart_order`. |\n| `table_id` | bigint | ID bàn đang được phục vụ. Tham chiếu sang `restaurant_tables.id`. |\n| `opened_by_employee` | varchar | `user_name` của nhân viên mở bàn. Backend tự set khi tạo mới. |\n| `closed_by_employee` | varchar, nullable | `user_name` của nhân viên kết thúc phiên bàn. Chỉ có khi phiên được đóng/hủy/thanh toán xong. |\n| `guest_count` | integer, nullable | Số lượng khách ngồi trong phiên này. FE có thể cho phép cập nhật khi khách vào thêm/bớt. |\n| `status` | enum | Trạng thái nghiệp vụ của phiên bàn: `OPEN`, `PAYMENT_PENDING`, `PAID`, `CLOSED`, `CANCELLED`. |\n| `opened_at` | datetime | Thời điểm mở bàn. Backend tự set khi tạo mới. |\n| `closed_at` | datetime, nullable | Thời điểm kết thúc phiên bàn. Backend tự set khi session đi vào trạng thái kết thúc. |\n| `remark` | varchar(255), nullable | Ghi chú nghiệp vụ cho phiên bàn, ví dụ: khách ngồi ghép, bàn ưu tiên, yêu cầu đặc biệt. |\n| `is_active` | boolean | Cờ hoạt động của bản ghi. Thường vẫn là `true`; có thể dùng để ẩn mềm nếu hệ thống mở rộng sau này. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi trong DB. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
+            "description": "API phiên bàn. Đây là thực thể đại diện cho toàn bộ một lượt phục vụ của một bàn, bắt đầu từ lúc mở bàn đến khi bàn được thanh toán/xong khách.\n\nRoute hiện có:\n- `GET /table/sessions`\n- `GET /table/sessions/:table_session_id`\n- `POST /table/sessions`\n- `PATCH /table/sessions/:table_session_id`\n\nCác trạng thái hợp lệ của `table_session`:\n- `OPEN`: bàn đang phục vụ, đang nhận món.\n- `PAYMENT_PENDING`: bàn đã chốt để chuẩn bị thanh toán.\n- `PAID`: đã thanh toán xong.\n- `CLOSED`: kết thúc phiên bàn.\n- `CANCELLED`: phiên bàn bị hủy.\n\nLuồng nghiệp vụ hiện tại:\n- `store`: mở một phiên bàn mới cho một bàn `AVAILABLE`, hoặc cho một bàn `RESERVED` nếu request dùng đúng `reservation_code` của reservation đang giữ bàn đó.\n- `update`: cập nhật số khách, ghi chú, đặt bàn (reservation), hoặc chuyển trạng thái phiên bàn.\n- Khi chuyển session sang trạng thái kết thúc (`PAID`, `CLOSED`, `CANCELLED`), backend sẽ chặn nếu vẫn còn `cart_order` ở trạng thái `OPEN` hoặc `LOCKED_FOR_PAYMENT`.\n\nLưu ý cho FE:\n- `table_session` là thực thể cha của `cart_orders` và `invoices`.\n- Một bàn tại một thời điểm chỉ nên có một `table_session` còn hoạt động (`OPEN` hoặc `PAYMENT_PENDING`).\n- `table.status` trên API bàn là giá trị suy diễn. Nếu cần cập nhật gần thời gian thực, FE nên gọi lại API bàn định kỳ hoặc làm mới ngay sau các hành động mở/đóng bàn, tạo/sửa/hủy đặt bàn.\n\n## Cấu trúc dữ liệu bảng `table_sessions`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của phiên bàn. FE thường dùng giá trị này khi gọi API detail/update và khi tạo `cart_order`. |\n| `table_id` | bigint | ID bàn đang được phục vụ. Tham chiếu sang `restaurant_tables.id`. |\n| `opened_by_employee` | varchar | `user_name` của nhân viên mở bàn. Backend tự đặt khi tạo mới. |\n| `closed_by_employee` | varchar, nullable | `user_name` của nhân viên kết thúc phiên bàn. Chỉ có khi phiên được đóng/hủy/thanh toán xong. |\n| `guest_count` | integer, nullable | Số lượng khách ngồi trong phiên này. FE có thể cho phép cập nhật khi khách vào thêm/bớt. |\n| `status` | enum | Trạng thái nghiệp vụ của phiên bàn: `OPEN`, `PAYMENT_PENDING`, `PAID`, `CLOSED`, `CANCELLED`. |\n| `opened_at` | datetime | Thời điểm mở bàn. Backend tự đặt khi tạo mới. |\n| `closed_at` | datetime, nullable | Thời điểm kết thúc phiên bàn. Backend tự đặt khi session đi vào trạng thái kết thúc. |\n| `remark` | varchar(255), nullable | Ghi chú nghiệp vụ cho phiên bàn. |\n| `reservation_code` | varchar, nullable | Mã đặt bàn gắn với phiên bàn nếu mở bàn từ đặt bàn. |\n| `is_active` | boolean | Cờ hoạt động của bản ghi. Thường vẫn là `true`. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi trong DB. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
             "item": [
                 {
                     "name": "List Sessions",
@@ -1429,7 +1430,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"table_id\": {{table_id}},\n  \"guest_count\": 4,\n  \"remark\": \"Guest seated\",\n  \"reservation_code\": null\n}",
+                            "raw": "{\n  \"table_id\": {{table_id}},\n  \"guest_count\": 4,\n  \"remark\": \"Khách đã vào bàn\",\n  \"reservation_code\": null\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1461,7 +1462,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"status\": \"PAYMENT_PENDING\",\n  \"remark\": \"Waiting for payment\"\n}",
+                            "raw": "{\n  \"status\": \"PAYMENT_PENDING\",\n  \"remark\": \"Đang chờ thanh toán\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1487,7 +1488,7 @@
         },
         {
             "name": "Cart Orders",
-            "description": "API đơn tạm tính theo bàn. Đây là thực thể đại diện cho một lần gọi món/nhóm món nằm bên trong một `table_session`. Một phiên bàn có thể có một hoặc nhiều `cart_order` tùy cách vận hành của quán.\n\nRoute hiện có:\n- `GET /table/cart-orders`\n- `GET /table/cart-orders/:cart_order_id`\n- `POST /table/cart-orders`\n- `PATCH /table/cart-orders/:cart_order_id`\n- `DELETE /table/cart-orders/:cart_order_id`\n\nCác trạng thái hợp lệ của `cart_order`:\n- `OPEN`: đơn đang mở, còn có thể thêm/sửa món.\n- `LOCKED_FOR_PAYMENT`: đơn đã khóa để chuẩn bị thanh toán.\n- `CANCELLED`: đơn bị hủy.\n- `CONVERTED_TO_INVOICE`: đơn đã được chuyển thành hóa đơn.\n\nLuồng nghiệp vụ hiện tại:\n- `store`: tạo đơn tạm tính mới cho một `table_session` còn hoạt động.\n- `update`: cập nhật trạng thái, ghi chú, số tiền, bàn/phiên hoặc thay toàn bộ danh sách món.\n- `destroy`: ẩn mềm đơn bằng `is_active = false`.\n- `table_session` sẽ không được phép đóng nếu vẫn còn `cart_order` ở trạng thái `OPEN` hoặc `LOCKED_FOR_PAYMENT`.\n\nLưu ý cho FE:\n- `session_id` phải thuộc một `table_session` đang ở trạng thái `OPEN` hoặc `PAYMENT_PENDING`.\n- `table_id` phải khớp với bàn của `session_id`; backend có kiểm tra chéo hai giá trị này.\n- `order_no` được backend tự sinh, FE không cần gửi lên khi tạo mới.\n- Các cột tiền đều là `INTEGER`, đơn vị là VNĐ.\n- `items` trong payload create/update chính là dữ liệu cho bảng `cart_order_items`.\n\n## Cấu trúc dữ liệu bảng `cart_orders`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của đơn tạm tính. FE dùng để gọi detail/update/delete. |\n| `session_id` | bigint | ID của `table_session` mà đơn này thuộc về. Dùng để gắn đơn vào đúng phiên phục vụ. |\n| `table_id` | bigint | ID của bàn hiện tại. Backend dùng để đối chiếu với `session_id`. |\n| `order_no` | varchar(30) | Mã đơn nghiệp vụ duy nhất, backend tự sinh. FE nên hiển thị cho nhân viên tra cứu nếu cần. |\n| `created_by_employee` | varchar | `user_name` của nhân viên tạo đơn. Backend tự set theo tài khoản đăng nhập. |\n| `status` | enum | Trạng thái nghiệp vụ của đơn: `OPEN`, `LOCKED_FOR_PAYMENT`, `CANCELLED`, `CONVERTED_TO_INVOICE`. |\n| `subtotal_amount` | integer | Tổng tiền món trước giảm giá/phí/tax. |\n| `discount_amount` | integer | Tổng tiền giảm giá của đơn. |\n| `service_charge_amount` | integer | Phí dịch vụ áp cho đơn. |\n| `tax_amount` | integer | Thuế áp cho đơn. |\n| `total_amount` | integer | Tổng tiền cuối cùng của đơn sau khi cộng/trừ các thành phần liên quan. |\n| `remark` | varchar(255), nullable | Ghi chú chung cho cả đơn. |\n| `is_active` | boolean | Cờ hoạt động của đơn. `false` nghĩa là đơn bị ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo đơn. |\n| `updated_at` | timestamp | Thời điểm cập nhật đơn gần nhất. |\n\n## Cấu trúc dữ liệu bảng `cart_order_items`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của dòng món trong đơn. |\n| `cart_order_id` | bigint | ID đơn tạm tính cha. Backend tự gắn khi tạo item qua quan hệ của `cart_order`. |\n| `combo_id` | bigint, nullable | ID combo nếu dòng này là combo; có thể `null` với món lẻ. |\n| `item_name_snapshot` | varchar(150) | Tên món/combo tại thời điểm chốt vào đơn. Dùng kiểu snapshot để giữ lịch sử ngay cả khi menu thay đổi sau đó. |\n| `variant_name_snapshot` | varchar(150), nullable | Tên phân loại/size tại thời điểm chốt đơn, ví dụ: nhỏ, vừa, lớn. |\n| `quantity` | decimal(10,2) | Số lượng của dòng món. Hỗ trợ cả số lẻ nếu nghiệp vụ cần. |\n| `base_unit_price` | integer | Đơn giá gốc của món trước option. |\n| `option_total_price` | integer | Tổng tiền cộng thêm từ option/topping/add-on cho 1 đơn vị món. |\n| `unit_final_price` | integer | Giá cuối cùng của 1 đơn vị món sau khi cộng option. |\n| `line_total` | integer | Thành tiền của dòng món = `quantity * unit_final_price` (theo dữ liệu backend đang lưu). |\n| `item_note` | varchar(255), nullable | Ghi chú riêng cho từng món, ví dụ: ít đá, không hành, thêm sốt. |\n| `line_status` | enum | Trạng thái của dòng món: `ACTIVE`, `CANCELLED`, `SERVED`. |\n| `is_active` | boolean | Cờ hoạt động của dòng món. |\n| `created_at` | timestamp | Thời điểm tạo dòng món. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
+            "description": "API đơn tạm tính theo bàn. Đây là thực thể đại diện cho một lần gọi món/nhóm món nằm bên trong một `table_session`. Một phiên bàn có thể có một hoặc nhiều `cart_order` tùy cách vận hành của quán.\n\nRoute hiện có:\n- `GET /table/cart-orders`\n- `GET /table/cart-orders/:cart_order_id`\n- `POST /table/cart-orders`\n- `PATCH /table/cart-orders/:cart_order_id`\n- `DELETE /table/cart-orders/:cart_order_id`\n\nCác trạng thái hợp lệ của `cart_order`:\n- `OPEN`: đơn đang mở, còn có thể thêm/sửa món.\n- `LOCKED_FOR_PAYMENT`: đơn đã khóa để chuẩn bị thanh toán.\n- `CANCELLED`: đơn bị hủy.\n- `CONVERTED_TO_INVOICE`: đơn đã được chuyển thành hóa đơn.\n\nLuồng nghiệp vụ hiện tại:\n- `store`: tạo đơn tạm tính mới cho một `table_session` còn hoạt động.\n- `update`: cập nhật trạng thái, ghi chú, số tiền, bàn/phiên hoặc thay toàn bộ danh sách món.\n- `destroy`: ẩn mềm đơn bằng `is_active = false`.\n- `table_session` sẽ không được phép đóng nếu vẫn còn `cart_order` ở trạng thái `OPEN` hoặc `LOCKED_FOR_PAYMENT`.\n\nLưu ý cho FE:\n- `session_id` phải thuộc một `table_session` đang ở trạng thái `OPEN` hoặc `PAYMENT_PENDING`.\n- `table_id` phải khớp với bàn của `session_id`; backend có kiểm tra chéo hai giá trị này.\n- `order_no` được backend tự sinh, FE không cần gửi lên khi tạo mới.\n- Các cột tiền đều là kiểu `INTEGER`, đơn vị là VNĐ.\n- `items` trong payload create/update chính là dữ liệu cho bảng `cart_order_items`.\n\n## Cấu trúc dữ liệu bảng `cart_orders`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của đơn tạm tính. FE dùng để gọi detail/update/delete. |\n| `session_id` | bigint | ID của `table_session` mà đơn này thuộc về. |\n| `table_id` | bigint | ID của bàn hiện tại. Backend dùng để đối chiếu với `session_id`. |\n| `order_no` | varchar(30) | Mã đơn nghiệp vụ duy nhất, backend tự sinh. |\n| `created_by_employee` | varchar | `user_name` của nhân viên tạo đơn. |\n| `status` | enum | Trạng thái nghiệp vụ của đơn: `OPEN`, `LOCKED_FOR_PAYMENT`, `CANCELLED`, `CONVERTED_TO_INVOICE`. |\n| `subtotal_amount` | integer | Tổng tiền món trước giảm giá/phí/thuế. |\n| `discount_amount` | integer | Tổng tiền giảm giá của đơn. |\n| `service_charge_amount` | integer | Phí dịch vụ áp cho đơn. |\n| `tax_amount` | integer | Thuế áp cho đơn. |\n| `total_amount` | integer | Tổng tiền cuối cùng của đơn sau khi cộng/trừ các thành phần liên quan. |\n| `remark` | varchar(255), nullable | Ghi chú chung cho cả đơn. |\n| `is_active` | boolean | Cờ hoạt động của đơn. `false` nghĩa là đơn bị ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo đơn. |\n| `updated_at` | timestamp | Thời điểm cập nhật đơn gần nhất. |\n\n## Cấu trúc dữ liệu bảng `cart_order_items`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của dòng món trong đơn. |\n| `cart_order_id` | bigint | ID đơn tạm tính cha. |\n| `combo_id` | bigint, nullable | ID combo nếu dòng này là combo; có thể `null` với món lẻ. |\n| `item_name_snapshot` | varchar(150) | Tên món/combo tại thời điểm chốt vào đơn (giữ lịch sử). |\n| `variant_name_snapshot` | varchar(150), nullable | Tên phân loại/size tại thời điểm chốt đơn, ví dụ: nhỏ, vừa, lớn. |\n| `quantity` | decimal(10,2) | Số lượng của dòng món. |\n| `base_unit_price` | integer | Đơn giá gốc của món trước khi cộng option. |\n| `option_total_price` | integer | Tổng tiền cộng thêm từ option/topping cho 1 đơn vị món. |\n| `unit_final_price` | integer | Giá cuối cùng của 1 đơn vị món sau khi cộng option. |\n| `line_total` | integer | Thành tiền của dòng món = `quantity * unit_final_price`. |\n| `item_note` | varchar(255), nullable | Ghi chú riêng cho từng món (ví dụ: ít đá, không hành). |\n| `line_status` | enum | Trạng thái của dòng món: `ACTIVE`, `CANCELLED`, `SERVED`. |\n| `is_active` | boolean | Cờ hoạt động của dòng món. |\n| `created_at` | timestamp | Thời điểm tạo dòng món. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
             "item": [
                 {
                     "name": "List Cart Orders",
@@ -1549,7 +1550,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"session_id\": {{table_session_id}},\n  \"table_id\": {{table_id}},\n  \"subtotal_amount\": 120000,\n  \"discount_amount\": 0,\n  \"service_charge_amount\": 0,\n  \"tax_amount\": 0,\n  \"total_amount\": 120000,\n  \"remark\": \"Order mới\",\n  \"items\": [\n    {\n      \"item_name_snapshot\": \"Cơm sườn\",\n      \"variant_name_snapshot\": \"Lớn\",\n      \"quantity\": 2,\n      \"base_unit_price\": 60000,\n      \"option_total_price\": 0,\n      \"unit_final_price\": 60000,\n      \"line_total\": 120000,\n      \"item_note\": \"Ít hành\"\n    }\n  ]\n}",
+                            "raw": "{\n  \"session_id\": {{table_session_id}},\n  \"table_id\": {{table_id}},\n  \"subtotal_amount\": 120000,\n  \"discount_amount\": 0,\n  \"service_charge_amount\": 0,\n  \"tax_amount\": 0,\n  \"total_amount\": 120000,\n  \"remark\": \"Đơn hàng mới\",\n  \"items\": [\n    {\n      \"item_name_snapshot\": \"Cơm sườn\",\n      \"variant_name_snapshot\": \"Lớn\",\n      \"quantity\": 2,\n      \"base_unit_price\": 60000,\n      \"option_total_price\": 0,\n      \"unit_final_price\": 60000,\n      \"line_total\": 120000,\n      \"item_note\": \"Ít hành\"\n    }\n  ]\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1581,7 +1582,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"status\": \"LOCKED_FOR_PAYMENT\",\n  \"remark\": \"Chờ thanh toán\"\n}",
+                            "raw": "{\n  \"status\": \"LOCKED_FOR_PAYMENT\",\n  \"remark\": \"Đang chờ thanh toán\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
