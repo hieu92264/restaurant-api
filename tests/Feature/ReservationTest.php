@@ -4,11 +4,14 @@ namespace Tests\Feature;
 
 use App\Common\Constants\ReservationStatus;
 use App\Common\Constants\RestaurantTableStatus;
+use App\Common\Constants\TableSessionStatus;
 use App\Http\interfaces\ITableStatusService;
 use App\Mail\CustomerReservationCreatedMail;
+use App\Mail\ExpiredReservationAutoCanceledMail;
 use App\Models\Reservation;
 use App\Models\RestaurantTable;
 use App\Models\Role;
+use App\Models\TableSession;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -94,6 +97,121 @@ class ReservationTest extends TestCase
                 && $mail->reservation->customer_name === 'Tran Thi B'
                 && $mail->reservation->customer_phone === '0900000999';
         });
+    }
+
+    public function test_expired_reservation_is_auto_canceled_and_notifies_managers(): void
+    {
+        Mail::fake();
+
+        $spy = new ReservationTableStatusServiceSpy();
+        $this->app->instance(ITableStatusService::class, $spy);
+
+        $managerRole = Role::query()->create([
+            'name' => 'Manager',
+            'code' => 'MANAGER',
+            'remark' => 'Reservation manager role',
+        ]);
+
+        User::query()->create([
+            'is_active' => true,
+            'user_name' => 'reservation.manager.auto.cancel',
+            'full_name' => 'Reservation Manager',
+            'email' => 'manager@example.com',
+            'password' => 'password',
+            'role_id' => $managerRole->id,
+        ]);
+
+        $table = $this->createTable('a05');
+        $reservationTime = Carbon::parse('2026-04-09 18:00:00');
+
+        $reservation = Reservation::query()->create([
+            'is_active' => true,
+            'reservation_code' => 'EXPIRED-001',
+            'customer_name' => 'Khach qua han',
+            'customer_phone' => '0900999000',
+            'guest_count' => 4,
+            'reservation_time' => $reservationTime->format('Y-m-d H:i:s'),
+            'status' => ReservationStatus::CONFIRMED,
+            'deposit_amount' => 0,
+            'hold_start_time' => $reservationTime->copy()->subHour()->format('Y-m-d H:i:s'),
+            'hold_end_time' => $reservationTime->copy()->addMinutes(15)->format('Y-m-d H:i:s'),
+            'table_code' => $table->slug,
+        ]);
+
+        Carbon::setTestNow('2026-04-09 18:20:00');
+
+        try {
+            $this->artisan('reservations:auto-cancel-expired')
+                ->assertSuccessful();
+        } finally {
+            Carbon::setTestNow();
+        }
+
+        $reservation->refresh();
+
+        $this->assertFalse($reservation->is_active);
+        $this->assertSame(ReservationStatus::CANCELED, $reservation->status);
+        $this->assertNull($reservation->cancelled_by_employee);
+        $this->assertNotNull($reservation->cancelled_at);
+        $this->assertSame([$table->slug], $spy->syncedTableCodes);
+
+        Mail::assertQueued(ExpiredReservationAutoCanceledMail::class, function (ExpiredReservationAutoCanceledMail $mail) use ($reservation) {
+            return $mail->hasTo('manager@example.com')
+                && $mail->reservation->is($reservation);
+        });
+    }
+
+    public function test_expired_reservation_with_table_session_is_not_auto_canceled(): void
+    {
+        Mail::fake();
+
+        $spy = new ReservationTableStatusServiceSpy();
+        $this->app->instance(ITableStatusService::class, $spy);
+
+        $user = $this->createAuthenticatedUser();
+        $table = $this->createTable('a06');
+        $reservationTime = Carbon::parse('2026-04-09 19:00:00');
+
+        $reservation = Reservation::query()->create([
+            'is_active' => true,
+            'reservation_code' => 'EXPIRED-SESSION-001',
+            'customer_name' => 'Khach da vao ban',
+            'customer_phone' => '0900111222',
+            'guest_count' => 2,
+            'reservation_time' => $reservationTime->format('Y-m-d H:i:s'),
+            'status' => ReservationStatus::CONFIRMED,
+            'deposit_amount' => 0,
+            'hold_start_time' => $reservationTime->copy()->subHour()->format('Y-m-d H:i:s'),
+            'hold_end_time' => $reservationTime->copy()->addMinutes(15)->format('Y-m-d H:i:s'),
+            'table_code' => $table->slug,
+        ]);
+
+        TableSession::query()->create([
+            'table_id' => $table->id,
+            'opened_by_employee' => $user->user_name,
+            'guest_count' => 2,
+            'status' => TableSessionStatus::OPEN,
+            'opened_at' => $reservationTime->copy()->format('Y-m-d H:i:s'),
+            'reservation_code' => $reservation->reservation_code,
+            'is_active' => true,
+        ]);
+
+        Carbon::setTestNow('2026-04-09 19:30:00');
+
+        try {
+            $this->artisan('reservations:auto-cancel-expired')
+                ->assertSuccessful();
+        } finally {
+            Carbon::setTestNow();
+        }
+
+        $reservation->refresh();
+
+        $this->assertTrue($reservation->is_active);
+        $this->assertSame(ReservationStatus::CONFIRMED, $reservation->status);
+        $this->assertSame([], $spy->syncedTableCodes);
+
+        Mail::assertNotQueued(ExpiredReservationAutoCanceledMail::class);
     }
 
     public function test_authenticated_user_cannot_store_reservation_when_table_time_overlaps(): void

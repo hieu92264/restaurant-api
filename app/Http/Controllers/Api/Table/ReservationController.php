@@ -8,18 +8,18 @@ use App\Http\interfaces\ITableStatusService;
 use App\Http\Requests\StoreReservationByCustomerRequest;
 use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
-use App\Mail\CustomerReservationCreatedMail;
 use App\Models\Reservation;
-use App\Models\User;
+use App\Support\ReservationManagerNotifier;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpFoundation\Response;
 
 class ReservationController extends Controller
 {
-    public function __construct(protected ITableStatusService $tableStatusService) {}
+    public function __construct(
+        protected ITableStatusService $tableStatusService,
+        protected ReservationManagerNotifier $reservationManagerNotifier
+    ) {}
 
     public function index(): JsonResponse
     {
@@ -54,7 +54,7 @@ class ReservationController extends Controller
             ->format('Y-m-d H:i:s');
 
         $result = Reservation::create($payload);
-        $this->notifyManagersAboutCustomerReservation($result);
+        $this->reservationManagerNotifier->notifyCustomerReservationCreated($result);
 
         return $this->success($result, 'Tạo đặt bàn thành công.', Response::HTTP_CREATED);
     }
@@ -70,36 +70,6 @@ class ReservationController extends Controller
         }
 
         return $code;
-    }
-
-    protected function notifyManagersAboutCustomerReservation(Reservation $reservation): void
-    {
-        $managerEmails = User::query()
-            ->where('is_active', true)
-            ->whereNotNull('email')
-            ->whereHas('role', fn ($query) => $query->where('code', 'MANAGER'))
-            ->pluck('email')
-            ->filter(fn (?string $email) => is_string($email) && $email !== '')
-            ->unique()
-            ->values()
-            ->all();
-
-        if ($managerEmails === []) {
-            return;
-        }
-
-        try {
-            Mail::to($managerEmails)->queue(
-                (new CustomerReservationCreatedMail($reservation))->onQueue('mail')
-            );
-        } catch (\Throwable $e) {
-            Log::warning('Khong the gui email thong bao dat ban moi cho quan ly.', [
-                'reservation_id' => $reservation->id,
-                'reservation_code' => $reservation->reservation_code,
-                'manager_emails' => $managerEmails,
-                'error' => $e->getMessage(),
-            ]);
-        }
     }
 
     public function store(StoreReservationRequest $request): JsonResponse
