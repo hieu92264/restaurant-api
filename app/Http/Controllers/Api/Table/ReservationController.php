@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class ReservationController extends Controller
@@ -39,7 +40,7 @@ class ReservationController extends Controller
     public function storeByCustomer(StoreReservationByCustomerRequest $request): JsonResponse
     {
         $payload = $request->validated();
-        $payload['reservation_code'] = $this->generateUniqueCode($payload['customer_name']);
+        $payload['reservation_code'] = $this->generateUniqueCode();
         $payload['is_active'] = true;
         $payload['status'] = ReservationStatus::PENDING;
         $payload['deposit_amount'] = 0;
@@ -56,14 +57,14 @@ class ReservationController extends Controller
         return $this->success($result, 'Tạo đặt bàn thành công.', Response::HTTP_CREATED);
     }
 
-    protected function generateUniqueCode(string $customerName): string
+    protected function generateUniqueCode(): string
     {
-        $code = now()->format('YmdHis') . '-' . strtoupper($customerName);
+        $code = Str::upper(Str::random(6));
 
         $exists = Reservation::where('reservation_code', $code)->first();
 
         if ($exists) {
-            return $this->generateUniqueCode($customerName);
+            return $this->generateUniqueCode();
         }
 
         return $code;
@@ -102,7 +103,7 @@ class ReservationController extends Controller
     public function store(StoreReservationRequest $request): JsonResponse
     {
         $payload = $request->validated();
-        $payload['reservation_code'] = $this->generateUniqueCode($payload['customer_name']);
+        $payload['reservation_code'] = $this->generateUniqueCode();
         $payload['is_active'] = true;
         $payload['hold_start_time'] = $payload['hold_start_time'] ?? Carbon::parse($payload['reservation_time'])
             ->subHour()

@@ -38,6 +38,9 @@ class ReservationTest extends TestCase
             ->assertJsonPath('metadata.table_code', $table->slug)
             ->assertJsonPath('metadata.created_by_employee', $user->user_name);
 
+        $reservationCode = (string) $response->json('metadata.reservation_code');
+        $this->assertMatchesRegularExpression('/^[A-Z0-9]{6}$/', $reservationCode);
+
         $this->assertDatabaseHas('reservations', [
             'customer_name' => 'Nguyen Van A',
             'table_code' => $table->slug,
@@ -80,6 +83,9 @@ class ReservationTest extends TestCase
             ->assertJsonPath('metadata.customer_name', 'Tran Thi B')
             ->assertJsonPath('metadata.customer_phone', '0900000999')
             ->assertJsonPath('metadata.status', ReservationStatus::PENDING);
+
+        $reservationCode = (string) $response->json('metadata.reservation_code');
+        $this->assertMatchesRegularExpression('/^[A-Z0-9]{6}$/', $reservationCode);
 
         Mail::assertQueued(CustomerReservationCreatedMail::class, function (CustomerReservationCreatedMail $mail) {
             return $mail->hasTo('manager@example.com')
