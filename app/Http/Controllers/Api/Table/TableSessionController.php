@@ -7,7 +7,6 @@ use App\Common\Constants\RestaurantTableStatus;
 use App\Common\Constants\ReservationStatus;
 use App\Common\Constants\TableSessionStatus;
 use App\Http\Controllers\Controller;
-use App\Http\interfaces\ITableStatusService;
 use App\Http\Requests\StoreTableSessionRequest;
 use App\Http\Requests\UpdateTableSessionRequest;
 use App\Models\Reservation;
@@ -21,8 +20,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TableSessionController extends Controller
 {
-    public function __construct(protected ITableStatusService $tableStatusService) {}
-
     public function index(Request $request): JsonResponse
     {
         $tableSessions = TableSession::query()
@@ -64,7 +61,9 @@ class TableSessionController extends Controller
     public function store(StoreTableSessionRequest $request): JsonResponse
     {
         $payload = $request->validated();
-        $table = RestaurantTable::query()->findOrFail($payload['table_id']);
+        $table = RestaurantTable::query()
+            ->withComputedStatus()
+            ->findOrFail($payload['table_id']);
         $reservation = $this->resolveReservation($payload['reservation_code'] ?? null);
 
         if ($error = $this->validateReservationForTable($table, $reservation)) {
@@ -90,8 +89,6 @@ class TableSessionController extends Controller
         $payload['is_active'] = true;
 
         $tableSession = DB::transaction(fn () => TableSession::query()->create($payload));
-
-        $this->tableStatusService->syncTableStatus($table->slug);
 
         return $this->success(
             $tableSession->fresh()->load($this->relations()),
@@ -146,21 +143,16 @@ class TableSessionController extends Controller
 
         DB::transaction(fn () => $tableSession->update($payload));
 
-        $this->tableStatusService->syncTableStatus($tableSession->table->slug);
-
         return $this->success(
             $tableSession->fresh()->load($this->relations()),
             'Cập nhật phiên bàn thành công.'
         );
     }
 
-    /**
-     * @return array<int, string>
-     */
     protected function relations(): array
     {
         return [
-            'table',
+            'table' => fn ($query) => $query->withComputedStatus(),
             'reservation',
             'cartOrders',
             'invoices',

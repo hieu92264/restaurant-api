@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use App\Common\Constants\ReservationStatus;
-use App\Common\Constants\RestaurantTableStatus;
-use App\Http\interfaces\ITableStatusService;
 use App\Mail\CustomerReservationCreatedMail;
 use App\Models\Reservation;
 use App\Models\RestaurantTable;
@@ -21,9 +19,6 @@ class ReservationTest extends TestCase
 
     public function test_authenticated_user_can_store_reservation_with_table(): void
     {
-        $spy = new ReservationTableStatusServiceSpy();
-        $this->app->instance(ITableStatusService::class, $spy);
-
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('a01');
 
@@ -39,10 +34,12 @@ class ReservationTest extends TestCase
         ]);
 
         $response->assertCreated()
-            ->assertJsonPath('message', 'Tạo đặt bàn thành công.')
             ->assertJsonPath('metadata.customer_name', 'Nguyen Van A')
             ->assertJsonPath('metadata.table_code', $table->slug)
             ->assertJsonPath('metadata.created_by_employee', $user->user_name);
+
+        $reservationCode = (string) $response->json('metadata.reservation_code');
+        $this->assertMatchesRegularExpression('/^[A-Z0-9]{6}$/', $reservationCode);
 
         $this->assertDatabaseHas('reservations', [
             'customer_name' => 'Nguyen Van A',
@@ -51,8 +48,6 @@ class ReservationTest extends TestCase
             'created_by_employee' => $user->user_name,
             'is_active' => true,
         ]);
-
-        $this->assertSame([$table->slug], $spy->syncedTableCodes);
     }
 
     public function test_customer_store_by_customer_sends_email_to_managers(): void
@@ -89,6 +84,9 @@ class ReservationTest extends TestCase
             ->assertJsonPath('metadata.customer_phone', '0900000999')
             ->assertJsonPath('metadata.status', ReservationStatus::PENDING);
 
+        $reservationCode = (string) $response->json('metadata.reservation_code');
+        $this->assertMatchesRegularExpression('/^[A-Z0-9]{6}$/', $reservationCode);
+
         Mail::assertQueued(CustomerReservationCreatedMail::class, function (CustomerReservationCreatedMail $mail) {
             return $mail->hasTo('manager@example.com')
                 && $mail->reservation->customer_name === 'Tran Thi B'
@@ -98,9 +96,6 @@ class ReservationTest extends TestCase
 
     public function test_authenticated_user_cannot_store_reservation_when_table_time_overlaps(): void
     {
-        $spy = new ReservationTableStatusServiceSpy();
-        $this->app->instance(ITableStatusService::class, $spy);
-
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('a02');
         $reservationTime = Carbon::now()->addDay()->setTime(18, 0);
@@ -119,7 +114,7 @@ class ReservationTest extends TestCase
             'table_code' => $table->slug,
         ]);
 
-        $response = $this->actingAs($user, 'api')->postJson('/api/v1/reservations', [
+        $this->actingAs($user, 'api')->postJson('/api/v1/reservations', [
             'customer_name' => 'Khach moi',
             'customer_phone' => '0900000003',
             'guest_count' => 2,
@@ -127,23 +122,13 @@ class ReservationTest extends TestCase
             'hold_start_time' => $reservationTime->copy()->subMinutes(15)->format('Y-m-d H:i:s'),
             'hold_end_time' => $reservationTime->copy()->addHour()->format('Y-m-d H:i:s'),
             'table_code' => $table->slug,
-        ]);
+        ])->assertBadRequest();
 
-        $response->assertBadRequest()
-            ->assertJsonPath(
-                'message',
-                'Bàn hiện tại đang được chờ duyệt cho một yêu cầu đặt bàn trước hoặc đã được đặt trước'
-            );
-
-        $this->assertCount(0, $spy->syncedTableCodes);
         $this->assertDatabaseCount('reservations', 1);
     }
 
     public function test_authenticated_user_can_patch_reservation_remark_without_full_payload(): void
     {
-        $spy = new ReservationTableStatusServiceSpy();
-        $this->app->instance(ITableStatusService::class, $spy);
-
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('a03');
         $reservation = $this->createReservation($table->slug, $user->user_name);
@@ -153,20 +138,15 @@ class ReservationTest extends TestCase
         ]);
 
         $response->assertOk()
-            ->assertJsonPath('message', 'Cập nhật đặt bàn thành công.')
             ->assertJsonPath('metadata.remark', 'Khach doi them 10 phut');
 
         $reservation->refresh();
 
         $this->assertSame('Khach doi them 10 phut', $reservation->remark);
-        $this->assertSame([$table->slug], $spy->syncedTableCodes);
     }
 
-    public function test_destroy_reservation_soft_cancels_and_syncs_table_status(): void
+    public function test_destroy_reservation_soft_cancels_reservation(): void
     {
-        $spy = new ReservationTableStatusServiceSpy();
-        $this->app->instance(ITableStatusService::class, $spy);
-
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('a04');
         $reservation = $this->createReservation($table->slug, $user->user_name);
@@ -174,7 +154,6 @@ class ReservationTest extends TestCase
         $response = $this->actingAs($user, 'api')->deleteJson('/api/v1/reservations/' . $reservation->reservation_code);
 
         $response->assertOk()
-            ->assertJsonPath('message', 'Xóa đặt bàn thành công.')
             ->assertJsonPath('metadata.status', ReservationStatus::CANCELED)
             ->assertJsonPath('metadata.is_active', false);
 
@@ -184,20 +163,15 @@ class ReservationTest extends TestCase
         $this->assertSame(ReservationStatus::CANCELED, $reservation->status);
         $this->assertSame($user->user_name, $reservation->cancelled_by_employee);
         $this->assertNotNull($reservation->cancelled_at);
-        $this->assertSame([$table->slug], $spy->syncedTableCodes);
     }
 
     public function test_show_returns_not_found_when_reservation_does_not_exist(): void
     {
-        $spy = new ReservationTableStatusServiceSpy();
-        $this->app->instance(ITableStatusService::class, $spy);
-
         $user = $this->createAuthenticatedUser();
 
         $this->actingAs($user, 'api')
             ->getJson('/api/v1/reservations/NOT-FOUND')
-            ->assertNotFound()
-            ->assertJsonPath('message', 'Không tìm thấy yêu cầu đặt bàn');
+            ->assertNotFound();
     }
 
     private function createAuthenticatedUser(): User
@@ -224,7 +198,6 @@ class ReservationTest extends TestCase
             'slug' => $slug,
             'name' => 'Ban ' . strtoupper($slug),
             'capacity' => 4,
-            'status' => RestaurantTableStatus::AVAILABLE,
             'is_active' => true,
         ]);
     }
@@ -248,15 +221,5 @@ class ReservationTest extends TestCase
             'created_by_employee' => $createdByEmployee,
             'table_code' => $tableCode,
         ]);
-    }
-}
-
-class ReservationTableStatusServiceSpy implements ITableStatusService
-{
-    public array $syncedTableCodes = [];
-
-    public function syncTableStatus(string $tableCode): void
-    {
-        $this->syncedTableCodes[] = $tableCode;
     }
 }

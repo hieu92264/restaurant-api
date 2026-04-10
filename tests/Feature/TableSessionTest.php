@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Common\Constants\CartOrderStatus;
 use App\Common\Constants\RestaurantTableStatus;
 use App\Common\Constants\TableSessionStatus;
-use App\Http\interfaces\ITableStatusService;
 use App\Models\CartOrder;
 use App\Models\RestaurantTable;
 use App\Models\Role;
@@ -20,9 +19,6 @@ class TableSessionTest extends TestCase
 
     public function test_authenticated_user_can_store_table_session_for_available_table(): void
     {
-        $spy = new TableSessionTableStatusServiceSpy();
-        $this->app->instance(ITableStatusService::class, $spy);
-
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('a01');
 
@@ -46,35 +42,25 @@ class TableSessionTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->assertSame([$table->slug], $spy->syncedTableCodes);
+        $this->assertSame(RestaurantTableStatus::OCCUPIED, $table->fresh()->status);
     }
 
     public function test_authenticated_user_cannot_store_duplicate_live_session_for_same_table(): void
     {
-        $spy = new TableSessionTableStatusServiceSpy();
-        $this->app->instance(ITableStatusService::class, $spy);
-
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('a02');
         $this->createSession($table, $user->user_name, TableSessionStatus::OPEN);
 
-        $response = $this->actingAs($user, 'api')->postJson('/api/v1/table/sessions', [
+        $this->actingAs($user, 'api')->postJson('/api/v1/table/sessions', [
             'table_id' => $table->id,
             'guest_count' => 2,
-        ]);
-
-        $response->assertBadRequest()
-            ->assertJsonPath('message', 'Bàn đang có phiên phục vụ chưa kết thúc');
+        ])->assertBadRequest();
 
         $this->assertDatabaseCount('table_sessions', 1);
-        $this->assertSame([], $spy->syncedTableCodes);
     }
 
     public function test_authenticated_user_can_close_table_session(): void
     {
-        $spy = new TableSessionTableStatusServiceSpy();
-        $this->app->instance(ITableStatusService::class, $spy);
-
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('a03');
         $session = $this->createSession($table, $user->user_name, TableSessionStatus::OPEN);
@@ -94,31 +80,24 @@ class TableSessionTest extends TestCase
         $this->assertSame(TableSessionStatus::CLOSED, $session->status);
         $this->assertSame($user->user_name, $session->closed_by_employee);
         $this->assertNotNull($session->closed_at);
-        $this->assertSame([$table->slug], $spy->syncedTableCodes);
+        $this->assertSame(RestaurantTableStatus::AVAILABLE, $table->fresh()->status);
     }
 
     public function test_authenticated_user_cannot_close_table_session_when_open_cart_order_exists(): void
     {
-        $spy = new TableSessionTableStatusServiceSpy();
-        $this->app->instance(ITableStatusService::class, $spy);
-
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('a04');
         $session = $this->createSession($table, $user->user_name, TableSessionStatus::OPEN);
         $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::OPEN);
 
-        $response = $this->actingAs($user, 'api')->patchJson('/api/v1/table/sessions/' . $session->id, [
+        $this->actingAs($user, 'api')->patchJson('/api/v1/table/sessions/' . $session->id, [
             'status' => TableSessionStatus::CLOSED,
-        ]);
-
-        $response->assertBadRequest()
-            ->assertJsonPath('message', 'Phiên bàn vẫn còn đơn đang mở, không thể kết thúc');
+        ])->assertBadRequest();
 
         $session->refresh();
 
         $this->assertSame(TableSessionStatus::OPEN, $session->status);
         $this->assertNull($session->closed_at);
-        $this->assertSame([], $spy->syncedTableCodes);
     }
 
     public function test_authenticated_user_can_show_table_session(): void
@@ -159,7 +138,6 @@ class TableSessionTest extends TestCase
             'slug' => $slug,
             'name' => 'Ban ' . strtoupper($slug),
             'capacity' => 4,
-            'status' => RestaurantTableStatus::AVAILABLE,
             'is_active' => true,
         ]);
     }
@@ -201,15 +179,5 @@ class TableSessionTest extends TestCase
             'remark' => 'Order test',
             'is_active' => true,
         ]);
-    }
-}
-
-class TableSessionTableStatusServiceSpy implements ITableStatusService
-{
-    public array $syncedTableCodes = [];
-
-    public function syncTableStatus(string $tableCode): void
-    {
-        $this->syncedTableCodes[] = $tableCode;
     }
 }

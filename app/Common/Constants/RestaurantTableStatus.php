@@ -11,6 +11,4 @@ final class RestaurantTableStatus
     public const AVAILABLE = 'AVAILABLE';
     public const OCCUPIED = 'OCCUPIED';
     public const RESERVED = 'RESERVED';
-    public const CLEANING = 'CLEANING';
-    public const DISABLED = 'DISABLED';
 }

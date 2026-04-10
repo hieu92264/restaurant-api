@@ -10,13 +10,11 @@ use Illuminate\Database\Seeder;
 
 class TableSessionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $waiter = User::where('user_name', 'waiter')->first();
-        $cashier = User::where('user_name', 'cashier')->first();
+        $waiter = User::withoutGlobalScopes()->where('user_name', 'waiter')->first();
+        $cashier = User::withoutGlobalScopes()->where('user_name', 'cashier')->first();
+        $now = now();
 
         $sessions = [
             [
@@ -25,9 +23,10 @@ class TableSessionSeeder extends Seeder
                 'closed_by_employee' => null,
                 'guest_count' => 3,
                 'status' => TableSessionStatus::OPEN,
-                'opened_at' => '2026-03-20 18:30:00',
+                'opened_at' => $now->copy()->subMinutes(45),
                 'closed_at' => null,
-                'remark' => 'Khách muốn lên món từng đợt',
+                'remark' => 'Khach muon len mon tung dot',
+                'reservation_code' => null,
             ],
             [
                 'table_slug' => 'G01',
@@ -35,14 +34,17 @@ class TableSessionSeeder extends Seeder
                 'closed_by_employee' => $cashier?->user_name,
                 'guest_count' => 2,
                 'status' => TableSessionStatus::CLOSED,
-                'opened_at' => '2026-03-20 11:45:00',
-                'closed_at' => '2026-03-20 12:35:00',
-                'remark' => 'Khách yêu cầu xuất hóa đơn công ty',
+                'opened_at' => $now->copy()->subDay()->setTime(11, 45),
+                'closed_at' => $now->copy()->subDay()->setTime(12, 35),
+                'remark' => 'Khach yeu cau xuat hoa don cong ty',
+                'reservation_code' => null,
             ],
         ];
 
         foreach ($sessions as $sessionData) {
-            $table = RestaurantTable::withoutGlobalScopes()->where('slug', $sessionData['table_slug'])->first();
+            $table = RestaurantTable::withoutGlobalScopes()
+                ->where('slug', $sessionData['table_slug'])
+                ->first();
 
             TableSession::withoutGlobalScopes()->updateOrCreate(
                 [
@@ -56,6 +58,7 @@ class TableSessionSeeder extends Seeder
                     'status' => $sessionData['status'],
                     'closed_at' => $sessionData['closed_at'],
                     'remark' => $sessionData['remark'],
+                    'reservation_code' => $sessionData['reservation_code'],
                     'is_active' => true,
                 ]
             );
