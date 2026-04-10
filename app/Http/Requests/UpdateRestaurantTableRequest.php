@@ -2,10 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Common\Constants\RestaurantTableStatus;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdateRestaurantTableRequest extends FormRequest
 {
@@ -22,7 +20,6 @@ class UpdateRestaurantTableRequest extends FormRequest
         return [
             'name' => ['sometimes', 'string', 'max:50'],
             'capacity' => ['sometimes', 'integer', 'min:1'],
-            'status' => ['sometimes', 'string', Rule::in(RestaurantTableStatus::values())],
             'is_active' => ['sometimes', 'boolean'],
         ];
     }

@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Http\interfaces\ITableStatusService;
-use App\Http\services\TableStatusService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +11,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(ITableStatusService::class, TableStatusService::class);
+        //
     }
 
     /**

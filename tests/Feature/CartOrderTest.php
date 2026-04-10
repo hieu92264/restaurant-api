@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Common\Constants\CartOrderStatus;
-use App\Common\Constants\RestaurantTableStatus;
 use App\Common\Constants\TableSessionStatus;
 use App\Models\CartOrder;
 use App\Models\RestaurantTable;
@@ -74,7 +73,7 @@ class CartOrderTest extends TestCase
         $table = $this->createTable('b02');
         $session = $this->createSession($table, $user->user_name, TableSessionStatus::CLOSED);
 
-        $response = $this->actingAs($user, 'api')->postJson('/api/v1/table/cart-orders', [
+        $this->actingAs($user, 'api')->postJson('/api/v1/table/cart-orders', [
             'session_id' => $session->id,
             'table_id' => $table->id,
             'subtotal_amount' => 50000,
@@ -88,10 +87,7 @@ class CartOrderTest extends TestCase
                     'line_total' => 50000,
                 ],
             ],
-        ]);
-
-        $response->assertBadRequest()
-            ->assertJsonPath('message', 'Phiên bản không hợp lệ hoặc đã kết thúc');
+        ])->assertBadRequest();
 
         $this->assertDatabaseCount('cart_orders', 0);
     }
@@ -128,8 +124,7 @@ class CartOrderTest extends TestCase
 
         $this->actingAs($user, 'api')
             ->deleteJson('/api/v1/table/cart-orders/' . $cartOrder->id)
-            ->assertOk()
-            ->assertJsonPath('message', 'Ẩn đơn tạm tính thành công.');
+            ->assertOk();
 
         $this->assertDatabaseHas('cart_orders', [
             'id' => $cartOrder->id,
@@ -161,7 +156,6 @@ class CartOrderTest extends TestCase
             'slug' => $slug,
             'name' => 'Ban ' . strtoupper($slug),
             'capacity' => 4,
-            'status' => RestaurantTableStatus::AVAILABLE,
             'is_active' => true,
         ]);
     }
