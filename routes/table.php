@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Table\CartOrderController;
+use App\Http\Controllers\Api\Table\InvoiceController;
 use App\Http\Controllers\Api\Table\ReservationController;
 use App\Http\Controllers\Api\Table\RestaurantTableController;
 use App\Http\Controllers\Api\Table\TableSessionController;
@@ -32,10 +33,21 @@ Route::prefix('table')
             ->controller(CartOrderController::class)
             ->group(function () {
                 Route::get('/', 'index');
+                Route::get('/current-by-table/{tableId}', 'showCurrentByTable');
                 Route::get('/{cartOrderId}', 'show');
                 Route::post('/', 'store');
                 Route::patch('/{cartOrderId}', 'update');
                 Route::delete('/{cartOrderId}', 'destroy');
+            });
+
+        Route::prefix('invoices')
+            ->controller(InvoiceController::class)
+            ->group(function () {
+                Route::get('/', 'index');
+                Route::get('/{invoiceId}', 'show');
+                Route::post('/', 'store');
+                Route::patch('/{invoiceId}', 'update');
+                Route::delete('/{invoiceId}', 'destroy');
             });
     });
 

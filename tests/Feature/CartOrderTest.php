@@ -115,10 +115,44 @@ class CartOrderTest extends TestCase
         $this->assertSame('Chot de thanh toan', $cartOrder->remark);
     }
 
-    public function test_authenticated_user_can_soft_delete_cart_order(): void
+    public function test_authenticated_user_can_show_current_open_cart_order_by_table(): void
     {
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('b04');
+        $session = $this->createSession($table, $user->user_name, TableSessionStatus::OPEN);
+
+        $olderCartOrder = $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::OPEN);
+        $olderCartOrder->update([
+            'created_at' => now()->subMinutes(5),
+            'updated_at' => now()->subMinutes(5),
+        ]);
+
+        $newerCartOrder = $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::LOCKED_FOR_PAYMENT);
+
+        $this->actingAs($user, 'api')
+            ->getJson('/api/v1/table/cart-orders/current-by-table/' . $table->id)
+            ->assertOk()
+            ->assertJsonPath('metadata.id', $newerCartOrder->id)
+            ->assertJsonPath('metadata.table_id', $table->id)
+            ->assertJsonPath('metadata.status', CartOrderStatus::LOCKED_FOR_PAYMENT);
+    }
+
+    public function test_authenticated_user_gets_not_found_when_table_has_no_current_open_cart_order(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $table = $this->createTable('b05');
+        $session = $this->createSession($table, $user->user_name, TableSessionStatus::CLOSED);
+        $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::CONVERTED_TO_INVOICE);
+
+        $this->actingAs($user, 'api')
+            ->getJson('/api/v1/table/cart-orders/current-by-table/' . $table->id)
+            ->assertNotFound();
+    }
+
+    public function test_authenticated_user_can_soft_delete_cart_order(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $table = $this->createTable('b06');
         $session = $this->createSession($table, $user->user_name, TableSessionStatus::OPEN);
         $cartOrder = $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::OPEN);
 

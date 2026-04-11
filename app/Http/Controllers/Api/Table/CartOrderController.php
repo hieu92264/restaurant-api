@@ -65,6 +65,34 @@ class CartOrderController extends Controller
     /**
      * Tạo mới đơn tạm tính kèm danh sách món
      */
+    public function showCurrentByTable(int $tableId): JsonResponse
+    {
+        $cartOrder = CartOrder::query()
+            ->with($this->relations())
+            ->where('table_id', $tableId)
+            ->where('is_active', true)
+            ->whereIn('status', [
+                CartOrderStatus::OPEN,
+                CartOrderStatus::LOCKED_FOR_PAYMENT,
+            ])
+            ->whereHas('session', function (Builder $query): void {
+                $query->where('is_active', true)
+                    ->whereIn('status', [
+                        TableSessionStatus::OPEN,
+                        TableSessionStatus::PAYMENT_PENDING,
+                    ]);
+            })
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->first();
+
+        if (! $cartOrder) {
+            return $this->error(null, 'Không tìm thấy đơn tạm tính đang mở của bàn này!', Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->success($cartOrder);
+    }
+
     public function store(StoreCartOrderRequest $request): JsonResponse
     {
         $payload = $request->validated();
