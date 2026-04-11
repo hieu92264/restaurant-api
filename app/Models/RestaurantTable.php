@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $slug
  * @property string $name
  * @property int $capacity
+ * @property int $sort_order
  * @property string $status
  * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -53,6 +54,7 @@ class RestaurantTable extends BaseModel
         'slug',
         'name',
         'capacity',
+        'sort_order',
         'is_active',
     ];
 
@@ -60,8 +62,16 @@ class RestaurantTable extends BaseModel
     {
         return [
             'capacity' => 'integer',
+            'sort_order' => 'integer',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function scopeOrdered(Builder $query): Builder
+    {
+        return $query
+            ->orderBy('sort_order')
+            ->orderBy('name');
     }
 
     public function scopeWithComputedStatus(Builder $query): Builder

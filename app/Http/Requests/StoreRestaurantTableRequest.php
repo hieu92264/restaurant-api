@@ -20,6 +20,7 @@ class StoreRestaurantTableRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:50'],
             'capacity' => ['required', 'integer', 'min:1'],
+            'sort_order' => ['nullable', 'integer'],
             'is_active' => ['nullable', 'boolean'],
         ];
     }

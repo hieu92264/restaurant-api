@@ -20,6 +20,7 @@ class UpdateRestaurantTableRequest extends FormRequest
         return [
             'name' => ['sometimes', 'string', 'max:50'],
             'capacity' => ['sometimes', 'integer', 'min:1'],
+            'sort_order' => ['sometimes', 'integer'],
             'is_active' => ['sometimes', 'boolean'],
         ];
     }

@@ -16,7 +16,7 @@ class RestaurantTableController extends Controller
     {
         $tables = RestaurantTable::query()
             ->withComputedStatus()
-            ->orderBy('name')
+            ->ordered()
             ->get();
 
         return $this->success($tables);

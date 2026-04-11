@@ -27,6 +27,7 @@ class RestaurantTableTest extends TestCase
             'slug',
             'name',
             'capacity',
+            'sort_order',
             'is_active',
             'created_at',
             'updated_at',
@@ -42,6 +43,7 @@ class RestaurantTableTest extends TestCase
         $response = $this->actingAs($user, 'api')->postJson('/api/v1/table/tables', [
             'name' => 'Ban san vuon 01',
             'capacity' => 4,
+            'sort_order' => 3,
             'is_active' => true,
         ]);
 
@@ -49,12 +51,14 @@ class RestaurantTableTest extends TestCase
             ->assertJsonPath('metadata.name', 'Ban san vuon 01')
             ->assertJsonPath('metadata.slug', 'ban-san-vuon-01')
             ->assertJsonPath('metadata.capacity', 4)
+            ->assertJsonPath('metadata.sort_order', 3)
             ->assertJsonPath('metadata.status', RestaurantTableStatus::AVAILABLE);
 
         $this->assertDatabaseHas('restaurant_tables', [
             'slug' => 'ban-san-vuon-01',
             'name' => 'Ban san vuon 01',
             'capacity' => 4,
+            'sort_order' => 3,
             'is_active' => true,
         ]);
     }
@@ -67,18 +71,21 @@ class RestaurantTableTest extends TestCase
             'slug' => 'ban-tang-1',
             'name' => 'Ban tang 1',
             'capacity' => 4,
+            'sort_order' => 1,
             'is_active' => true,
         ]);
 
         $response = $this->actingAs($user, 'api')->patchJson('/api/v1/table/tables/ban-tang-1', [
             'name' => 'Ban tang 1 VIP',
             'capacity' => 8,
+            'sort_order' => 2,
         ]);
 
         $response->assertOk()
             ->assertJsonPath('metadata.name', 'Ban tang 1 VIP')
             ->assertJsonPath('metadata.slug', 'ban-tang-1-vip')
             ->assertJsonPath('metadata.capacity', 8)
+            ->assertJsonPath('metadata.sort_order', 2)
             ->assertJsonPath('metadata.status', RestaurantTableStatus::AVAILABLE);
 
         $table->refresh();
@@ -86,7 +93,44 @@ class RestaurantTableTest extends TestCase
         $this->assertSame('ban-tang-1-vip', $table->slug);
         $this->assertSame('Ban tang 1 VIP', $table->name);
         $this->assertSame(8, $table->capacity);
+        $this->assertSame(2, $table->sort_order);
         $this->assertSame(RestaurantTableStatus::AVAILABLE, $table->status);
+    }
+
+    public function test_index_orders_restaurant_tables_by_sort_order_then_name(): void
+    {
+        $user = $this->createAuthenticatedUser();
+
+        RestaurantTable::query()->create([
+            'slug' => 'ban-b',
+            'name' => 'Ban B',
+            'capacity' => 4,
+            'sort_order' => 2,
+            'is_active' => true,
+        ]);
+
+        RestaurantTable::query()->create([
+            'slug' => 'ban-a',
+            'name' => 'Ban A',
+            'capacity' => 4,
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+
+        RestaurantTable::query()->create([
+            'slug' => 'ban-c',
+            'name' => 'Ban C',
+            'capacity' => 4,
+            'sort_order' => 2,
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($user, 'api')
+            ->getJson('/api/v1/table/tables')
+            ->assertOk()
+            ->assertJsonPath('metadata.0.slug', 'ban-a')
+            ->assertJsonPath('metadata.1.slug', 'ban-b')
+            ->assertJsonPath('metadata.2.slug', 'ban-c');
     }
 
     public function test_authenticated_user_can_soft_delete_restaurant_table(): void
@@ -97,6 +141,7 @@ class RestaurantTableTest extends TestCase
             'slug' => 'ban-ngoai-troi',
             'name' => 'Ban ngoai troi',
             'capacity' => 6,
+            'sort_order' => 1,
             'is_active' => true,
         ]);
 
@@ -116,6 +161,7 @@ class RestaurantTableTest extends TestCase
             'slug' => 'ban-dat-truoc',
             'name' => 'Ban dat truoc',
             'capacity' => 4,
+            'sort_order' => 1,
             'is_active' => true,
         ]);
 
@@ -147,6 +193,7 @@ class RestaurantTableTest extends TestCase
             'slug' => 'ban-dang-phuc-vu',
             'name' => 'Ban dang phuc vu',
             'capacity' => 4,
+            'sort_order' => 1,
             'is_active' => true,
         ]);
 
