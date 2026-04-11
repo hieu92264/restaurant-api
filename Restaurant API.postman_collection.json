@@ -1223,7 +1223,7 @@
         },
         {
             "name": "Tables",
-            "description": "API bàn nhà hàng. Detail/update/delete dùng slug.\n\n`status` là trường được tính toán (computed) trong response, không còn là cột trong DB. Backend suy ra theo thứ tự ưu tiên:\n- `OCCUPIED`: có `table_session` đang hoạt động với trạng thái `OPEN` hoặc `PAYMENT_PENDING`.\n- `RESERVED`: không có phiên hoạt động, nhưng có `reservation` (đặt bàn) trạng thái `pending`/`confirmed` đang nằm trong khoảng `hold_start_time`/`hold_end_time`.\n- `AVAILABLE`: không rơi vào 2 trường hợp trên.\n\n## Cấu trúc dữ liệu bảng `restaurant_tables`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `slug` | varchar(20) | Mã định danh duy nhất, dùng cho detail/update/delete. |\n| `name` | varchar(50) | Tên bàn hiển thị (tối đa 50 ký tự). |\n| `capacity` | integer | Sức chứa của bàn (số người). |\n| `status` | string/appends | Trạng thái suy diễn trong response: `AVAILABLE`, `OCCUPIED`, `RESERVED`. Không lưu trong DB. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
+            "description": "API bàn nhà hàng. Detail/update/delete dùng slug.\n\n`status` là trường được tính toán (computed) trong response, không còn là cột trong DB. Backend suy ra theo thứ tự ưu tiên:\n- `OCCUPIED`: có `table_session` đang hoạt động với trạng thái `OPEN` hoặc `PAYMENT_PENDING`.\n- `RESERVED`: không có phiên hoạt động, nhưng có `reservation` (đặt bàn) trạng thái `pending`/`confirmed` đang nằm trong khoảng `hold_start_time`/`hold_end_time`.\n- `AVAILABLE`: không rơi vào 2 trường hợp trên.\n\nDanh sách bàn (`GET /table/tables`) được sắp xếp theo `sort_order` tăng dần, nếu trùng thì tiếp tục theo `name`.\n\n## Cấu trúc dữ liệu bảng `restaurant_tables`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính. |\n| `slug` | varchar(20) | Mã định danh duy nhất, dùng cho detail/update/delete. |\n| `name` | varchar(50) | Tên bàn hiển thị (tối đa 50 ký tự). |\n| `capacity` | integer | Sức chứa của bàn (số người). |\n| `sort_order` | integer | Thứ tự sắp xếp bàn trong danh sách. Giá trị nhỏ hơn sẽ được hiển thị trước. |\n| `status` | string/appends | Trạng thái suy diễn trong response: `AVAILABLE`, `OCCUPIED`, `RESERVED`. Không lưu trong DB. |\n| `is_active` | boolean | Trạng thái hoạt động; `false` là ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
             "item": [
                 {
                     "name": "List Tables",
@@ -1240,7 +1240,7 @@
                             "host": ["{{base_url}}"],
                             "path": ["table", "tables"]
                         },
-                        "description": "Lấy danh sách bàn."
+                        "description": "Lấy danh sách bàn, sắp xếp theo `sort_order` tăng dần rồi đến `name`."
                     },
                     "response": []
                 },
@@ -1285,7 +1285,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Bàn sân vườn 01\",\n  \"capacity\": 4,\n  \"is_active\": true\n}",
+                            "raw": "{\n  \"name\": \"Bàn sân vườn 01\",\n  \"capacity\": 4,\n  \"sort_order\": 3,\n  \"is_active\": true\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1297,7 +1297,7 @@
                             "host": ["{{base_url}}"],
                             "path": ["table", "tables"]
                         },
-                        "description": "Tạo bàn mới. Không gửi `status`; backend sẽ trả về `status` suy diễn trong response."
+                        "description": "Tạo bàn mới. Có thể gửi `sort_order` để sắp xếp hiển thị. Không gửi `status`; backend sẽ trả về `status` suy diễn trong response."
                     },
                     "response": []
                 },
@@ -1317,7 +1317,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Bàn sân vườn VIP 01\",\n  \"capacity\": 6\n}",
+                            "raw": "{\n  \"name\": \"Bàn sân vườn VIP 01\",\n  \"capacity\": 6,\n  \"sort_order\": 1\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1335,7 +1335,7 @@
                                 }
                             ]
                         },
-                        "description": "Cập nhật thông tin bàn theo slug. Không đặt `status` thủ công."
+                        "description": "Cập nhật thông tin bàn theo slug. Có thể cập nhật `sort_order`. Không đặt `status` thủ công."
                     },
                     "response": []
                 },
