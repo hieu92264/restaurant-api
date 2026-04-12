@@ -6,6 +6,7 @@ use App\Common\Constants\OrderLineStatus;
 use App\Models\CartOrder;
 use App\Models\CartOrderItem;
 use App\Models\Combo;
+use App\Models\Dish;
 use Illuminate\Database\Seeder;
 
 class CartOrderItemSeeder extends Seeder
@@ -93,6 +94,9 @@ class CartOrderItemSeeder extends Seeder
             $combo = $item['combo_slug']
                 ? Combo::withoutGlobalScopes()->where('slug', $item['combo_slug'])->first()
                 : null;
+            $dish = $combo === null
+                ? Dish::withoutGlobalScopes()->where('name', $item['item_name_snapshot'])->first()
+                : null;
 
             CartOrderItem::withoutGlobalScopes()->updateOrCreate(
                 [
@@ -101,6 +105,7 @@ class CartOrderItemSeeder extends Seeder
                     'created_at' => $item['created_at'],
                 ],
                 [
+                    'dish_id' => $dish?->id,
                     'combo_id' => $combo?->id,
                     'variant_name_snapshot' => $item['variant_name_snapshot'],
                     'quantity' => $item['quantity'],

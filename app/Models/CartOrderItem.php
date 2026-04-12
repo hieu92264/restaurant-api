@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $id
  * @property int $cart_order_id
+ * @property int|null $dish_id
  * @property int|null $combo_id
  * @property string $item_name_snapshot
  * @property string|null $variant_name_snapshot
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\CartOrder $cartOrder
  * @property-read \App\Models\Combo|null $combo
+ * @property-read \App\Models\Dish|null $dish
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrderItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrderItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrderItem query()
@@ -29,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrderItem whereCartOrderId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrderItem whereComboId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrderItem whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrderItem whereDishId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrderItem whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrderItem whereIsActive($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartOrderItem whereItemNameSnapshot($value)
@@ -46,6 +49,7 @@ class CartOrderItem extends BaseModel
 {
     protected $fillable = [
         'cart_order_id',
+        'dish_id',
         'combo_id',
         'item_name_snapshot',
         'variant_name_snapshot',
@@ -63,6 +67,7 @@ class CartOrderItem extends BaseModel
     {
         return [
             'cart_order_id' => 'integer',
+            'dish_id' => 'integer',
             'combo_id' => 'integer',
             'quantity' => 'decimal:2',
             'base_unit_price' => 'integer',
@@ -84,5 +89,10 @@ class CartOrderItem extends BaseModel
     public function combo(): BelongsTo
     {
         return $this->belongsTo(Combo::class, 'combo_id');
+    }
+
+    public function dish(): BelongsTo
+    {
+        return $this->belongsTo(Dish::class, 'dish_id');
     }
 }

@@ -63,6 +63,7 @@ class InvoiceTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('invoice_items', [
+            'dish_id' => Dish::query()->where('slug', 'com-ga')->value('id'),
             'item_name_snapshot' => 'Com ga',
             'line_total' => 100000,
         ]);
@@ -248,7 +249,7 @@ class InvoiceTest extends TestCase
             ]
         );
 
-        Dish::query()->firstOrCreate(
+        $dish = Dish::query()->firstOrCreate(
             ['slug' => 'com-ga'],
             [
                 'category_id' => $category->id,
@@ -287,6 +288,7 @@ class InvoiceTest extends TestCase
         ]);
 
         $cartOrder->items()->create([
+            'dish_id' => $dish->id,
             'combo_id' => null,
             'item_name_snapshot' => 'Com ga',
             'variant_name_snapshot' => null,
@@ -339,6 +341,7 @@ class InvoiceTest extends TestCase
         ]);
 
         $invoice->items()->create([
+            'dish_id' => Dish::query()->where('slug', 'com-ga')->value('id'),
             'combo_id' => null,
             'item_name_snapshot' => 'Com ga',
             'variant_name_snapshot' => null,

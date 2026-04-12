@@ -6,7 +6,9 @@ use App\Common\Constants\CartOrderStatus;
 use App\Common\Constants\RestaurantTableStatus;
 use App\Common\Constants\ReservationStatus;
 use App\Common\Constants\TableSessionStatus;
+use App\Models\Category;
 use App\Models\CartOrder;
+use App\Models\Dish;
 use App\Models\Reservation;
 use App\Models\RestaurantTable;
 use App\Models\Role;
@@ -251,6 +253,39 @@ class TableSessionTest extends TestCase
         string $createdByEmployee,
         string $status
     ): CartOrder {
+        $category = Category::query()->firstOrCreate(
+            ['slug' => 'table-session-mon-chinh'],
+            [
+                'name' => 'Table session mon chinh',
+                'description' => null,
+                'sort_order' => 1,
+                'is_active' => true,
+            ]
+        );
+
+        $dish = Dish::query()->firstOrCreate(
+            ['slug' => 'table-session-com-ga'],
+            [
+                'category_id' => $category->id,
+                'name' => 'Com ga',
+                'description' => null,
+                'price' => 100000,
+                'original_price' => 100000,
+                'cost_price' => 50000,
+                'image' => null,
+                'unit' => 'phan',
+                'is_featured' => false,
+                'published_at' => now()->toDateString(),
+                'status' => 'available',
+                'available_from' => null,
+                'available_to' => null,
+                'sort_order' => 1,
+                'options_json' => [],
+                'tags_json' => [],
+                'is_active' => true,
+            ]
+        );
+
         $cartOrder = CartOrder::query()->create([
             'session_id' => $session->id,
             'table_id' => $table->id,
@@ -267,6 +302,7 @@ class TableSessionTest extends TestCase
         ]);
 
         $cartOrder->items()->create([
+            'dish_id' => $dish->id,
             'combo_id' => null,
             'item_name_snapshot' => 'Com ga',
             'variant_name_snapshot' => null,

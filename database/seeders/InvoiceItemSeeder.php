@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Combo;
+use App\Models\Dish;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use Illuminate\Database\Seeder;
@@ -26,6 +27,9 @@ class InvoiceItemSeeder extends Seeder
             $combo = $item['combo_slug']
                 ? Combo::withoutGlobalScopes()->where('slug', $item['combo_slug'])->first()
                 : null;
+            $dish = $combo === null
+                ? Dish::withoutGlobalScopes()->where('name', $item['item_name_snapshot'])->first()
+                : null;
 
             InvoiceItem::withoutGlobalScopes()->updateOrCreate(
                 [
@@ -34,6 +38,7 @@ class InvoiceItemSeeder extends Seeder
                     'variant_name_snapshot' => $item['variant_name_snapshot'],
                 ],
                 [
+                    'dish_id' => $dish?->id,
                     'combo_id' => $combo?->id,
                     'quantity' => $item['quantity'],
                     'base_unit_price' => $item['base_unit_price'],

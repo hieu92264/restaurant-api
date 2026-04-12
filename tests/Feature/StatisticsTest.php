@@ -7,6 +7,7 @@ use App\Common\Constants\TableSessionStatus;
 use App\Models\Category;
 use App\Models\CartOrder;
 use App\Models\Combo;
+use App\Models\Dish;
 use App\Models\Invoice;
 use App\Models\RestaurantTable;
 use App\Models\Role;
@@ -24,6 +25,9 @@ class StatisticsTest extends TestCase
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('s01');
         $combo = $this->createCombo();
+        $comGa = $this->createDish('com-ga-stat', 'Com ga', 50000);
+        $bunBo = $this->createDish('bun-bo-stat', 'Bun bo', 80000);
+        $phoBo = $this->createDish('pho-bo-stat', 'Pho bo', 50000);
 
         $aprilSessionOne = $this->createSession($table, $user->user_name, '2026-04-10 10:00:00', '2026-04-10 11:00:00', TableSessionStatus::PAID);
         $aprilSessionTwo = $this->createSession($table, $user->user_name, '2026-04-11 12:00:00', '2026-04-11 13:30:00', TableSessionStatus::CLOSED);
@@ -32,6 +36,7 @@ class StatisticsTest extends TestCase
         $aprilInvoiceOne = $this->createPaidInvoice($table, $aprilSessionOne, $user->user_name, '2026-04-10 11:05:00', 180000);
         $aprilInvoiceOne->items()->createMany([
             [
+                'dish_id' => $comGa->id,
                 'combo_id' => null,
                 'item_name_snapshot' => 'Com ga',
                 'variant_name_snapshot' => null,
@@ -60,6 +65,7 @@ class StatisticsTest extends TestCase
         $aprilInvoiceTwo = $this->createPaidInvoice($table, $aprilSessionTwo, $user->user_name, '2026-04-11 13:35:00', 120000);
         $aprilInvoiceTwo->items()->createMany([
             [
+                'dish_id' => $bunBo->id,
                 'combo_id' => null,
                 'item_name_snapshot' => 'Bun bo',
                 'variant_name_snapshot' => null,
@@ -87,6 +93,7 @@ class StatisticsTest extends TestCase
 
         $marchInvoice = $this->createPaidInvoice($table, $marchSession, $user->user_name, '2026-03-15 19:10:00', 50000);
         $marchInvoice->items()->create([
+            'dish_id' => $phoBo->id,
             'combo_id' => null,
             'item_name_snapshot' => 'Pho bo',
             'variant_name_snapshot' => null,
@@ -195,6 +202,42 @@ class StatisticsTest extends TestCase
             'end_at' => null,
             'is_active' => true,
         ]);
+    }
+
+    private function createDish(string $slug, string $name, int $price): Dish
+    {
+        $category = Category::query()->firstOrCreate(
+            ['slug' => 'statistics-dishes'],
+            [
+                'name' => 'Statistics dishes',
+                'description' => null,
+                'sort_order' => 1,
+                'is_active' => true,
+            ]
+        );
+
+        return Dish::query()->firstOrCreate(
+            ['slug' => $slug],
+            [
+                'category_id' => $category->id,
+                'name' => $name,
+                'description' => null,
+                'price' => $price,
+                'original_price' => $price,
+                'cost_price' => max($price - 20000, 0),
+                'image' => null,
+                'unit' => 'phan',
+                'is_featured' => false,
+                'published_at' => now()->toDateString(),
+                'status' => 'available',
+                'available_from' => null,
+                'available_to' => null,
+                'sort_order' => 1,
+                'options_json' => [],
+                'tags_json' => [],
+                'is_active' => true,
+            ]
+        );
     }
 
     private function createSession(

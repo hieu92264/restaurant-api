@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $id
  * @property int $invoice_id
+ * @property int|null $dish_id
  * @property int|null $combo_id
  * @property string $item_name_snapshot
  * @property string|null $variant_name_snapshot
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Combo|null $combo
+ * @property-read \App\Models\Dish|null $dish
  * @property-read \App\Models\Invoice $invoice
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem newQuery()
@@ -27,6 +29,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereBaseUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereComboId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereDishId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereInvoiceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceItem whereIsActive($value)
@@ -44,6 +47,7 @@ class InvoiceItem extends BaseModel
 {
     protected $fillable = [
         'invoice_id',
+        'dish_id',
         'combo_id',
         'item_name_snapshot',
         'variant_name_snapshot',
@@ -60,6 +64,7 @@ class InvoiceItem extends BaseModel
     {
         return [
             'invoice_id' => 'integer',
+            'dish_id' => 'integer',
             'combo_id' => 'integer',
             'quantity' => 'decimal:2',
             'base_unit_price' => 'integer',
@@ -78,5 +83,10 @@ class InvoiceItem extends BaseModel
     public function combo(): BelongsTo
     {
         return $this->belongsTo(Combo::class, 'combo_id');
+    }
+
+    public function dish(): BelongsTo
+    {
+        return $this->belongsTo(Dish::class, 'dish_id');
     }
 }

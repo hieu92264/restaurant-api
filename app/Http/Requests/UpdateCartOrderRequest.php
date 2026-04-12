@@ -3,13 +3,35 @@
 namespace App\Http\Requests;
 
 use App\Common\Constants\CartOrderStatus;
-use App\Common\Constants\OrderLineStatus;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateCartOrderRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if (! is_array($this->input('items'))) {
+            return;
+        }
+
+        $items = array_map(function ($item) {
+            if (! is_array($item)) {
+                return $item;
+            }
+
+            if (isset($item['item_type']) && is_string($item['item_type'])) {
+                $item['item_type'] = strtoupper($item['item_type']);
+            }
+
+            return $item;
+        }, $this->input('items'));
+
+        $this->merge([
+            'items' => $items,
+        ]);
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -37,18 +59,10 @@ class UpdateCartOrderRequest extends FormRequest
             'remark' => ['sometimes', 'nullable', 'string', 'max:1000'],
             'is_active' => ['sometimes', 'boolean'],
 
-            'items' => ['sometimes', 'required', 'array', 'min:1'],
-            'items.*.combo_id' => ['nullable', 'integer', 'exists:combos,id'],
-            'items.*.item_name_snapshot' => ['required_with:items', 'string', 'max:150'],
-            'items.*.variant_name_snapshot' => ['nullable', 'string', 'max:150'],
+            'items' => ['sometimes', 'array'],
+            'items.*.item_type' => ['required_with:items', 'string', Rule::in(['COMBO', 'DISH'])],
+            'items.*.item_id' => ['required_with:items', 'integer', 'min:1'],
             'items.*.quantity' => ['required_with:items', 'numeric', 'gt:0'],
-            'items.*.base_unit_price' => ['required_with:items', 'integer', 'min:0'],
-            'items.*.option_total_price' => ['sometimes', 'integer', 'min:0'],
-            'items.*.unit_final_price' => ['required_with:items', 'integer', 'min:0'],
-            'items.*.line_total' => ['required_with:items', 'integer', 'min:0'],
-            'items.*.item_note' => ['nullable', 'string', 'max:255'],
-            'items.*.line_status' => ['sometimes', 'required', 'string', Rule::in(OrderLineStatus::values())],
-            'items.*.is_active' => ['sometimes', 'boolean'],
         ];
     }
 }

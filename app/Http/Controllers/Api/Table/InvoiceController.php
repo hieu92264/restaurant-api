@@ -122,6 +122,7 @@ class InvoiceController extends Controller
 
             foreach ($cartOrder->items->where('is_active', true) as $item) {
                 $invoice->items()->create([
+                    'dish_id' => $item->dish_id,
                     'combo_id' => $item->combo_id,
                     'item_name_snapshot' => $item->item_name_snapshot,
                     'variant_name_snapshot' => $item->variant_name_snapshot,
@@ -227,6 +228,7 @@ class InvoiceController extends Controller
             'table',
             'reservation',
             'items.combo.dishes',
+            'items.dish',
         ];
     }
 
@@ -384,7 +386,7 @@ class InvoiceController extends Controller
     protected function transformInvoiceItem(object $item, Collection $dishMap): array
     {
         $dish = $item->combo_id === null
-            ? $dishMap->get($item->item_name_snapshot)
+            ? ($item->dish ?? $dishMap->get($item->dish_id ?? $item->item_name_snapshot))
             : null;
 
         return [
@@ -398,6 +400,20 @@ class InvoiceController extends Controller
 
     protected function resolveDishMap(Collection $items): Collection
     {
+        $dishIds = $items
+            ->where('combo_id', null)
+            ->pluck('dish_id')
+            ->filter(fn ($dishId) => is_numeric($dishId))
+            ->unique()
+            ->values();
+
+        if ($dishIds->isNotEmpty()) {
+            return Dish::query()
+                ->whereIn('id', $dishIds->all())
+                ->get()
+                ->keyBy('id');
+        }
+
         $dishNames = $items
             ->where('combo_id', null)
             ->pluck('item_name_snapshot')
