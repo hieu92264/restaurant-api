@@ -34,13 +34,24 @@ class TableSessionTest extends TestCase
             ->assertJsonPath('metadata.table_id', $table->id)
             ->assertJsonPath('metadata.status', TableSessionStatus::OPEN)
             ->assertJsonPath('metadata.opened_by_employee', $user->user_name)
-            ->assertJsonPath('metadata.guest_count', 4);
+            ->assertJsonPath('metadata.guest_count', 4)
+            ->assertJsonPath('metadata.cart_orders.0.status', CartOrderStatus::OPEN)
+            ->assertJsonPath('metadata.cart_orders.0.total_amount', 0);
 
         $this->assertDatabaseHas('table_sessions', [
             'table_id' => $table->id,
             'status' => TableSessionStatus::OPEN,
             'opened_by_employee' => $user->user_name,
             'guest_count' => 4,
+            'is_active' => true,
+        ]);
+
+        $this->assertDatabaseHas('cart_orders', [
+            'session_id' => (int) $response->json('metadata.id'),
+            'table_id' => $table->id,
+            'status' => CartOrderStatus::OPEN,
+            'total_amount' => 0,
+            'created_by_employee' => $user->user_name,
             'is_active' => true,
         ]);
 
@@ -240,7 +251,7 @@ class TableSessionTest extends TestCase
         string $createdByEmployee,
         string $status
     ): CartOrder {
-        return CartOrder::query()->create([
+        $cartOrder = CartOrder::query()->create([
             'session_id' => $session->id,
             'table_id' => $table->id,
             'order_no' => 'ORD-' . $session->id . '-' . str_replace('_', '-', $status),
@@ -254,5 +265,21 @@ class TableSessionTest extends TestCase
             'remark' => 'Order test',
             'is_active' => true,
         ]);
+
+        $cartOrder->items()->create([
+            'combo_id' => null,
+            'item_name_snapshot' => 'Com ga',
+            'variant_name_snapshot' => null,
+            'quantity' => 1,
+            'base_unit_price' => 100000,
+            'option_total_price' => 0,
+            'unit_final_price' => 100000,
+            'line_total' => 100000,
+            'item_note' => null,
+            'line_status' => 'ACTIVE',
+            'is_active' => true,
+        ]);
+
+        return $cartOrder;
     }
 }

@@ -1368,7 +1368,7 @@
         },
         {
             "name": "Table Sessions",
-            "description": "API phiên bàn. Đây là thực thể đại diện cho toàn bộ một lượt phục vụ của một bàn, bắt đầu từ lúc mở bàn đến khi bàn được thanh toán/xong khách.\n\nRoute hiện có:\n- `GET /table/sessions`\n- `GET /table/sessions/:table_session_id`\n- `POST /table/sessions`\n- `PATCH /table/sessions/:table_session_id`\n\nCác trạng thái hợp lệ của `table_session`:\n- `OPEN`: bàn đang phục vụ, đang nhận món.\n- `PAYMENT_PENDING`: bàn đã chốt để chuẩn bị thanh toán.\n- `PAID`: đã thanh toán xong.\n- `CLOSED`: kết thúc phiên bàn.\n- `CANCELLED`: phiên bàn bị hủy.\n\nLuồng nghiệp vụ hiện tại:\n- `store`: mở một phiên bàn mới cho một bàn `AVAILABLE`, hoặc cho một bàn `RESERVED` nếu request dùng đúng `reservation_code` của reservation đang giữ bàn đó.\n- `update`: cập nhật số khách, ghi chú, đặt bàn (reservation), hoặc chuyển trạng thái phiên bàn.\n- Khi chuyển session sang trạng thái kết thúc (`PAID`, `CLOSED`, `CANCELLED`), backend sẽ chặn nếu vẫn còn `cart_order` ở trạng thái `OPEN` hoặc `LOCKED_FOR_PAYMENT`.\n\nLưu ý cho FE:\n- `table_session` là thực thể cha của `cart_orders` và `invoices`.\n- Một bàn tại một thời điểm chỉ nên có một `table_session` còn hoạt động (`OPEN` hoặc `PAYMENT_PENDING`).\n- `table.status` trên API bàn là giá trị suy diễn. Nếu cần cập nhật gần thời gian thực, FE nên gọi lại API bàn định kỳ hoặc làm mới ngay sau các hành động mở/đóng bàn, tạo/sửa/hủy đặt bàn.\n\n## Cấu trúc dữ liệu bảng `table_sessions`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của phiên bàn. FE thường dùng giá trị này khi gọi API detail/update và khi tạo `cart_order`. |\n| `table_id` | bigint | ID bàn đang được phục vụ. Tham chiếu sang `restaurant_tables.id`. |\n| `opened_by_employee` | varchar | `user_name` của nhân viên mở bàn. Backend tự đặt khi tạo mới. |\n| `closed_by_employee` | varchar, nullable | `user_name` của nhân viên kết thúc phiên bàn. Chỉ có khi phiên được đóng/hủy/thanh toán xong. |\n| `guest_count` | integer, nullable | Số lượng khách ngồi trong phiên này. FE có thể cho phép cập nhật khi khách vào thêm/bớt. |\n| `status` | enum | Trạng thái nghiệp vụ của phiên bàn: `OPEN`, `PAYMENT_PENDING`, `PAID`, `CLOSED`, `CANCELLED`. |\n| `opened_at` | datetime | Thời điểm mở bàn. Backend tự đặt khi tạo mới. |\n| `closed_at` | datetime, nullable | Thời điểm kết thúc phiên bàn. Backend tự đặt khi session đi vào trạng thái kết thúc. |\n| `remark` | varchar(255), nullable | Ghi chú nghiệp vụ cho phiên bàn. |\n| `reservation_code` | varchar, nullable | Mã đặt bàn gắn với phiên bàn nếu mở bàn từ đặt bàn. |\n| `is_active` | boolean | Cờ hoạt động của bản ghi. Thường vẫn là `true`. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi trong DB. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
+            "description": "API phiên bàn. Đây là thực thể đại diện cho toàn bộ một lượt phục vụ của một bàn, bắt đầu từ lúc mở bàn đến khi bàn được thanh toán/xong khách.\n\nRoute hiện có:\n- `GET /table/sessions`\n- `GET /table/sessions/:table_session_id`\n- `POST /table/sessions`\n- `PATCH /table/sessions/:table_session_id`\n\nCác trạng thái hợp lệ của `table_session`:\n- `OPEN`: bàn đang phục vụ, đang nhận món.\n- `PAYMENT_PENDING`: bàn đã vào luồng thanh toán.\n- `PAID`: đã thanh toán xong.\n- `CLOSED`: kết thúc phiên bàn.\n- `CANCELLED`: phiên bàn bị hủy.\n\nLuồng nghiệp vụ hiện tại:\n- `store`: mở một phiên bàn mới cho một bàn `AVAILABLE`, hoặc cho một bàn `RESERVED` nếu request dùng đúng `reservation_code` của reservation đang giữ bàn đó.\n- Khi mở session bằng `reservation_code`, reservation tương ứng sẽ được backend chuyển sang `COMPLETED`.\n- `update`: cập nhật số khách, ghi chú, đặt bàn (reservation), hoặc chuyển trạng thái phiên bàn.\n- FE chỉ nên dùng `update session` để chuyển sang `CLOSED` hoặc `CANCELLED` trong các case như mở nhầm phiên, khách vào rồi rời bàn nhưng chưa gọi món.\n- Backend không cho cập nhật thủ công `PAYMENT_PENDING` hoặc `PAID`; hai trạng thái này chỉ đi qua nghiệp vụ `invoice`.\n- Khi chuyển session sang `CLOSED` hoặc `CANCELLED`, backend sẽ chặn nếu vẫn còn `cart_order` ở trạng thái `OPEN` hoặc `LOCKED_FOR_PAYMENT`.\n\nLưu ý cho FE:\n- `table_session` là thực thể cha của `cart_orders` và `invoices`.\n- Một bàn tại một thời điểm chỉ nên có một `table_session` còn hoạt động (`OPEN` hoặc `PAYMENT_PENDING`).\n- `table.status` trên API bàn là giá trị suy diễn. Nếu cần cập nhật gần thời gian thực, FE nên gọi lại API bàn định kỳ hoặc làm mới ngay sau các hành động mở/đóng bàn, tạo/sửa/hủy đặt bàn.\n\n## Cấu trúc dữ liệu bảng `table_sessions`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của phiên bàn. FE thường dùng giá trị này khi gọi API detail/update và khi tạo `cart_order`. |\n| `table_id` | bigint | ID bàn đang được phục vụ. Tham chiếu sang `restaurant_tables.id`. |\n| `opened_by_employee` | varchar | `user_name` của nhân viên mở bàn. Backend tự đặt khi tạo mới. |\n| `closed_by_employee` | varchar, nullable | `user_name` của nhân viên kết thúc phiên bàn. Chỉ có khi phiên được đóng/hủy/thanh toán xong. |\n| `guest_count` | integer, nullable | Số lượng khách ngồi trong phiên này. FE có thể cho phép cập nhật khi khách vào thêm/bớt. |\n| `status` | enum | Trạng thái nghiệp vụ của phiên bàn: `OPEN`, `PAYMENT_PENDING`, `PAID`, `CLOSED`, `CANCELLED`. |\n| `opened_at` | datetime | Thời điểm mở bàn. Backend tự đặt khi tạo mới. |\n| `closed_at` | datetime, nullable | Thời điểm kết thúc phiên bàn. Backend tự đặt khi session đi vào trạng thái kết thúc. |\n| `remark` | varchar(255), nullable | Ghi chú nghiệp vụ cho phiên bàn. |\n| `reservation_code` | varchar, nullable | Mã đặt bàn gắn với phiên bàn nếu mở bàn từ đặt bàn. |\n| `is_active` | boolean | Cờ hoạt động của bản ghi. Thường vẫn là `true`. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi trong DB. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
             "item": [
                 {
                     "name": "List Sessions",
@@ -1462,7 +1462,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"status\": \"PAYMENT_PENDING\",\n  \"remark\": \"Đang chờ thanh toán\"\n}",
+                            "raw": "{\n  \"status\": \"CLOSED\",\n  \"remark\": \"Khách rời bàn, chưa phát sinh gọi món\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1480,7 +1480,7 @@
                                 }
                             ]
                         },
-                        "description": "Cập nhật phiên bàn theo `id`, thường dùng để đổi trạng thái phục vụ, cập nhật số khách hoặc ghi chú."
+                        "description": "Cập nhật phiên bàn theo `id`, thường dùng để cập nhật số khách, ghi chú, hoặc chuyển sang `CLOSED`/`CANCELLED` khi chưa phát sinh luồng thanh toán. Không dùng route này để set `PAYMENT_PENDING` hoặc `PAID`."
                     },
                     "response": []
                 }
@@ -1658,7 +1658,7 @@
         },
         {
             "name": "Invoices",
-            "description": "API hóa đơn theo bàn. Đây là thực thể được tạo ra từ `cart_order` khi chốt thanh toán.\n\nRoute hiện có:\n- `GET /table/invoices`\n- `GET /table/invoices/:invoice_id`\n- `POST /table/invoices`\n- `PATCH /table/invoices/:invoice_id`\n- `DELETE /table/invoices/:invoice_id`\n\nCác trạng thái hợp lệ của `payment_status`:\n- `UNPAID`: chưa thanh toán.\n- `PARTIAL`: đã thanh toán một phần.\n- `PAID`: đã thanh toán đủ.\n\nLuồng nghiệp vụ hiện tại:\n- Khi khách yêu cầu thanh toán, FE nên cập nhật `cart_order.status = LOCKED_FOR_PAYMENT` trước.\n- `store`: tạo hóa đơn từ một `cart_order` hợp lệ, sao chép toàn bộ item trong cart sang `invoice_items`, cập nhật `cart_order.status = CONVERTED_TO_INVOICE`.\n- `update`: cập nhật thông tin khách, tiền cọc, số tiền đã trả, phương thức thanh toán và ghi chú.\n- `destroy`: ẩn mềm hóa đơn bằng `is_active = false`.\n- Khi hóa đơn được thanh toán đủ, backend sẽ tự đồng bộ `table_session.status = PAID`; lúc này bàn sẽ sẵn sàng cho phiên tiếp theo vì trạng thái bàn được suy ra động từ session đang mở.\n\nLưu ý cho FE:\n- Chỉ nên tạo hóa đơn cho `cart_order` còn hoạt động và có món.\n- `no` được backend tự sinh, FE không cần gửi khi tạo.\n- Các cột tiền đều là kiểu `INTEGER`, đơn vị là VNĐ.\n- `payment_method` hiện chấp nhận `CASH`, `TRANSFER`, `CARD`, `EWALLET` và vẫn hỗ trợ `BANK_QR` cũ dưới dạng alias.\n- Response hóa đơn đã được rút gọn theo UI thanh toán: ưu tiên `customer_name`, `customer_phone`, `table_name`, `item_list`, `created_by_employee`, `issued_at`, `paid_at`, `payment_method`, `deposit_amount`, `vat_amount`, `remark`.",
+            "description": "API hóa đơn theo bàn. Đây là thực thể được tạo ra từ `cart_order` khi chốt thanh toán.\n\nRoute hiện có:\n- `GET /table/invoices`\n- `GET /table/invoices/:invoice_id`\n- `POST /table/invoices`\n- `PATCH /table/invoices/:invoice_id`\n- `DELETE /table/invoices/:invoice_id`\n\nCác trạng thái hợp lệ của `payment_status`:\n- `UNPAID`: chưa thanh toán.\n- `PARTIAL`: đã thanh toán một phần.\n- `PAID`: đã thanh toán đủ.\n\nLuồng nghiệp vụ hiện tại:\n- Khi khách yêu cầu thanh toán, FE nên cập nhật `cart_order.status = LOCKED_FOR_PAYMENT` trước.\n- `store`: chỉ tạo hóa đơn từ `cart_order` đang ở trạng thái `LOCKED_FOR_PAYMENT`, sao chép toàn bộ item trong cart sang `invoice_items`, cập nhật `cart_order.status = CONVERTED_TO_INVOICE`.\n- `update`: cập nhật thông tin khách, tiền cọc, số tiền đã trả, phương thức thanh toán và ghi chú.\n- `destroy`: ẩn mềm hóa đơn bằng `is_active = false`.\n- Khi hóa đơn được thanh toán đủ, backend sẽ tự đồng bộ `table_session.status = PAID`; lúc này bàn sẽ sẵn sàng cho phiên tiếp theo vì trạng thái bàn được suy ra động từ session đang mở.\n- Nếu session gắn với reservation còn hiệu lực, khi thanh toán đủ backend cũng sẽ hoàn tất reservation đó.\n\nLưu ý cho FE:\n- Chỉ nên tạo hóa đơn cho `cart_order` còn hoạt động, có món và đã `LOCKED_FOR_PAYMENT`.\n- `no` được backend tự sinh, FE không cần gửi khi tạo.\n- Các cột tiền đều là kiểu `INTEGER`, đơn vị là VNĐ.\n- `payment_method` hiện chấp nhận `CASH`, `TRANSFER`, `CARD`, `EWALLET` và vẫn hỗ trợ `BANK_QR` cũ dưới dạng alias.\n- Response hóa đơn đã được rút gọn theo UI thanh toán: ưu tiên `customer_name`, `customer_phone`, `table_name`, `item_list`, `created_by_employee`, `issued_at`, `paid_at`, `payment_method`, `deposit_amount`, `vat_amount`, `remark`.",
             "item": [
                 {
                     "name": "List Invoices",
@@ -1732,7 +1732,7 @@
                             "host": ["{{base_url}}"],
                             "path": ["table", "invoices"]
                         },
-                        "description": "Tạo hóa đơn từ một `cart_order`. Backend tự sinh `no`, tính `payment_status`, `remaining_amount`, `change_amount`, sao chép danh sách món và cập nhật trạng thái đơn tạm tính."
+                        "description": "Tạo hóa đơn từ một `cart_order` đã `LOCKED_FOR_PAYMENT`. Backend tự sinh `no`, tính `payment_status`, `remaining_amount`, `change_amount`, sao chép danh sách món và cập nhật trạng thái đơn tạm tính."
                     },
                     "response": []
                 },
@@ -1800,6 +1800,169 @@
                     "response": []
                 }
             ]
+        },
+        {
+            "name": "Statistics",
+            "description": "API thống kê phục vụ các màn hình báo cáo doanh thu và hiệu suất vận hành.\n\nRoute hiện có:\n- `GET /statistics/revenue`\n- `GET /statistics/average-service-time`\n- `GET /statistics/top-dishes`\n- `GET /statistics/top-combos`\n- `GET /statistics/summary`\n\nLưu ý cho FE:\n- Các route đều cần đăng nhập `auth:api`.\n- `year`, `month` là bộ lọc chính. Nếu không truyền, backend mặc định dùng tháng/năm hiện tại.\n- `top_limit` chỉ áp dụng cho top món và top combo, mặc định `5`.\n- Doanh thu và top bán chạy hiện được tính từ `invoice` đã `PAID` và còn active.",
+            "item": [
+                {
+                    "name": "Revenue Statistics",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/statistics/revenue?year={{stat_year}}&month={{stat_month}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["statistics", "revenue"],
+                            "query": [
+                                {
+                                    "key": "year",
+                                    "value": "{{stat_year}}"
+                                },
+                                {
+                                    "key": "month",
+                                    "value": "{{stat_month}}"
+                                }
+                            ]
+                        },
+                        "description": "Thống kê doanh thu theo tháng và năm của bộ lọc hiện tại."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Average Service Time",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/statistics/average-service-time?year={{stat_year}}&month={{stat_month}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["statistics", "average-service-time"],
+                            "query": [
+                                {
+                                    "key": "year",
+                                    "value": "{{stat_year}}"
+                                },
+                                {
+                                    "key": "month",
+                                    "value": "{{stat_month}}"
+                                }
+                            ]
+                        },
+                        "description": "Thống kê thời gian phục vụ trung bình trong tháng được chọn, tính từ `opened_at` đến `closed_at` của các session đã hoàn tất."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Top Selling Dishes",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/statistics/top-dishes?year={{stat_year}}&month={{stat_month}}&top_limit={{stat_top_limit}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["statistics", "top-dishes"],
+                            "query": [
+                                {
+                                    "key": "year",
+                                    "value": "{{stat_year}}"
+                                },
+                                {
+                                    "key": "month",
+                                    "value": "{{stat_month}}"
+                                },
+                                {
+                                    "key": "top_limit",
+                                    "value": "{{stat_top_limit}}"
+                                }
+                            ]
+                        },
+                        "description": "Lấy top món bán chạy trong tháng được chọn. Response trả danh sách `items` gồm `name`, `quantity_sold`, `revenue_amount`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Top Selling Combos",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/statistics/top-combos?year={{stat_year}}&month={{stat_month}}&top_limit={{stat_top_limit}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["statistics", "top-combos"],
+                            "query": [
+                                {
+                                    "key": "year",
+                                    "value": "{{stat_year}}"
+                                },
+                                {
+                                    "key": "month",
+                                    "value": "{{stat_month}}"
+                                },
+                                {
+                                    "key": "top_limit",
+                                    "value": "{{stat_top_limit}}"
+                                }
+                            ]
+                        },
+                        "description": "Lấy top combo bán chạy trong tháng được chọn. Response trả danh sách `items` gồm `combo_id`, `name`, `quantity_sold`, `revenue_amount`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Statistics Summary",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/statistics/summary?year={{stat_year}}&month={{stat_month}}&top_limit={{stat_top_limit}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["statistics", "summary"],
+                            "query": [
+                                {
+                                    "key": "year",
+                                    "value": "{{stat_year}}"
+                                },
+                                {
+                                    "key": "month",
+                                    "value": "{{stat_month}}"
+                                },
+                                {
+                                    "key": "top_limit",
+                                    "value": "{{stat_top_limit}}"
+                                }
+                            ]
+                        },
+                        "description": "API tổng hợp để lấy cùng lúc doanh thu, thời gian phục vụ trung bình, top món và top combo."
+                    },
+                    "response": []
+                }
+            ]
         }
     ],
     "auth": {
@@ -1856,6 +2019,18 @@
         {
             "key": "invoice_id",
             "value": ""
+        },
+        {
+            "key": "stat_year",
+            "value": "2026"
+        },
+        {
+            "key": "stat_month",
+            "value": "4"
+        },
+        {
+            "key": "stat_top_limit",
+            "value": "5"
         }
     ]
 }

@@ -9,6 +9,7 @@ use App\Common\Constants\TableSessionStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTableSessionRequest;
 use App\Http\Requests\UpdateTableSessionRequest;
+use App\Models\CartOrder;
 use App\Models\Reservation;
 use App\Models\RestaurantTable;
 use App\Models\TableSession;
@@ -90,6 +91,7 @@ class TableSessionController extends Controller
 
         $tableSession = DB::transaction(function () use ($payload, $reservation) {
             $tableSession = TableSession::query()->create($payload);
+            $this->createInitialCartOrder($tableSession);
 
             $this->completeReservationOnArrival($reservation);
 
@@ -278,7 +280,35 @@ class TableSessionController extends Controller
                 CartOrderStatus::OPEN,
                 CartOrderStatus::LOCKED_FOR_PAYMENT,
             ])
+            ->whereHas('items', fn (Builder $query) => $query->where('is_active', true))
             ->exists();
+    }
+
+    protected function createInitialCartOrder(TableSession $tableSession): CartOrder
+    {
+        return CartOrder::query()->create([
+            'session_id' => $tableSession->id,
+            'table_id' => $tableSession->table_id,
+            'order_no' => $this->generateOrderNo(),
+            'created_by_employee' => $tableSession->opened_by_employee,
+            'status' => CartOrderStatus::OPEN,
+            'subtotal_amount' => 0,
+            'discount_amount' => 0,
+            'service_charge_amount' => 0,
+            'tax_amount' => 0,
+            'total_amount' => 0,
+            'remark' => 'Giỏ mặc định khi mở phiên bàn',
+            'is_active' => true,
+        ]);
+    }
+
+    protected function generateOrderNo(): string
+    {
+        do {
+            $orderNo = 'ORD-' . now()->format('YmdHis') . '-' . str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+        } while (CartOrder::query()->where('order_no', $orderNo)->exists());
+
+        return $orderNo;
     }
 
     protected function guardManualStatusUpdate(string $nextStatus): ?JsonResponse
