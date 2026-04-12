@@ -1488,7 +1488,7 @@
         },
         {
             "name": "Cart Orders",
-            "description": "API đơn tạm tính theo bàn. Đây là thực thể đại diện cho một lần gọi món/nhóm món nằm bên trong một `table_session`. Một phiên bàn có thể có một hoặc nhiều `cart_order` tùy cách vận hành của quán.\n\nRoute hiện có:\n- `GET /table/cart-orders`\n- `GET /table/cart-orders/current-by-table/:table_id`\n- `GET /table/cart-orders/:cart_order_id`\n- `POST /table/cart-orders`\n- `PATCH /table/cart-orders/:cart_order_id`\n- `DELETE /table/cart-orders/:cart_order_id`\n\nCác trạng thái hợp lệ của `cart_order`:\n- `OPEN`: đơn đang mở, còn có thể thêm/sửa món.\n- `LOCKED_FOR_PAYMENT`: đơn đã khóa để chuẩn bị thanh toán.\n- `CANCELLED`: đơn bị hủy.\n- `CONVERTED_TO_INVOICE`: đơn đã được chuyển thành hóa đơn.\n\nLuồng nghiệp vụ hiện tại:\n- `showCurrentByTable`: lấy đơn tạm tính đang mở gần nhất của một bàn và trả về payload rút gọn cho UI thanh toán.\n- `store`: tạo đơn tạm tính mới cho một `table_session` còn hoạt động.\n- `update`: cập nhật trạng thái, ghi chú, số tiền, bàn/phiên hoặc thay toàn bộ danh sách món.\n- `destroy`: ẩn mềm đơn bằng `is_active = false`.\n- `table_session` sẽ không được phép đóng nếu vẫn còn `cart_order` ở trạng thái `OPEN` hoặc `LOCKED_FOR_PAYMENT`.\n\nLưu ý cho FE:\n- `session_id` phải thuộc một `table_session` đang ở trạng thái `OPEN` hoặc `PAYMENT_PENDING`.\n- `table_id` phải khớp với bàn của `session_id`; backend có kiểm tra chéo hai giá trị này.\n- `order_no` được backend tự sinh, FE không cần gửi lên khi tạo mới.\n- Các cột tiền đều là kiểu `INTEGER`, đơn vị là VNĐ.\n- `items` trong payload create/update chính là dữ liệu cho bảng `cart_order_items`.\n- Riêng API `current-by-table` đã được tối giản: mỗi item chỉ còn `type`, `name`, `image`, `unit_price`, `quantity`.",
+            "description": "API đơn tạm tính theo bàn. Đây là thực thể đại diện cho một lần gọi món/nhóm món nằm bên trong một `table_session`. Một phiên bàn có thể có một hoặc nhiều `cart_order` tùy cách vận hành của quán.\n\nRoute hiện có:\n- `GET /table/cart-orders`\n- `GET /table/cart-orders/current-by-table/:table_id`\n- `GET /table/cart-orders/:cart_order_id`\n- `POST /table/cart-orders`\n- `PATCH /table/cart-orders/:cart_order_id`\n- `DELETE /table/cart-orders/:cart_order_id`\n\nCác trạng thái hợp lệ của `cart_order`:\n- `OPEN`: đơn đang mở, còn có thể thêm/sửa món.\n- `LOCKED_FOR_PAYMENT`: đơn đã khóa để chuẩn bị thanh toán.\n- `CANCELLED`: đơn bị hủy.\n- `CONVERTED_TO_INVOICE`: đơn đã được chuyển thành hóa đơn.\n\nLuồng nghiệp vụ hiện tại:\n- `showCurrentByTable`: lấy đơn tạm tính đang mở gần nhất của một bàn và trả về payload rút gọn cho UI thanh toán.\n- `store`: tạo đơn tạm tính mới cho một `table_session` còn hoạt động.\n- `update`: cập nhật trạng thái, ghi chú, bàn/phiên hoặc đồng bộ lại toàn bộ danh sách món.\n- `destroy`: ẩn mềm đơn bằng `is_active = false`.\n- `table_session` sẽ không được phép đóng nếu vẫn còn `cart_order` ở trạng thái `OPEN` hoặc `LOCKED_FOR_PAYMENT`.\n\nLưu ý cho FE:\n- `session_id` phải thuộc một `table_session` đang ở trạng thái `OPEN` hoặc `PAYMENT_PENDING`.\n- `table_id` phải khớp với bàn của `session_id`; backend có kiểm tra chéo hai giá trị này.\n- `order_no` được backend tự sinh, FE không cần gửi lên khi tạo mới.\n- FE không cần gửi `subtotal_amount`, `total_amount`, snapshot tên món hay giá từng dòng nữa; backend sẽ tự resolve theo `item_type`, `item_id`, `quantity` và tự tính tiền.\n- `items` trong payload create/update là danh sách rút gọn. Mỗi phần tử có dạng `{ \"item_type\": \"DISH|COMBO\", \"item_id\": number, \"quantity\": number }`.\n- `items` gửi lên ở API `update` được hiểu là trạng thái cuối cùng của giỏ: món không còn xuất hiện sẽ bị xóa, món có sẵn sẽ được cập nhật số lượng, món mới sẽ được thêm vào.\n- Riêng API `current-by-table` đã được tối giản: mỗi item chỉ còn `type`, `name`, `image`, `unit_price`, `quantity`.",
             "item": [
                 {
                     "name": "List Cart Orders",
@@ -1575,7 +1575,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"session_id\": {{table_session_id}},\n  \"table_id\": {{table_id}},\n  \"subtotal_amount\": 120000,\n  \"discount_amount\": 0,\n  \"service_charge_amount\": 0,\n  \"tax_amount\": 0,\n  \"total_amount\": 120000,\n  \"remark\": \"Đơn hàng mới\",\n  \"items\": [\n    {\n      \"item_name_snapshot\": \"Cơm sườn\",\n      \"variant_name_snapshot\": \"Lớn\",\n      \"quantity\": 2,\n      \"base_unit_price\": 60000,\n      \"option_total_price\": 0,\n      \"unit_final_price\": 60000,\n      \"line_total\": 120000,\n      \"item_note\": \"Ít hành\"\n    }\n  ]\n}",
+                            "raw": "{\n  \"session_id\": {{table_session_id}},\n  \"table_id\": {{table_id}},\n  \"discount_amount\": 0,\n  \"service_charge_amount\": 0,\n  \"tax_amount\": 0,\n  \"remark\": \"Đơn hàng mới\",\n  \"items\": [\n    {\n      \"item_type\": \"DISH\",\n      \"item_id\": {{dish_id}},\n      \"quantity\": 2\n    },\n    {\n      \"item_type\": \"COMBO\",\n      \"item_id\": {{combo_id}},\n      \"quantity\": 1\n    }\n  ]\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1587,7 +1587,7 @@
                             "host": ["{{base_url}}"],
                             "path": ["table", "cart-orders"]
                         },
-                        "description": "Tạo đơn tạm tính mới cho một phiên bàn còn hoạt động. Backend tự sinh `order_no`, tự gán `created_by_employee` và mặc định `status = OPEN`."
+                        "description": "Tạo đơn tạm tính mới cho một phiên bàn còn hoạt động. Backend tự sinh `order_no`, tự gán `created_by_employee`, mặc định `status = OPEN`, tự resolve `dish_id`/`combo_id`, snapshot tên món và tự tính các cột tiền từ `items`."
                     },
                     "response": []
                 },
@@ -1607,7 +1607,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"status\": \"LOCKED_FOR_PAYMENT\",\n  \"remark\": \"Đang chờ thanh toán\"\n}",
+                            "raw": "{\n  \"remark\": \"Khách đổi món\",\n  \"items\": [\n    {\n      \"item_type\": \"DISH\",\n      \"item_id\": {{dish_id}},\n      \"quantity\": 3\n    },\n    {\n      \"item_type\": \"COMBO\",\n      \"item_id\": {{combo_id}},\n      \"quantity\": 1\n    }\n  ]\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1625,7 +1625,7 @@
                                 }
                             ]
                         },
-                        "description": "Cập nhật đơn tạm tính theo `id`. Có thể đổi trạng thái, số tiền, ghi chú, chuyển session/bàn hợp lệ hoặc thay toàn bộ danh sách `items`."
+                        "description": "Cập nhật đơn tạm tính theo `id`. Có thể đổi trạng thái, ghi chú, chuyển session/bàn hợp lệ hoặc đồng bộ lại toàn bộ danh sách `items`. Khi gửi `items`, backend tự tính lại tiền và hiểu payload là trạng thái cuối cùng của giỏ."
                     },
                     "response": []
                 },
@@ -2010,6 +2010,14 @@
         },
         {
             "key": "table_session_id",
+            "value": ""
+        },
+        {
+            "key": "dish_id",
+            "value": ""
+        },
+        {
+            "key": "combo_id",
             "value": ""
         },
         {
