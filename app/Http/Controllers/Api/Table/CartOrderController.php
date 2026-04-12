@@ -9,10 +9,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCartOrderRequest;
 use App\Http\Requests\UpdateCartOrderRequest;
 use App\Models\CartOrder;
+use App\Models\Dish;
 use App\Models\TableSession;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -68,7 +70,11 @@ class CartOrderController extends Controller
     public function showCurrentByTable(int $tableId): JsonResponse
     {
         $cartOrder = CartOrder::query()
-            ->with($this->relations())
+            ->with([
+                'table',
+                'session.reservation',
+                'items.combo.dishes',
+            ])
             ->where('table_id', $tableId)
             ->where('is_active', true)
             ->whereIn('status', [
@@ -90,7 +96,7 @@ class CartOrderController extends Controller
             return $this->error(null, 'Không tìm thấy đơn tạm tính đang mở của bàn này!', Response::HTTP_NOT_FOUND);
         }
 
-        return $this->success($cartOrder);
+        return $this->success($this->transformCurrentCartOrder($cartOrder));
     }
 
     public function store(StoreCartOrderRequest $request): JsonResponse
@@ -318,5 +324,58 @@ class CartOrderController extends Controller
         } while (CartOrder::query()->where('order_no', $orderNo)->exists());
 
         return $orderNo;
+    }
+
+    protected function transformCurrentCartOrder(CartOrder $cartOrder): array
+    {
+        $dishMap = $this->resolveDishMap($cartOrder->items);
+
+        return [
+            'cart_order_id' => $cartOrder->id,
+            'table_id' => $cartOrder->table_id,
+            'table_name' => $cartOrder->table?->name,
+            'session_id' => $cartOrder->session_id,
+            'status' => $cartOrder->status,
+            'remark' => $cartOrder->remark,
+            'item_list' => $cartOrder->items
+                ->where('is_active', true)
+                ->values()
+                ->map(fn ($item) => $this->transformCartOrderItem($item, $dishMap))
+                ->all(),
+        ];
+    }
+
+    protected function transformCartOrderItem(object $item, Collection $dishMap): array
+    {
+        $dish = $item->combo_id === null
+            ? $dishMap->get($item->item_name_snapshot)
+            : null;
+
+        return [
+            'type' => $item->combo_id === null ? 'dish' : 'combo',
+            'name' => $item->item_name_snapshot,
+            'image' => $item->combo?->combo_image ?? $dish?->image,
+            'unit_price' => (int) $item->unit_final_price,
+            'quantity' => (float) $item->quantity,
+        ];
+    }
+
+    protected function resolveDishMap(Collection $items): Collection
+    {
+        $dishNames = $items
+            ->where('combo_id', null)
+            ->pluck('item_name_snapshot')
+            ->filter(fn ($name) => is_string($name) && $name !== '')
+            ->unique()
+            ->values();
+
+        if ($dishNames->isEmpty()) {
+            return collect();
+        }
+
+        return Dish::query()
+            ->whereIn('name', $dishNames->all())
+            ->get()
+            ->keyBy('name');
     }
 }

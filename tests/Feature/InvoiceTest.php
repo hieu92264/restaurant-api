@@ -6,7 +6,9 @@ use App\Common\Constants\CartOrderStatus;
 use App\Common\Constants\InvoicePaymentStatus;
 use App\Common\Constants\PaymentMethod;
 use App\Common\Constants\TableSessionStatus;
+use App\Models\Category;
 use App\Models\CartOrder;
+use App\Models\Dish;
 use App\Models\Invoice;
 use App\Models\RestaurantTable;
 use App\Models\Role;
@@ -41,8 +43,10 @@ class InvoiceTest extends TestCase
             ->assertJsonPath('metadata.table_id', $table->id)
             ->assertJsonPath('metadata.payment_status', InvoicePaymentStatus::PAID)
             ->assertJsonPath('metadata.payment_method', PaymentMethod::CASH)
-            ->assertJsonPath('metadata.items.0.item_name_snapshot', 'Com ga')
-            ->assertJsonPath('metadata.items.0.line_total', 100000);
+            ->assertJsonPath('metadata.table_name', $table->name)
+            ->assertJsonPath('metadata.item_list.0.name', 'Com ga')
+            ->assertJsonPath('metadata.item_list.0.unit_price', 100000)
+            ->assertJsonPath('metadata.remark', 'Thanh toan du');
 
         $this->assertDatabaseHas('invoices', [
             'cart_order_id' => $cartOrder->id,
@@ -81,11 +85,12 @@ class InvoiceTest extends TestCase
         $this->actingAs($user, 'api')->postJson('/api/v1/table/invoices', [
             'cart_order_id' => $cartOrder->id,
             'paid_amount' => 30000,
-            'payment_method' => PaymentMethod::BANK_QR,
+            'payment_method' => PaymentMethod::TRANSFER,
         ])->assertCreated()
             ->assertJsonPath('metadata.payment_status', InvoicePaymentStatus::PARTIAL)
             ->assertJsonPath('metadata.remaining_amount', 70000)
-            ->assertJsonPath('metadata.change_amount', 0);
+            ->assertJsonPath('metadata.change_amount', 0)
+            ->assertJsonPath('metadata.payment_method', PaymentMethod::TRANSFER);
 
         $session->refresh();
         $cartOrder->refresh();
@@ -130,7 +135,7 @@ class InvoiceTest extends TestCase
             ->assertJsonPath('metadata.payment_status', InvoicePaymentStatus::PAID)
             ->assertJsonPath('metadata.remaining_amount', 0)
             ->assertJsonPath('metadata.payment_method', PaymentMethod::CARD)
-            ->assertJsonPath('metadata.note', 'Khach vua quet the');
+            ->assertJsonPath('metadata.remark', 'Khach vua quet the');
 
         $invoice->refresh();
         $session->refresh();
@@ -194,6 +199,39 @@ class InvoiceTest extends TestCase
         string $createdByEmployee,
         string $status
     ): CartOrder {
+        $category = Category::query()->firstOrCreate(
+            ['slug' => 'mon-chinh'],
+            [
+                'name' => 'Mon chinh',
+                'description' => null,
+                'sort_order' => 1,
+                'is_active' => true,
+            ]
+        );
+
+        Dish::query()->firstOrCreate(
+            ['slug' => 'com-ga'],
+            [
+                'category_id' => $category->id,
+                'name' => 'Com ga',
+                'description' => null,
+                'price' => 100000,
+                'original_price' => 100000,
+                'cost_price' => 50000,
+                'image' => json_encode(['url' => 'storage/dishes/com-ga.webp']),
+                'unit' => 'phan',
+                'is_featured' => false,
+                'published_at' => now()->toDateString(),
+                'status' => 'available',
+                'available_from' => null,
+                'available_to' => null,
+                'sort_order' => 1,
+                'options_json' => [],
+                'tags_json' => [],
+                'is_active' => true,
+            ]
+        );
+
         $cartOrder = CartOrder::query()->create([
             'session_id' => $session->id,
             'table_id' => $table->id,

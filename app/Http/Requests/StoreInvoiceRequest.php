@@ -9,6 +9,15 @@ use Illuminate\Validation\Rule;
 
 class StoreInvoiceRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('payment_method')) {
+            $this->merge([
+                'payment_method' => PaymentMethod::normalize($this->input('payment_method')),
+            ]);
+        }
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */

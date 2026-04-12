@@ -4,16 +4,19 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Common\Constants\CartOrderStatus;
 use App\Common\Constants\InvoicePaymentStatus;
+use App\Common\Constants\PaymentMethod;
 use App\Common\Constants\TableSessionStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\CartOrder;
+use App\Models\Dish;
 use App\Models\Invoice;
 use App\Models\TableSession;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -51,7 +54,9 @@ class InvoiceController extends Controller
             ->orderByDesc('id')
             ->get();
 
-        return $this->success($invoices);
+        return $this->success(
+            $invoices->map(fn (Invoice $invoice) => $this->transformInvoice($invoice))->all()
+        );
     }
 
     public function show(int $invoiceId): JsonResponse
@@ -62,7 +67,7 @@ class InvoiceController extends Controller
             return $this->error(null, 'Khong tim thay hoa don', Response::HTTP_NOT_FOUND);
         }
 
-        return $this->success($invoice);
+        return $this->success($this->transformInvoice($invoice));
     }
 
     public function store(StoreInvoiceRequest $request): JsonResponse
@@ -140,7 +145,7 @@ class InvoiceController extends Controller
         });
 
         return $this->success(
-            $invoice->fresh()->load($this->relations()),
+            $this->transformInvoice($invoice->fresh()->load($this->relations())),
             'Tao hoa don thanh cong.',
             Response::HTTP_CREATED
         );
@@ -194,7 +199,7 @@ class InvoiceController extends Controller
         });
 
         return $this->success(
-            $invoice->fresh()->load($this->relations()),
+            $this->transformInvoice($invoice->fresh()->load($this->relations())),
             'Cap nhat hoa don thanh cong.'
         );
     }
@@ -221,7 +226,7 @@ class InvoiceController extends Controller
             'session',
             'table',
             'reservation',
-            'items',
+            'items.combo.dishes',
         ];
     }
 
@@ -322,5 +327,75 @@ class InvoiceController extends Controller
         } while (Invoice::query()->where('no', $invoiceNo)->exists());
 
         return $invoiceNo;
+    }
+
+    protected function transformInvoice(Invoice $invoice): array
+    {
+        $dishMap = $this->resolveDishMap($invoice->items);
+
+        return [
+            'id' => $invoice->id,
+            'no' => $invoice->no,
+            'cart_order_id' => $invoice->cart_order_id,
+            'session_id' => $invoice->session_id,
+            'table_id' => $invoice->table_id,
+            'table_name' => $invoice->table?->name,
+            'reservation_code' => $invoice->reservation_code,
+            'customer_name' => $invoice->customer_name,
+            'customer_phone' => $invoice->customer_phone,
+            'created_by_employee' => $invoice->created_by_employee,
+            'payment_method' => PaymentMethod::display($invoice->payment_method),
+            'payment_status' => $invoice->payment_status,
+            'issued_at' => $invoice->issued_at,
+            'paid_at' => $invoice->paid_at,
+            'deposit_amount' => (int) $invoice->deposit_amount,
+            'vat_amount' => (int) $invoice->tax_amount,
+            'subtotal_amount' => (int) $invoice->subtotal_amount,
+            'discount_amount' => (int) $invoice->discount_amount,
+            'total_amount' => (int) $invoice->total_amount,
+            'paid_amount' => (int) $invoice->paid_amount,
+            'remaining_amount' => (int) $invoice->remaining_amount,
+            'change_amount' => (int) $invoice->change_amount,
+            'remark' => $invoice->note,
+            'item_list' => $invoice->items
+                ->where('is_active', true)
+                ->values()
+                ->map(fn ($item) => $this->transformInvoiceItem($item, $dishMap))
+                ->all(),
+        ];
+    }
+
+    protected function transformInvoiceItem(object $item, Collection $dishMap): array
+    {
+        $dish = $item->combo_id === null
+            ? $dishMap->get($item->item_name_snapshot)
+            : null;
+
+        return [
+            'type' => $item->combo_id === null ? 'dish' : 'combo',
+            'name' => $item->item_name_snapshot,
+            'image' => $item->combo?->combo_image ?? $dish?->image,
+            'unit_price' => (int) $item->unit_final_price,
+            'quantity' => (float) $item->quantity,
+        ];
+    }
+
+    protected function resolveDishMap(Collection $items): Collection
+    {
+        $dishNames = $items
+            ->where('combo_id', null)
+            ->pluck('item_name_snapshot')
+            ->filter(fn ($name) => is_string($name) && $name !== '')
+            ->unique()
+            ->values();
+
+        if ($dishNames->isEmpty()) {
+            return collect();
+        }
+
+        return Dish::query()
+            ->whereIn('name', $dishNames->all())
+            ->get()
+            ->keyBy('name');
     }
 }

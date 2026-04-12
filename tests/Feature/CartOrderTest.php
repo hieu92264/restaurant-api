@@ -132,9 +132,10 @@ class CartOrderTest extends TestCase
         $this->actingAs($user, 'api')
             ->getJson('/api/v1/table/cart-orders/current-by-table/' . $table->id)
             ->assertOk()
-            ->assertJsonPath('metadata.id', $newerCartOrder->id)
+            ->assertJsonPath('metadata.cart_order_id', $newerCartOrder->id)
             ->assertJsonPath('metadata.table_id', $table->id)
-            ->assertJsonPath('metadata.status', CartOrderStatus::LOCKED_FOR_PAYMENT);
+            ->assertJsonPath('metadata.status', CartOrderStatus::LOCKED_FOR_PAYMENT)
+            ->assertJsonPath('metadata.item_list', []);
     }
 
     public function test_authenticated_user_gets_not_found_when_table_has_no_current_open_cart_order(): void
