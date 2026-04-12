@@ -4,8 +4,10 @@ namespace Tests\Feature;
 
 use App\Common\Constants\CartOrderStatus;
 use App\Common\Constants\RestaurantTableStatus;
+use App\Common\Constants\ReservationStatus;
 use App\Common\Constants\TableSessionStatus;
 use App\Models\CartOrder;
+use App\Models\Reservation;
 use App\Models\RestaurantTable;
 use App\Models\Role;
 use App\Models\TableSession;
@@ -59,7 +61,7 @@ class TableSessionTest extends TestCase
         $this->assertDatabaseCount('table_sessions', 1);
     }
 
-    public function test_authenticated_user_can_close_table_session(): void
+    public function test_authenticated_user_can_close_table_session_manually_when_no_cart_exists(): void
     {
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('a03');
@@ -114,6 +116,58 @@ class TableSessionTest extends TestCase
             ->assertJsonPath('metadata.status', TableSessionStatus::OPEN);
     }
 
+    public function test_authenticated_user_cannot_mark_table_session_paid_manually(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $table = $this->createTable('a06');
+        $session = $this->createSession($table, $user->user_name, TableSessionStatus::OPEN);
+
+        $this->actingAs($user, 'api')->patchJson('/api/v1/table/sessions/' . $session->id, [
+            'status' => TableSessionStatus::PAID,
+        ])->assertBadRequest();
+
+        $session->refresh();
+
+        $this->assertSame(TableSessionStatus::OPEN, $session->status);
+    }
+
+    public function test_authenticated_user_can_cancel_table_session_manually_when_no_cart_exists(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $table = $this->createTable('a08');
+        $session = $this->createSession($table, $user->user_name, TableSessionStatus::OPEN);
+
+        $this->actingAs($user, 'api')->patchJson('/api/v1/table/sessions/' . $session->id, [
+            'status' => TableSessionStatus::CANCELLED,
+            'remark' => 'Khach huy som',
+        ])->assertOk()
+            ->assertJsonPath('metadata.status', TableSessionStatus::CANCELLED)
+            ->assertJsonPath('metadata.closed_by_employee', $user->user_name);
+
+        $session->refresh();
+
+        $this->assertSame(TableSessionStatus::CANCELLED, $session->status);
+        $this->assertNotNull($session->closed_at);
+    }
+
+    public function test_authenticated_user_can_open_session_and_reservation_becomes_completed(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $table = $this->createTable('a07');
+        $reservation = $this->createReservation($table, $user->user_name);
+
+        $this->actingAs($user, 'api')->postJson('/api/v1/table/sessions', [
+            'table_id' => $table->id,
+            'guest_count' => 4,
+            'reservation_code' => $reservation->reservation_code,
+        ])->assertCreated();
+
+        $reservation->refresh();
+
+        $this->assertSame(ReservationStatus::COMPLETED, $reservation->status);
+        $this->assertFalse($reservation->is_active);
+    }
+
     private function createAuthenticatedUser(): User
     {
         $role = Role::query()->create([
@@ -156,6 +210,27 @@ class TableSessionTest extends TestCase
             'closed_at' => null,
             'remark' => 'Session test',
             'is_active' => true,
+        ]);
+    }
+
+    private function createReservation(RestaurantTable $table, string $createdByEmployee): Reservation
+    {
+        return Reservation::query()->create([
+            'is_active' => true,
+            'reservation_code' => 'RSV-' . strtoupper($table->slug),
+            'customer_name' => 'Khach dat ban',
+            'customer_phone' => '0900000012',
+            'guest_count' => 4,
+            'reservation_time' => now()->addHour()->format('Y-m-d H:i:s'),
+            'remark' => 'Reservation session test',
+            'status' => ReservationStatus::CONFIRMED,
+            'deposit_amount' => 0,
+            'hold_start_time' => now()->subMinutes(10)->format('Y-m-d H:i:s'),
+            'hold_end_time' => now()->addHour()->format('Y-m-d H:i:s'),
+            'created_by_employee' => $createdByEmployee,
+            'confirmed_by_employee' => $createdByEmployee,
+            'confirmed_at' => now()->subMinutes(30)->format('Y-m-d H:i:s'),
+            'table_code' => $table->slug,
         ]);
     }
 

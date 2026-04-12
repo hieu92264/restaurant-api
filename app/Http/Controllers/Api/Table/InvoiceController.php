@@ -243,11 +243,7 @@ class InvoiceController extends Controller
             ->with(['session.reservation', 'items'])
             ->where('id', $cartOrderId)
             ->where('is_active', true)
-            ->whereIn('status', [
-                CartOrderStatus::OPEN,
-                CartOrderStatus::LOCKED_FOR_PAYMENT,
-                CartOrderStatus::CONVERTED_TO_INVOICE,
-            ])
+            ->where('status', CartOrderStatus::LOCKED_FOR_PAYMENT)
             ->first();
     }
 
@@ -303,12 +299,16 @@ class InvoiceController extends Controller
 
     protected function syncSessionFromInvoice(TableSession $session, string $paymentStatus): void
     {
+        $reservation = $session->reservation;
+
         if ($paymentStatus === InvoicePaymentStatus::PAID) {
             $session->update([
                 'status' => TableSessionStatus::PAID,
                 'closed_at' => $session->closed_at ?? now(),
                 'closed_by_employee' => $session->closed_by_employee ?? $this->getUserName(),
             ]);
+
+            $this->completeReservation($reservation);
 
             return;
         }
@@ -317,6 +317,22 @@ class InvoiceController extends Controller
             'status' => TableSessionStatus::PAYMENT_PENDING,
             'closed_at' => null,
             'closed_by_employee' => null,
+        ]);
+    }
+
+    protected function completeReservation(?\App\Models\Reservation $reservation): void
+    {
+        if (! $reservation || ! $reservation->is_active) {
+            return;
+        }
+
+        if (in_array($reservation->status, [\App\Common\Constants\ReservationStatus::COMPLETED, \App\Common\Constants\ReservationStatus::CANCELED], true)) {
+            return;
+        }
+
+        $reservation->update([
+            'status' => \App\Common\Constants\ReservationStatus::COMPLETED,
+            'is_active' => false,
         ]);
     }
 

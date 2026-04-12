@@ -88,7 +88,13 @@ class TableSessionController extends Controller
         $payload['opened_by_employee'] = $this->getUserName();
         $payload['is_active'] = true;
 
-        $tableSession = DB::transaction(fn () => TableSession::query()->create($payload));
+        $tableSession = DB::transaction(function () use ($payload, $reservation) {
+            $tableSession = TableSession::query()->create($payload);
+
+            $this->completeReservationOnArrival($reservation);
+
+            return $tableSession;
+        });
 
         return $this->success(
             $tableSession->fresh()->load($this->relations()),
@@ -120,6 +126,10 @@ class TableSessionController extends Controller
         }
 
         if (array_key_exists('status', $payload)) {
+            if ($error = $this->guardManualStatusUpdate($payload['status'])) {
+                return $error;
+            }
+
             if ($error = $this->validateStatusTransition($tableSession, $payload['status'])) {
                 return $error;
             }
@@ -269,5 +279,37 @@ class TableSessionController extends Controller
                 CartOrderStatus::LOCKED_FOR_PAYMENT,
             ])
             ->exists();
+    }
+
+    protected function guardManualStatusUpdate(string $nextStatus): ?JsonResponse
+    {
+        if (in_array($nextStatus, [
+            TableSessionStatus::PAYMENT_PENDING,
+            TableSessionStatus::PAID,
+        ], true)) {
+            return $this->error(
+                null,
+                'Trạng thái thanh toán của phiên bàn chỉ được cập nhật thông qua nghiệp vụ hóa đơn',
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        return null;
+    }
+
+    protected function completeReservationOnArrival(?Reservation $reservation): void
+    {
+        if (! $reservation || ! $reservation->is_active) {
+            return;
+        }
+
+        if (in_array($reservation->status, [ReservationStatus::COMPLETED, ReservationStatus::CANCELED], true)) {
+            return;
+        }
+
+        $reservation->update([
+            'status' => ReservationStatus::COMPLETED,
+            'is_active' => false,
+        ]);
     }
 }

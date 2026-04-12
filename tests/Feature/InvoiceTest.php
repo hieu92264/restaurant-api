@@ -12,6 +12,7 @@ use App\Models\Dish;
 use App\Models\Invoice;
 use App\Models\RestaurantTable;
 use App\Models\Role;
+use App\Models\Reservation;
 use App\Models\TableSession;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -80,7 +81,7 @@ class InvoiceTest extends TestCase
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('c02');
         $session = $this->createSession($table, $user->user_name, TableSessionStatus::OPEN);
-        $cartOrder = $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::OPEN);
+        $cartOrder = $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::LOCKED_FOR_PAYMENT);
 
         $this->actingAs($user, 'api')->postJson('/api/v1/table/invoices', [
             'cart_order_id' => $cartOrder->id,
@@ -98,6 +99,42 @@ class InvoiceTest extends TestCase
         $this->assertSame(TableSessionStatus::PAYMENT_PENDING, $session->status);
         $this->assertNull($session->closed_at);
         $this->assertSame(CartOrderStatus::CONVERTED_TO_INVOICE, $cartOrder->status);
+    }
+
+    public function test_authenticated_user_cannot_store_invoice_when_cart_order_is_not_locked_for_payment(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $table = $this->createTable('c05');
+        $session = $this->createSession($table, $user->user_name, TableSessionStatus::OPEN);
+        $cartOrder = $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::OPEN);
+
+        $this->actingAs($user, 'api')->postJson('/api/v1/table/invoices', [
+            'cart_order_id' => $cartOrder->id,
+            'paid_amount' => 100000,
+            'payment_method' => PaymentMethod::CASH,
+        ])->assertBadRequest();
+
+        $this->assertDatabaseCount('invoices', 0);
+    }
+
+    public function test_paid_invoice_completes_attached_reservation(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $table = $this->createTable('c06');
+        $reservation = $this->createReservation($table, $user->user_name, 'RSV-C06');
+        $session = $this->createSession($table, $user->user_name, TableSessionStatus::OPEN, $reservation->reservation_code);
+        $cartOrder = $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::LOCKED_FOR_PAYMENT);
+
+        $this->actingAs($user, 'api')->postJson('/api/v1/table/invoices', [
+            'cart_order_id' => $cartOrder->id,
+            'paid_amount' => 100000,
+            'payment_method' => PaymentMethod::CASH,
+        ])->assertCreated();
+
+        $reservation->refresh();
+
+        $this->assertSame('completed', $reservation->status);
+        $this->assertFalse($reservation->is_active);
     }
 
     public function test_authenticated_user_cannot_store_duplicate_active_invoice_for_same_cart_order(): void
@@ -179,7 +216,8 @@ class InvoiceTest extends TestCase
     private function createSession(
         RestaurantTable $table,
         string $openedByEmployee,
-        string $status
+        string $status,
+        ?string $reservationCode = null
     ): TableSession {
         return TableSession::query()->create([
             'table_id' => $table->id,
@@ -188,6 +226,7 @@ class InvoiceTest extends TestCase
             'status' => $status,
             'opened_at' => now()->subHour(),
             'closed_at' => null,
+            'reservation_code' => $reservationCode,
             'remark' => 'Session invoice test',
             'is_active' => true,
         ]);
@@ -313,5 +352,26 @@ class InvoiceTest extends TestCase
         ]);
 
         return $invoice;
+    }
+
+    private function createReservation(RestaurantTable $table, string $createdByEmployee, string $reservationCode): Reservation
+    {
+        return Reservation::query()->create([
+            'is_active' => true,
+            'reservation_code' => $reservationCode,
+            'customer_name' => 'Khach reservation',
+            'customer_phone' => '0900000011',
+            'guest_count' => 4,
+            'reservation_time' => now()->addHour()->format('Y-m-d H:i:s'),
+            'remark' => 'Reservation invoice test',
+            'status' => 'confirmed',
+            'deposit_amount' => 0,
+            'hold_start_time' => now()->subMinutes(10)->format('Y-m-d H:i:s'),
+            'hold_end_time' => now()->addHour()->format('Y-m-d H:i:s'),
+            'created_by_employee' => $createdByEmployee,
+            'confirmed_by_employee' => $createdByEmployee,
+            'confirmed_at' => now()->subMinutes(30)->format('Y-m-d H:i:s'),
+            'table_code' => $table->slug,
+        ]);
     }
 }
