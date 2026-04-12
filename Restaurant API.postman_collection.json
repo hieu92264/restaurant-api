@@ -1488,7 +1488,7 @@
         },
         {
             "name": "Cart Orders",
-            "description": "API đơn tạm tính theo bàn. Đây là thực thể đại diện cho một lần gọi món/nhóm món nằm bên trong một `table_session`. Một phiên bàn có thể có một hoặc nhiều `cart_order` tùy cách vận hành của quán.\n\nRoute hiện có:\n- `GET /table/cart-orders`\n- `GET /table/cart-orders/:cart_order_id`\n- `POST /table/cart-orders`\n- `PATCH /table/cart-orders/:cart_order_id`\n- `DELETE /table/cart-orders/:cart_order_id`\n\nCác trạng thái hợp lệ của `cart_order`:\n- `OPEN`: đơn đang mở, còn có thể thêm/sửa món.\n- `LOCKED_FOR_PAYMENT`: đơn đã khóa để chuẩn bị thanh toán.\n- `CANCELLED`: đơn bị hủy.\n- `CONVERTED_TO_INVOICE`: đơn đã được chuyển thành hóa đơn.\n\nLuồng nghiệp vụ hiện tại:\n- `store`: tạo đơn tạm tính mới cho một `table_session` còn hoạt động.\n- `update`: cập nhật trạng thái, ghi chú, số tiền, bàn/phiên hoặc thay toàn bộ danh sách món.\n- `destroy`: ẩn mềm đơn bằng `is_active = false`.\n- `table_session` sẽ không được phép đóng nếu vẫn còn `cart_order` ở trạng thái `OPEN` hoặc `LOCKED_FOR_PAYMENT`.\n\nLưu ý cho FE:\n- `session_id` phải thuộc một `table_session` đang ở trạng thái `OPEN` hoặc `PAYMENT_PENDING`.\n- `table_id` phải khớp với bàn của `session_id`; backend có kiểm tra chéo hai giá trị này.\n- `order_no` được backend tự sinh, FE không cần gửi lên khi tạo mới.\n- Các cột tiền đều là kiểu `INTEGER`, đơn vị là VNĐ.\n- `items` trong payload create/update chính là dữ liệu cho bảng `cart_order_items`.\n\n## Cấu trúc dữ liệu bảng `cart_orders`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của đơn tạm tính. FE dùng để gọi detail/update/delete. |\n| `session_id` | bigint | ID của `table_session` mà đơn này thuộc về. |\n| `table_id` | bigint | ID của bàn hiện tại. Backend dùng để đối chiếu với `session_id`. |\n| `order_no` | varchar(30) | Mã đơn nghiệp vụ duy nhất, backend tự sinh. |\n| `created_by_employee` | varchar | `user_name` của nhân viên tạo đơn. |\n| `status` | enum | Trạng thái nghiệp vụ của đơn: `OPEN`, `LOCKED_FOR_PAYMENT`, `CANCELLED`, `CONVERTED_TO_INVOICE`. |\n| `subtotal_amount` | integer | Tổng tiền món trước giảm giá/phí/thuế. |\n| `discount_amount` | integer | Tổng tiền giảm giá của đơn. |\n| `service_charge_amount` | integer | Phí dịch vụ áp cho đơn. |\n| `tax_amount` | integer | Thuế áp cho đơn. |\n| `total_amount` | integer | Tổng tiền cuối cùng của đơn sau khi cộng/trừ các thành phần liên quan. |\n| `remark` | varchar(255), nullable | Ghi chú chung cho cả đơn. |\n| `is_active` | boolean | Cờ hoạt động của đơn. `false` nghĩa là đơn bị ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo đơn. |\n| `updated_at` | timestamp | Thời điểm cập nhật đơn gần nhất. |\n\n## Cấu trúc dữ liệu bảng `cart_order_items`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của dòng món trong đơn. |\n| `cart_order_id` | bigint | ID đơn tạm tính cha. |\n| `combo_id` | bigint, nullable | ID combo nếu dòng này là combo; có thể `null` với món lẻ. |\n| `item_name_snapshot` | varchar(150) | Tên món/combo tại thời điểm chốt vào đơn (giữ lịch sử). |\n| `variant_name_snapshot` | varchar(150), nullable | Tên phân loại/size tại thời điểm chốt đơn, ví dụ: nhỏ, vừa, lớn. |\n| `quantity` | decimal(10,2) | Số lượng của dòng món. |\n| `base_unit_price` | integer | Đơn giá gốc của món trước khi cộng option. |\n| `option_total_price` | integer | Tổng tiền cộng thêm từ option/topping cho 1 đơn vị món. |\n| `unit_final_price` | integer | Giá cuối cùng của 1 đơn vị món sau khi cộng option. |\n| `line_total` | integer | Thành tiền của dòng món = `quantity * unit_final_price`. |\n| `item_note` | varchar(255), nullable | Ghi chú riêng cho từng món (ví dụ: ít đá, không hành). |\n| `line_status` | enum | Trạng thái của dòng món: `ACTIVE`, `CANCELLED`, `SERVED`. |\n| `is_active` | boolean | Cờ hoạt động của dòng món. |\n| `created_at` | timestamp | Thời điểm tạo dòng món. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
+            "description": "API đơn tạm tính theo bàn. Đây là thực thể đại diện cho một lần gọi món/nhóm món nằm bên trong một `table_session`. Một phiên bàn có thể có một hoặc nhiều `cart_order` tùy cách vận hành của quán.\n\nRoute hiện có:\n- `GET /table/cart-orders`\n- `GET /table/cart-orders/current-by-table/:table_id`\n- `GET /table/cart-orders/:cart_order_id`\n- `POST /table/cart-orders`\n- `PATCH /table/cart-orders/:cart_order_id`\n- `DELETE /table/cart-orders/:cart_order_id`\n\nCác trạng thái hợp lệ của `cart_order`:\n- `OPEN`: đơn đang mở, còn có thể thêm/sửa món.\n- `LOCKED_FOR_PAYMENT`: đơn đã khóa để chuẩn bị thanh toán.\n- `CANCELLED`: đơn bị hủy.\n- `CONVERTED_TO_INVOICE`: đơn đã được chuyển thành hóa đơn.\n\nLuồng nghiệp vụ hiện tại:\n- `showCurrentByTable`: lấy đơn tạm tính đang mở gần nhất của một bàn.\n- `store`: tạo đơn tạm tính mới cho một `table_session` còn hoạt động.\n- `update`: cập nhật trạng thái, ghi chú, số tiền, bàn/phiên hoặc thay toàn bộ danh sách món.\n- `destroy`: ẩn mềm đơn bằng `is_active = false`.\n- `table_session` sẽ không được phép đóng nếu vẫn còn `cart_order` ở trạng thái `OPEN` hoặc `LOCKED_FOR_PAYMENT`.\n\nLưu ý cho FE:\n- `session_id` phải thuộc một `table_session` đang ở trạng thái `OPEN` hoặc `PAYMENT_PENDING`.\n- `table_id` phải khớp với bàn của `session_id`; backend có kiểm tra chéo hai giá trị này.\n- `order_no` được backend tự sinh, FE không cần gửi lên khi tạo mới.\n- Các cột tiền đều là kiểu `INTEGER`, đơn vị là VNĐ.\n- `items` trong payload create/update chính là dữ liệu cho bảng `cart_order_items`.\n\n## Cấu trúc dữ liệu bảng `cart_orders`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của đơn tạm tính. FE dùng để gọi detail/update/delete. |\n| `session_id` | bigint | ID của `table_session` mà đơn này thuộc về. |\n| `table_id` | bigint | ID của bàn hiện tại. Backend dùng để đối chiếu với `session_id`. |\n| `order_no` | varchar(30) | Mã đơn nghiệp vụ duy nhất, backend tự sinh. |\n| `created_by_employee` | varchar | `user_name` của nhân viên tạo đơn. |\n| `status` | enum | Trạng thái nghiệp vụ của đơn: `OPEN`, `LOCKED_FOR_PAYMENT`, `CANCELLED`, `CONVERTED_TO_INVOICE`. |\n| `subtotal_amount` | integer | Tổng tiền món trước giảm giá/phí/thuế. |\n| `discount_amount` | integer | Tổng tiền giảm giá của đơn. |\n| `service_charge_amount` | integer | Phí dịch vụ áp cho đơn. |\n| `tax_amount` | integer | Thuế áp cho đơn. |\n| `total_amount` | integer | Tổng tiền cuối cùng của đơn sau khi cộng/trừ các thành phần liên quan. |\n| `remark` | varchar(255), nullable | Ghi chú chung cho cả đơn. |\n| `is_active` | boolean | Cờ hoạt động của đơn. `false` nghĩa là đơn bị ẩn mềm. |\n| `created_at` | timestamp | Thời điểm tạo đơn. |\n| `updated_at` | timestamp | Thời điểm cập nhật đơn gần nhất. |\n\n## Cấu trúc dữ liệu bảng `cart_order_items`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của dòng món trong đơn. |\n| `cart_order_id` | bigint | ID đơn tạm tính cha. |\n| `combo_id` | bigint, nullable | ID combo nếu dòng này là combo; có thể `null` với món lẻ. |\n| `item_name_snapshot` | varchar(150) | Tên món/combo tại thời điểm chốt vào đơn (giữ lịch sử). |\n| `variant_name_snapshot` | varchar(150), nullable | Tên phân loại/size tại thời điểm chốt đơn, ví dụ: nhỏ, vừa, lớn. |\n| `quantity` | decimal(10,2) | Số lượng của dòng món. |\n| `base_unit_price` | integer | Đơn giá gốc của món trước khi cộng option. |\n| `option_total_price` | integer | Tổng tiền cộng thêm từ option/topping cho 1 đơn vị món. |\n| `unit_final_price` | integer | Giá cuối cùng của 1 đơn vị món sau khi cộng option. |\n| `line_total` | integer | Thành tiền của dòng món = `quantity * unit_final_price`. |\n| `item_note` | varchar(255), nullable | Ghi chú riêng cho từng món (ví dụ: ít đá, không hành). |\n| `line_status` | enum | Trạng thái của dòng món: `ACTIVE`, `CANCELLED`, `SERVED`. |\n| `is_active` | boolean | Cờ hoạt động của dòng món. |\n| `created_at` | timestamp | Thời điểm tạo dòng món. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
             "item": [
                 {
                     "name": "List Cart Orders",
@@ -1506,6 +1506,31 @@
                             "path": ["table", "cart-orders"]
                         },
                         "description": "Lấy danh sách đơn tạm tính. Có thể lọc theo `session_id`, `table_id`, `status`, `is_active`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show Current Cart Order By Table",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/table/cart-orders/current-by-table/:table_id",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "cart-orders", "current-by-table", ":table_id"],
+                            "variable": [
+                                {
+                                    "key": "table_id",
+                                    "value": "{{table_id}}"
+                                }
+                            ]
+                        },
+                        "description": "Lấy đơn tạm tính đang mở hiện tại của một bàn theo `table_id`. Backend chỉ trả về đơn `OPEN` hoặc `LOCKED_FOR_PAYMENT` thuộc session còn hoạt động."
                     },
                     "response": []
                 },
@@ -1630,6 +1655,151 @@
                     "response": []
                 }
             ]
+        },
+        {
+            "name": "Invoices",
+            "description": "API hóa đơn theo bàn. Đây là thực thể được tạo ra từ `cart_order` khi chốt thanh toán.\n\nRoute hiện có:\n- `GET /table/invoices`\n- `GET /table/invoices/:invoice_id`\n- `POST /table/invoices`\n- `PATCH /table/invoices/:invoice_id`\n- `DELETE /table/invoices/:invoice_id`\n\nCác trạng thái hợp lệ của `payment_status`:\n- `UNPAID`: chưa thanh toán.\n- `PARTIAL`: đã thanh toán một phần.\n- `PAID`: đã thanh toán đủ.\n\nLuồng nghiệp vụ hiện tại:\n- `store`: tạo hóa đơn từ một `cart_order` hợp lệ, sao chép các dòng món sang `invoice_items`, cập nhật `cart_order.status = CONVERTED_TO_INVOICE`.\n- `update`: cập nhật thông tin khách, tiền cọc, số tiền đã trả, phương thức thanh toán, ghi chú và trạng thái active.\n- `destroy`: ẩn mềm hóa đơn bằng `is_active = false`.\n- Khi hóa đơn được thanh toán đủ, backend sẽ đồng bộ `table_session.status = PAID`.\n\nLưu ý cho FE:\n- Chỉ nên tạo hóa đơn cho `cart_order` còn hoạt động và có món.\n- `no` được backend tự sinh, FE không cần gửi khi tạo.\n- Các cột tiền đều là kiểu `INTEGER`, đơn vị là VNĐ.\n- Có thể lọc danh sách theo `cart_order_id`, `session_id`, `table_id`, `payment_status`, `no`, `is_active`.\n\n## Cấu trúc dữ liệu bảng `invoices`\n\n| Tên cột | Kiểu dữ liệu | Ghi chú |\n| --- | --- | --- |\n| `id` | bigint | Khóa chính của hóa đơn. FE dùng để gọi detail/update/delete. |\n| `no` | varchar | Mã hóa đơn nghiệp vụ duy nhất, backend tự sinh. |\n| `cart_order_id` | bigint | ID đơn tạm tính gốc của hóa đơn. |\n| `session_id` | bigint | ID phiên bàn liên quan. |\n| `table_id` | bigint | ID bàn liên quan. |\n| `reservation_code` | varchar, nullable | Mã reservation gắn với session nếu có. |\n| `created_by_employee` | varchar | `user_name` của nhân viên tạo hóa đơn. |\n| `customer_name` | varchar, nullable | Tên khách thanh toán. |\n| `customer_phone` | varchar, nullable | Số điện thoại khách. |\n| `subtotal_amount` | integer | Tổng tiền món trước giảm giá/phí/thuế. |\n| `discount_amount` | integer | Tổng tiền giảm giá. |\n| `service_charge_amount` | integer | Phí dịch vụ. |\n| `tax_amount` | integer | Thuế. |\n| `deposit_amount` | integer | Tiền cọc áp vào hóa đơn. |\n| `total_amount` | integer | Tổng tiền cuối cùng cần thanh toán. |\n| `paid_amount` | integer | Tổng tiền khách đã trả. |\n| `remaining_amount` | integer | Số tiền còn lại sau khi trừ cọc và tiền đã trả. |\n| `change_amount` | integer | Tiền thối lại nếu khách trả dư. |\n| `payment_method` | string, nullable | Phương thức thanh toán. |\n| `payment_status` | enum | `UNPAID`, `PARTIAL`, `PAID`. |\n| `issued_at` | datetime | Thời điểm phát hành hóa đơn. |\n| `paid_at` | datetime, nullable | Thời điểm thanh toán đủ. |\n| `note` | varchar(255), nullable | Ghi chú của hóa đơn. |\n| `is_active` | boolean | Cờ hoạt động của hóa đơn. |\n| `created_at` | timestamp | Thời điểm tạo bản ghi. |\n| `updated_at` | timestamp | Thời điểm cập nhật gần nhất. |",
+            "item": [
+                {
+                    "name": "List Invoices",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/table/invoices",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "invoices"]
+                        },
+                        "description": "Lấy danh sách hóa đơn. Có thể lọc theo `cart_order_id`, `session_id`, `table_id`, `payment_status`, `no`, `is_active`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show Invoice",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/table/invoices/:invoice_id",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "invoices", ":invoice_id"],
+                            "variable": [
+                                {
+                                    "key": "invoice_id",
+                                    "value": "{{invoice_id}}"
+                                }
+                            ]
+                        },
+                        "description": "Lấy chi tiết một hóa đơn theo `id`, kèm `cartOrder`, `session`, `table`, `reservation` và `items`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Invoice",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"cart_order_id\": {{cart_order_id}},\n  \"customer_name\": \"Nguyen Van A\",\n  \"customer_phone\": \"0901234567\",\n  \"deposit_amount\": 0,\n  \"paid_amount\": 120000,\n  \"payment_method\": \"CASH\",\n  \"issued_at\": \"2026-04-12T12:00:00\",\n  \"note\": \"Khách thanh toán tại quầy\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/table/invoices",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "invoices"]
+                        },
+                        "description": "Tạo hóa đơn từ một `cart_order`. Backend tự sinh `no`, tính `payment_status`, `remaining_amount`, `change_amount`, sao chép danh sách món và cập nhật trạng thái đơn tạm tính."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Invoice",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"paid_amount\": 120000,\n  \"payment_method\": \"CASH\",\n  \"paid_at\": \"2026-04-12T12:05:00\",\n  \"note\": \"Đã thanh toán đủ\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/table/invoices/:invoice_id",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "invoices", ":invoice_id"],
+                            "variable": [
+                                {
+                                    "key": "invoice_id",
+                                    "value": "{{invoice_id}}"
+                                }
+                            ]
+                        },
+                        "description": "Cập nhật một phần hóa đơn theo `id`. Backend sẽ tính lại `payment_status`, `remaining_amount`, `change_amount` và đồng bộ trạng thái session khi cần."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Invoice",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/table/invoices/:invoice_id",
+                            "host": ["{{base_url}}"],
+                            "path": ["table", "invoices", ":invoice_id"],
+                            "variable": [
+                                {
+                                    "key": "invoice_id",
+                                    "value": "{{invoice_id}}"
+                                }
+                            ]
+                        },
+                        "description": "Ẩn mềm hóa đơn bằng cách cập nhật `is_active = false`."
+                    },
+                    "response": []
+                }
+            ]
         }
     ],
     "auth": {
@@ -1681,6 +1851,10 @@
         },
         {
             "key": "cart_order_id",
+            "value": ""
+        },
+        {
+            "key": "invoice_id",
             "value": ""
         }
     ]
