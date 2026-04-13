@@ -337,7 +337,7 @@ class CartOrderController extends Controller
             'item_list' => $cartOrder->items
                 ->where('is_active', true)
                 ->values()
-                ->map(fn ($item) => $this->transformCartOrderItem($item, $dishMap))
+                ->map(fn($item) => $this->transformCartOrderItem($item, $dishMap))
                 ->all(),
         ];
     }
@@ -349,6 +349,7 @@ class CartOrderController extends Controller
             : null;
 
         return [
+            'id' => $item->combo_id ?? $item->dish_id,
             'type' => $item->combo_id === null ? 'dish' : 'combo',
             'name' => $item->item_name_snapshot,
             'image' => $item->combo?->combo_image ?? $dish?->image,
@@ -362,7 +363,7 @@ class CartOrderController extends Controller
         $dishIds = $items
             ->where('combo_id', null)
             ->pluck('dish_id')
-            ->filter(fn ($dishId) => is_numeric($dishId))
+            ->filter(fn($dishId) => is_numeric($dishId))
             ->unique()
             ->values();
 
@@ -376,7 +377,7 @@ class CartOrderController extends Controller
         $dishNames = $items
             ->where('combo_id', null)
             ->pluck('item_name_snapshot')
-            ->filter(fn ($name) => is_string($name) && $name !== '')
+            ->filter(fn($name) => is_string($name) && $name !== '')
             ->unique()
             ->values();
 
@@ -563,8 +564,7 @@ class CartOrderController extends Controller
         array $payload,
         array $resolvedItems,
         ?CartOrder $cartOrder = null
-    ): array
-    {
+    ): array {
         $subtotalAmount = (int) round(collect($resolvedItems)->sum('line_total'));
         $discountAmount = (int) ($payload['discount_amount'] ?? $cartOrder?->discount_amount ?? 0);
         $serviceChargeAmount = (int) ($payload['service_charge_amount'] ?? $cartOrder?->service_charge_amount ?? 0);
@@ -585,7 +585,7 @@ class CartOrderController extends Controller
             ->where('combo_id', null)
             ->whereNull('dish_id')
             ->pluck('item_name_snapshot')
-            ->filter(fn ($name) => is_string($name) && $name !== '')
+            ->filter(fn($name) => is_string($name) && $name !== '')
             ->unique()
             ->values();
 
