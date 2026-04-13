@@ -94,6 +94,12 @@ class InvoiceController extends Controller
         );
 
         $invoice = DB::transaction(function () use ($cartOrder, $payload, $financials): Invoice {
+            if ($cartOrder->status === CartOrderStatus::OPEN) {
+                $cartOrder->update([
+                    'status' => CartOrderStatus::LOCKED_FOR_PAYMENT,
+                ]);
+            }
+
             $invoice = Invoice::query()->create([
                 'no' => $this->generateInvoiceNo(),
                 'cart_order_id' => $cartOrder->id,
@@ -245,7 +251,10 @@ class InvoiceController extends Controller
             ->with(['session.reservation', 'items'])
             ->where('id', $cartOrderId)
             ->where('is_active', true)
-            ->where('status', CartOrderStatus::LOCKED_FOR_PAYMENT)
+            ->whereIn('status', [
+                CartOrderStatus::OPEN,
+                CartOrderStatus::LOCKED_FOR_PAYMENT,
+            ])
             ->first();
     }
 

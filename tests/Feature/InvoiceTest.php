@@ -22,12 +22,12 @@ class InvoiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_authenticated_user_can_store_paid_invoice_from_cart_order(): void
+    public function test_authenticated_user_can_store_paid_invoice_from_open_cart_order(): void
     {
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('c01');
         $session = $this->createSession($table, $user->user_name, TableSessionStatus::OPEN);
-        $cartOrder = $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::LOCKED_FOR_PAYMENT);
+        $cartOrder = $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::OPEN);
 
         $response = $this->actingAs($user, 'api')->postJson('/api/v1/table/invoices', [
             'cart_order_id' => $cartOrder->id,
@@ -102,12 +102,12 @@ class InvoiceTest extends TestCase
         $this->assertSame(CartOrderStatus::CONVERTED_TO_INVOICE, $cartOrder->status);
     }
 
-    public function test_authenticated_user_cannot_store_invoice_when_cart_order_is_not_locked_for_payment(): void
+    public function test_authenticated_user_cannot_store_invoice_when_cart_order_status_is_invalid(): void
     {
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('c05');
         $session = $this->createSession($table, $user->user_name, TableSessionStatus::OPEN);
-        $cartOrder = $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::OPEN);
+        $cartOrder = $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::CANCELLED);
 
         $this->actingAs($user, 'api')->postJson('/api/v1/table/invoices', [
             'cart_order_id' => $cartOrder->id,
