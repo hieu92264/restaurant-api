@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Common\Constants\CartOrderStatus;
+use App\Common\Constants\OrderLineStatus;
 use App\Common\Constants\RestaurantTableStatus;
 use App\Common\Constants\ReservationStatus;
 use App\Common\Constants\TableSessionStatus;
@@ -161,6 +162,58 @@ class TableSessionTest extends TestCase
 
         $this->assertSame(TableSessionStatus::CANCELLED, $session->status);
         $this->assertNotNull($session->closed_at);
+    }
+
+    public function test_authenticated_user_can_cancel_table_session_and_soft_delete_orders_and_reservation(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $table = $this->createTable('a09');
+        $reservation = $this->createReservation($table, $user->user_name);
+
+        $response = $this->actingAs($user, 'api')->postJson('/api/v1/table/sessions', [
+            'table_id' => $table->id,
+            'guest_count' => 4,
+            'reservation_code' => $reservation->reservation_code,
+        ]);
+
+        $response->assertCreated();
+
+        $session = TableSession::query()->findOrFail((int) $response->json('metadata.id'));
+        $cartOrder = $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::OPEN);
+
+        $reservation->refresh();
+        $this->assertSame(ReservationStatus::COMPLETED, $reservation->status);
+        $this->assertFalse($reservation->is_active);
+
+        $this->actingAs($user, 'api')->patchJson('/api/v1/table/sessions/' . $session->id, [
+            'status' => TableSessionStatus::CANCELLED,
+            'remark' => 'Huy ca phien va don',
+        ])->assertOk()
+            ->assertJsonPath('metadata.status', TableSessionStatus::CANCELLED);
+
+        $session->refresh();
+        $cartOrder->refresh();
+        $reservation->refresh();
+
+        $this->assertSame(TableSessionStatus::CANCELLED, $session->status);
+        $this->assertSame(CartOrderStatus::CANCELLED, $cartOrder->status);
+        $this->assertFalse($cartOrder->is_active);
+        $this->assertSame(ReservationStatus::CANCELED, $reservation->status);
+        $this->assertFalse($reservation->is_active);
+        $this->assertSame($user->user_name, $reservation->cancelled_by_employee);
+        $this->assertNotNull($reservation->cancelled_at);
+
+        $this->assertDatabaseHas('cart_order_items', [
+            'cart_order_id' => $cartOrder->id,
+            'line_status' => OrderLineStatus::CANCELLED,
+            'is_active' => false,
+        ]);
+
+        $this->assertDatabaseMissing('cart_orders', [
+            'session_id' => $session->id,
+            'status' => CartOrderStatus::OPEN,
+            'is_active' => true,
+        ]);
     }
 
     public function test_authenticated_user_can_open_session_and_reservation_becomes_completed(): void

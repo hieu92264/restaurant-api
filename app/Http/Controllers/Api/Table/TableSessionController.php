@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Table;
 
 use App\Common\Constants\CartOrderStatus;
+use App\Common\Constants\OrderLineStatus;
 use App\Common\Constants\RestaurantTableStatus;
 use App\Common\Constants\ReservationStatus;
 use App\Common\Constants\TableSessionStatus;
@@ -25,6 +26,7 @@ class TableSessionController extends Controller
     {
         $tableSessions = TableSession::query()
             ->with($this->relations())
+            ->where('status', TableSessionStatus::OPEN)
             ->when(
                 $request->filled('table_id'),
                 fn (Builder $query) => $query->where('table_id', (int) $request->input('table_id'))
@@ -32,10 +34,6 @@ class TableSessionController extends Controller
             ->when(
                 $request->filled('reservation_code'),
                 fn (Builder $query) => $query->where('reservation_code', (string) $request->input('reservation_code'))
-            )
-            ->when(
-                $request->filled('status'),
-                fn (Builder $query) => $query->where('status', (string) $request->input('status'))
             )
             ->when(
                 $request->has('is_active'),
@@ -108,7 +106,7 @@ class TableSessionController extends Controller
     public function update(UpdateTableSessionRequest $request, int $tableSessionId): JsonResponse
     {
         $tableSession = TableSession::query()
-            ->with(['table', 'cartOrders'])
+            ->with(['table', 'reservation'])
             ->find($tableSessionId);
 
         if (! $tableSession) {
@@ -116,6 +114,7 @@ class TableSessionController extends Controller
         }
 
         $payload = $request->validated();
+        $shouldCancelSession = false;
 
         if (array_key_exists('reservation_code', $payload)) {
             $reservation = $this->resolveReservation($payload['reservation_code']);
@@ -136,11 +135,14 @@ class TableSessionController extends Controller
                 return $error;
             }
 
+            $shouldCancelSession = $payload['status'] === TableSessionStatus::CANCELLED
+                && $payload['status'] !== $tableSession->status;
+
             if (
                 $this->isTerminalStatus($payload['status'])
                 && $payload['status'] !== $tableSession->status
             ) {
-                if ($this->hasOpenCartOrders($tableSession)) {
+                if (! $shouldCancelSession && $this->hasOpenCartOrders($tableSession)) {
                     return $this->error(
                         null,
                         'Phiên bàn vẫn còn đơn đang mở, không thể kết thúc',
@@ -153,7 +155,17 @@ class TableSessionController extends Controller
             }
         }
 
-        DB::transaction(fn () => $tableSession->update($payload));
+        DB::transaction(function () use ($tableSession, $payload, $shouldCancelSession): void {
+            $tableSession->update($payload);
+
+            if (! $shouldCancelSession) {
+                return;
+            }
+
+            $this->cancelSessionCartOrders($tableSession);
+            $tableSession->load('reservation');
+            $this->cancelReservation($tableSession->reservation);
+        });
 
         return $this->success(
             $tableSession->fresh()->load($this->relations()),
@@ -284,6 +296,31 @@ class TableSessionController extends Controller
             ->exists();
     }
 
+    protected function cancelSessionCartOrders(TableSession $tableSession): void
+    {
+        $cartOrders = $tableSession->cartOrders()
+            ->where('is_active', true)
+            ->whereIn('status', [
+                CartOrderStatus::OPEN,
+                CartOrderStatus::LOCKED_FOR_PAYMENT,
+            ])
+            ->get();
+
+        foreach ($cartOrders as $cartOrder) {
+            $cartOrder->items()
+                ->where('is_active', true)
+                ->update([
+                    'line_status' => OrderLineStatus::CANCELLED,
+                    'is_active' => false,
+                ]);
+
+            $cartOrder->update([
+                'status' => CartOrderStatus::CANCELLED,
+                'is_active' => false,
+            ]);
+        }
+    }
+
     protected function createInitialCartOrder(TableSession $tableSession): CartOrder
     {
         return CartOrder::query()->create([
@@ -340,6 +377,20 @@ class TableSessionController extends Controller
         $reservation->update([
             'status' => ReservationStatus::COMPLETED,
             'is_active' => false,
+        ]);
+    }
+
+    protected function cancelReservation(?Reservation $reservation): void
+    {
+        if (! $reservation || $reservation->status === ReservationStatus::CANCELED) {
+            return;
+        }
+
+        $reservation->update([
+            'is_active' => false,
+            'status' => ReservationStatus::CANCELED,
+            'cancelled_at' => $reservation->cancelled_at ?? now(),
+            'cancelled_by_employee' => $reservation->cancelled_by_employee ?? $this->getUserName(),
         ]);
     }
 }
