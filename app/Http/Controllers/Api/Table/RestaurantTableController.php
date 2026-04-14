@@ -16,7 +16,7 @@ class RestaurantTableController extends Controller
     {
         $tables = RestaurantTable::query()
             ->withComputedStatus()
-            ->with('holdingReservation')
+            ->with(['holdingReservation', 'liveSession.reservation'])
             ->ordered()
             ->get();
 
@@ -29,7 +29,7 @@ class RestaurantTableController extends Controller
     {
         $table = RestaurantTable::query()
             ->withComputedStatus()
-            ->with('holdingReservation')
+            ->with(['holdingReservation', 'liveSession.reservation'])
             ->where('slug', $slug)
             ->firstOrFail();
 

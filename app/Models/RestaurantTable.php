@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
  * @property-read int|null $invoices_count
  * @property-read \App\Models\Reservation|null $holdingReservation
+ * @property-read \App\Models\TableSession|null $liveSession
  * @property-read \App\Models\Reservation|null $reservation
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Reservation> $reservations
  * @property-read int|null $reservations_count
@@ -52,6 +53,7 @@ class RestaurantTable extends BaseModel
         'has_live_session',
         'has_holding_reservation',
         'holdingReservation',
+        'liveSession',
     ];
 
     protected $fillable = [
@@ -144,6 +146,22 @@ class RestaurantTable extends BaseModel
             });
     }
 
+    public function liveSession(): HasOne
+    {
+        return $this->hasOne(TableSession::class, 'table_id')
+            ->ofMany([
+                'opened_at' => 'max',
+                'id' => 'max',
+            ], function (Builder $builder) {
+                $builder
+                    ->where('is_active', true)
+                    ->whereIn('status', [
+                        TableSessionStatus::OPEN,
+                        TableSessionStatus::PAYMENT_PENDING,
+                    ]);
+            });
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';
@@ -159,9 +177,11 @@ class RestaurantTable extends BaseModel
     protected function reservation(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->resolveStatus() === RestaurantTableStatus::RESERVED
-                ? $this->resolveHoldingReservation()
-                : null
+            get: fn () => match ($this->resolveStatus()) {
+                RestaurantTableStatus::RESERVED => $this->resolveHoldingReservation(),
+                RestaurantTableStatus::OCCUPIED => $this->resolveLiveSessionReservation(),
+                default => null,
+            }
         );
     }
 
@@ -241,5 +261,20 @@ class RestaurantTable extends BaseModel
         }
 
         return $this->holdingReservation()->first();
+    }
+
+    protected function resolveLiveSessionReservation(): ?Reservation
+    {
+        $liveSession = $this->relationLoaded('liveSession')
+            ? $this->getRelation('liveSession')
+            : $this->liveSession()->with('reservation')->first();
+
+        if (! $liveSession) {
+            return null;
+        }
+
+        $liveSession->loadMissing('reservation');
+
+        return $liveSession->reservation;
     }
 }

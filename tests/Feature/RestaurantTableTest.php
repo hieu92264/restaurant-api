@@ -192,6 +192,68 @@ class RestaurantTableTest extends TestCase
             ->assertJsonMissingPath('metadata.holding_reservation');
     }
 
+    public function test_index_includes_reservation_for_occupied_table_when_live_session_has_reservation(): void
+    {
+        $user = $this->createAuthenticatedUser();
+
+        $table = RestaurantTable::query()->create([
+            'slug' => 'ban-dang-ngoi-tu-dat-ban',
+            'name' => 'Ban dang ngoi tu dat ban',
+            'capacity' => 4,
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+
+        $reservation = $this->createHoldingReservation($table, 'RES-OCCUPIED-001');
+        $reservation->update([
+            'status' => ReservationStatus::COMPLETED,
+            'is_active' => false,
+        ]);
+
+        $this->createLiveSession($table, $user->user_name, $reservation->reservation_code);
+
+        $this->actingAs($user, 'api')
+            ->getJson('/api/v1/table/tables')
+            ->assertOk()
+            ->assertJsonPath('metadata.0.slug', $table->slug)
+            ->assertJsonPath('metadata.0.status', RestaurantTableStatus::OCCUPIED)
+            ->assertJsonPath('metadata.0.reservation.reservation_code', $reservation->reservation_code)
+            ->assertJsonPath('metadata.0.reservation.is_active', false)
+            ->assertJsonPath('metadata.0.reservation.status', ReservationStatus::COMPLETED)
+            ->assertJsonMissingPath('metadata.0.live_session');
+    }
+
+    public function test_show_includes_reservation_for_occupied_table_when_live_session_has_reservation(): void
+    {
+        $user = $this->createAuthenticatedUser();
+
+        $table = RestaurantTable::query()->create([
+            'slug' => 'ban-show-occupied-reservation',
+            'name' => 'Ban show occupied reservation',
+            'capacity' => 6,
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+
+        $reservation = $this->createHoldingReservation($table, 'RES-OCCUPIED-SHOW-001');
+        $reservation->update([
+            'status' => ReservationStatus::COMPLETED,
+            'is_active' => false,
+        ]);
+
+        $this->createLiveSession($table, $user->user_name, $reservation->reservation_code);
+
+        $this->actingAs($user, 'api')
+            ->getJson('/api/v1/table/tables/' . $table->slug)
+            ->assertOk()
+            ->assertJsonPath('metadata.slug', $table->slug)
+            ->assertJsonPath('metadata.status', RestaurantTableStatus::OCCUPIED)
+            ->assertJsonPath('metadata.reservation.reservation_code', $reservation->reservation_code)
+            ->assertJsonPath('metadata.reservation.is_active', false)
+            ->assertJsonPath('metadata.reservation.status', ReservationStatus::COMPLETED)
+            ->assertJsonMissingPath('metadata.live_session');
+    }
+
     public function test_authenticated_user_can_soft_delete_restaurant_table(): void
     {
         $user = $this->createAuthenticatedUser();
@@ -285,6 +347,7 @@ class RestaurantTableTest extends TestCase
             ->findOrFail($table->id);
 
         $this->assertSame(RestaurantTableStatus::OCCUPIED, $table->status);
+        $this->assertNull($table->reservation);
     }
 
     private function createAuthenticatedUser(): User
@@ -319,6 +382,20 @@ class RestaurantTableTest extends TestCase
             'hold_start_time' => now()->subMinutes(5),
             'hold_end_time' => now()->addMinutes(25),
             'table_code' => $table->slug,
+        ]);
+    }
+
+    private function createLiveSession(RestaurantTable $table, string $openedByEmployee, ?string $reservationCode = null): TableSession
+    {
+        return TableSession::query()->create([
+            'table_id' => $table->id,
+            'opened_by_employee' => $openedByEmployee,
+            'guest_count' => 4,
+            'status' => TableSessionStatus::OPEN,
+            'opened_at' => now()->subMinutes(15),
+            'reservation_code' => $reservationCode,
+            'remark' => 'Dang phuc vu',
+            'is_active' => true,
         ]);
     }
 }
