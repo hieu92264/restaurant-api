@@ -7,6 +7,7 @@ use App\Common\Constants\RestaurantTableStatus;
 use App\Common\Constants\TableSessionStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -23,6 +24,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read int|null $cart_orders_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
  * @property-read int|null $invoices_count
+ * @property-read \App\Models\Reservation|null $holdingReservation
+ * @property-read \App\Models\Reservation|null $reservation
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Reservation> $reservations
  * @property-read int|null $reservations_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TableSession> $sessions
@@ -48,6 +51,7 @@ class RestaurantTable extends BaseModel
     protected $hidden = [
         'has_live_session',
         'has_holding_reservation',
+        'holding_reservation',
     ];
 
     protected $fillable = [
@@ -118,6 +122,28 @@ class RestaurantTable extends BaseModel
         return $this->hasMany(Reservation::class, 'table_code', 'slug');
     }
 
+    public function holdingReservation(): HasOne
+    {
+        $now = now();
+
+        return $this->hasOne(Reservation::class, 'table_code', 'slug')
+            ->ofMany([
+                'hold_start_time' => 'max',
+                'id' => 'max',
+            ], function (Builder $builder) use ($now) {
+                $builder
+                    ->where('is_active', true)
+                    ->whereIn('status', [
+                        ReservationStatus::PENDING,
+                        ReservationStatus::CONFIRMED,
+                    ])
+                    ->whereNotNull('hold_start_time')
+                    ->whereNotNull('hold_end_time')
+                    ->where('hold_start_time', '<=', $now)
+                    ->where('hold_end_time', '>=', $now);
+            });
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';
@@ -127,6 +153,15 @@ class RestaurantTable extends BaseModel
     {
         return Attribute::make(
             get: fn () => $this->resolveStatus()
+        );
+    }
+
+    protected function reservation(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->resolveStatus() === RestaurantTableStatus::RESERVED
+                ? $this->resolveHoldingReservation()
+                : null
         );
     }
 
@@ -197,5 +232,14 @@ class RestaurantTable extends BaseModel
             ->where('hold_start_time', '<=', $now)
             ->where('hold_end_time', '>=', $now)
             ->exists();
+    }
+
+    protected function resolveHoldingReservation(): ?Reservation
+    {
+        if ($this->relationLoaded('holdingReservation')) {
+            return $this->getRelation('holdingReservation');
+        }
+
+        return $this->holdingReservation()->first();
     }
 }

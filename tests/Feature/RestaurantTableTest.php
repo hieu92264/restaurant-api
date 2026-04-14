@@ -133,6 +133,63 @@ class RestaurantTableTest extends TestCase
             ->assertJsonPath('metadata.2.slug', 'ban-c');
     }
 
+    public function test_index_includes_reservation_for_reserved_table_only(): void
+    {
+        $user = $this->createAuthenticatedUser();
+
+        $reservedTable = RestaurantTable::query()->create([
+            'slug' => 'ban-da-dat',
+            'name' => 'Ban da dat',
+            'capacity' => 4,
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+
+        $availableTable = RestaurantTable::query()->create([
+            'slug' => 'ban-con-trong',
+            'name' => 'Ban con trong',
+            'capacity' => 4,
+            'sort_order' => 2,
+            'is_active' => true,
+        ]);
+
+        $this->createHoldingReservation($reservedTable, 'RES-INDEX-001');
+
+        $this->actingAs($user, 'api')
+            ->getJson('/api/v1/table/tables')
+            ->assertOk()
+            ->assertJsonPath('metadata.0.slug', $reservedTable->slug)
+            ->assertJsonPath('metadata.0.status', RestaurantTableStatus::RESERVED)
+            ->assertJsonPath('metadata.0.reservation.reservation_code', 'RES-INDEX-001')
+            ->assertJsonPath('metadata.0.reservation.table_code', $reservedTable->slug)
+            ->assertJsonPath('metadata.1.slug', $availableTable->slug)
+            ->assertJsonPath('metadata.1.status', RestaurantTableStatus::AVAILABLE)
+            ->assertJsonPath('metadata.1.reservation', null);
+    }
+
+    public function test_show_includes_reservation_when_table_is_reserved(): void
+    {
+        $user = $this->createAuthenticatedUser();
+
+        $table = RestaurantTable::query()->create([
+            'slug' => 'ban-show-reserved',
+            'name' => 'Ban show reserved',
+            'capacity' => 6,
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+
+        $this->createHoldingReservation($table, 'RES-SHOW-001');
+
+        $this->actingAs($user, 'api')
+            ->getJson('/api/v1/table/tables/' . $table->slug)
+            ->assertOk()
+            ->assertJsonPath('metadata.slug', $table->slug)
+            ->assertJsonPath('metadata.status', RestaurantTableStatus::RESERVED)
+            ->assertJsonPath('metadata.reservation.reservation_code', 'RES-SHOW-001')
+            ->assertJsonPath('metadata.reservation.table_code', $table->slug);
+    }
+
     public function test_authenticated_user_can_soft_delete_restaurant_table(): void
     {
         $user = $this->createAuthenticatedUser();
@@ -243,6 +300,23 @@ class RestaurantTableTest extends TestCase
             'email' => 'table-admin@example.com',
             'password' => 'password',
             'role_id' => $role->id,
+        ]);
+    }
+
+    private function createHoldingReservation(RestaurantTable $table, string $reservationCode): Reservation
+    {
+        return Reservation::query()->create([
+            'is_active' => true,
+            'reservation_code' => $reservationCode,
+            'customer_name' => 'Khach giu ban',
+            'customer_phone' => '0900000001',
+            'guest_count' => 4,
+            'reservation_time' => now()->addMinutes(10),
+            'status' => ReservationStatus::CONFIRMED,
+            'deposit_amount' => 0,
+            'hold_start_time' => now()->subMinutes(5),
+            'hold_end_time' => now()->addMinutes(25),
+            'table_code' => $table->slug,
         ]);
     }
 }

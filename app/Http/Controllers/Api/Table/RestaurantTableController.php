@@ -16,8 +16,11 @@ class RestaurantTableController extends Controller
     {
         $tables = RestaurantTable::query()
             ->withComputedStatus()
+            ->with('holdingReservation')
             ->ordered()
             ->get();
+
+        $tables->each->append('reservation');
 
         return $this->success($tables);
     }
@@ -26,8 +29,11 @@ class RestaurantTableController extends Controller
     {
         $table = RestaurantTable::query()
             ->withComputedStatus()
+            ->with('holdingReservation')
             ->where('slug', $slug)
             ->firstOrFail();
+
+        $table->append('reservation');
 
         return $this->success($table);
     }
