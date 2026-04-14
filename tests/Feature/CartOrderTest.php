@@ -230,7 +230,7 @@ class CartOrderTest extends TestCase
             ->assertJsonPath('metadata.item_list', []);
     }
 
-    public function test_authenticated_user_gets_not_found_when_table_has_no_current_open_cart_order(): void
+    public function test_authenticated_user_gets_empty_payload_when_table_has_no_current_open_cart_order(): void
     {
         $user = $this->createAuthenticatedUser();
         $table = $this->createTable('b05');
@@ -239,7 +239,11 @@ class CartOrderTest extends TestCase
 
         $this->actingAs($user, 'api')
             ->getJson('/api/v1/table/cart-orders/current-by-table/' . $table->id)
-            ->assertNotFound();
+            ->assertOk()
+            ->assertJsonPath('metadata.cart_order_id', null)
+            ->assertJsonPath('metadata.table_id', $table->id)
+            ->assertJsonPath('metadata.session_id', null)
+            ->assertJsonPath('metadata.item_list', []);
     }
 
     public function test_authenticated_user_can_soft_delete_cart_order(): void

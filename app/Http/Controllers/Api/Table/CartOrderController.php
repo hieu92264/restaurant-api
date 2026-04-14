@@ -98,7 +98,7 @@ class CartOrderController extends Controller
             ->first();
 
         if (! $cartOrder) {
-            return $this->error(null, 'Không tìm thấy đơn tạm tính đang mở của bàn này!', Response::HTTP_NOT_FOUND);
+            return $this->success([]);
         }
 
         return $this->success($this->transformCurrentCartOrder($cartOrder));
