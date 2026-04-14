@@ -51,7 +51,7 @@ class RestaurantTable extends BaseModel
     protected $hidden = [
         'has_live_session',
         'has_holding_reservation',
-        'holding_reservation',
+        'holdingReservation',
     ];
 
     protected $fillable = [

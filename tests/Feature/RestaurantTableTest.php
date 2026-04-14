@@ -162,6 +162,7 @@ class RestaurantTableTest extends TestCase
             ->assertJsonPath('metadata.0.status', RestaurantTableStatus::RESERVED)
             ->assertJsonPath('metadata.0.reservation.reservation_code', 'RES-INDEX-001')
             ->assertJsonPath('metadata.0.reservation.table_code', $reservedTable->slug)
+            ->assertJsonMissingPath('metadata.0.holding_reservation')
             ->assertJsonPath('metadata.1.slug', $availableTable->slug)
             ->assertJsonPath('metadata.1.status', RestaurantTableStatus::AVAILABLE)
             ->assertJsonPath('metadata.1.reservation', null);
@@ -187,7 +188,8 @@ class RestaurantTableTest extends TestCase
             ->assertJsonPath('metadata.slug', $table->slug)
             ->assertJsonPath('metadata.status', RestaurantTableStatus::RESERVED)
             ->assertJsonPath('metadata.reservation.reservation_code', 'RES-SHOW-001')
-            ->assertJsonPath('metadata.reservation.table_code', $table->slug);
+            ->assertJsonPath('metadata.reservation.table_code', $table->slug)
+            ->assertJsonMissingPath('metadata.holding_reservation');
     }
 
     public function test_authenticated_user_can_soft_delete_restaurant_table(): void
