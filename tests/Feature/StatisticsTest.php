@@ -124,13 +124,15 @@ class StatisticsTest extends TestCase
             ->getJson('/api/v1/statistics/top-dishes?year=2026&month=4&top_limit=3')
             ->assertOk()
             ->assertJsonPath('metadata.items.0.name', 'Com ga')
-            ->assertJsonPath('metadata.items.0.quantity_sold', 2);
+            ->assertJsonPath('metadata.items.0.quantity_sold', 2)
+            ->assertJsonPath('metadata.items.0.image.url', 'storage/dishes/com-ga-stat.webp');
 
         $this->actingAs($user, 'api')
             ->getJson('/api/v1/statistics/top-combos?year=2026&month=4&top_limit=3')
             ->assertOk()
             ->assertJsonPath('metadata.items.0.name', 'Combo trua')
-            ->assertJsonPath('metadata.items.0.quantity_sold', 3);
+            ->assertJsonPath('metadata.items.0.quantity_sold', 3)
+            ->assertJsonPath('metadata.items.0.image.url', 'storage/combos/combo-trua.webp');
 
         $this->actingAs($user, 'api')
             ->getJson('/api/v1/statistics/summary?year=2026&month=4&top_limit=3')
@@ -143,8 +145,10 @@ class StatisticsTest extends TestCase
             ->assertJsonPath('metadata.average_service_time.average_minutes', 75)
             ->assertJsonPath('metadata.top_dishes.0.name', 'Com ga')
             ->assertJsonPath('metadata.top_dishes.0.quantity_sold', 2)
+            ->assertJsonPath('metadata.top_dishes.0.image.url', 'storage/dishes/com-ga-stat.webp')
             ->assertJsonPath('metadata.top_combos.0.name', 'Combo trua')
-            ->assertJsonPath('metadata.top_combos.0.quantity_sold', 3);
+            ->assertJsonPath('metadata.top_combos.0.quantity_sold', 3)
+            ->assertJsonPath('metadata.top_combos.0.image.url', 'storage/combos/combo-trua.webp');
     }
 
     private function createAuthenticatedUser(): User
@@ -191,7 +195,11 @@ class StatisticsTest extends TestCase
             'slug' => 'combo-trua',
             'name' => 'Combo trua',
             'remark' => null,
-            'combo_image' => null,
+            'combo_image' => [
+                'name' => 'combo-trua.webp',
+                'url' => 'storage/combos/combo-trua.webp',
+                'size' => 34567,
+            ],
             'discount_price' => 0,
             'max_use_times' => null,
             'tag' => null,
@@ -225,7 +233,11 @@ class StatisticsTest extends TestCase
                 'price' => $price,
                 'original_price' => $price,
                 'cost_price' => max($price - 20000, 0),
-                'image' => null,
+                'image' => [
+                    'name' => $slug . '.webp',
+                    'url' => 'storage/dishes/' . $slug . '.webp',
+                    'size' => 12345,
+                ],
                 'unit' => 'phan',
                 'is_featured' => false,
                 'published_at' => now()->toDateString(),

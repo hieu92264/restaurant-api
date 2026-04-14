@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Common\Constants\InvoicePaymentStatus;
 use App\Common\Constants\TableSessionStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Combo;
+use App\Models\Dish;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\TableSession;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class StatisticsController extends Controller
@@ -177,7 +180,7 @@ class StatisticsController extends Controller
 
     protected function topDishes(Carbon $start, Carbon $end, int $limit): array
     {
-        return InvoiceItem::query()
+        $items = InvoiceItem::query()
             ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
             ->where('invoice_items.is_active', true)
             ->whereNull('invoice_items.combo_id')
@@ -191,11 +194,17 @@ class StatisticsController extends Controller
             ->limit($limit)
             ->get([
                 'invoice_items.item_name_snapshot as name',
+                DB::raw('MAX(invoice_items.dish_id) as dish_id'),
                 DB::raw('SUM(invoice_items.quantity) as quantity_sold'),
                 DB::raw('SUM(invoice_items.line_total) as revenue_amount'),
-            ])
+            ]);
+
+        [$dishesById, $dishesByName] = $this->resolveStatisticDishes($items);
+
+        return $items
             ->map(fn ($item) => [
                 'name' => $item->name,
+                'image' => $this->resolveStatisticDishImage($item, $dishesById, $dishesByName),
                 'quantity_sold' => (float) $item->quantity_sold,
                 'revenue_amount' => (int) $item->revenue_amount,
             ])
@@ -204,7 +213,7 @@ class StatisticsController extends Controller
 
     protected function topCombos(Carbon $start, Carbon $end, int $limit): array
     {
-        return InvoiceItem::query()
+        $items = InvoiceItem::query()
             ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
             ->where('invoice_items.is_active', true)
             ->whereNotNull('invoice_items.combo_id')
@@ -221,13 +230,85 @@ class StatisticsController extends Controller
                 'invoice_items.item_name_snapshot as name',
                 DB::raw('SUM(invoice_items.quantity) as quantity_sold'),
                 DB::raw('SUM(invoice_items.line_total) as revenue_amount'),
-            ])
+            ]);
+
+        $combosById = $this->resolveStatisticCombos($items);
+
+        return $items
             ->map(fn ($item) => [
                 'combo_id' => (int) $item->combo_id,
                 'name' => $item->name,
+                'image' => $combosById->get((int) $item->combo_id)?->combo_image,
                 'quantity_sold' => (float) $item->quantity_sold,
                 'revenue_amount' => (int) $item->revenue_amount,
             ])
             ->all();
+    }
+
+    protected function resolveStatisticDishes(Collection $items): array
+    {
+        $dishIds = $items
+            ->pluck('dish_id')
+            ->filter(fn ($dishId) => is_numeric($dishId))
+            ->map(fn ($dishId) => (int) $dishId)
+            ->unique()
+            ->values();
+
+        $dishNames = $items
+            ->pluck('name')
+            ->filter(fn ($name) => is_string($name) && $name !== '')
+            ->unique()
+            ->values();
+
+        if ($dishIds->isEmpty() && $dishNames->isEmpty()) {
+            return [collect(), collect()];
+        }
+
+        $dishes = Dish::query()
+            ->where(function ($query) use ($dishIds, $dishNames): void {
+                if ($dishIds->isNotEmpty()) {
+                    $query->whereIn('id', $dishIds->all());
+                }
+
+                if ($dishNames->isNotEmpty()) {
+                    $query->orWhereIn('name', $dishNames->all());
+                }
+            })
+            ->get();
+
+        return [
+            $dishes->keyBy('id'),
+            $dishes->keyBy('name'),
+        ];
+    }
+
+    protected function resolveStatisticDishImage(object $item, Collection $dishesById, Collection $dishesByName): array|string|null
+    {
+        $dish = is_numeric($item->dish_id ?? null)
+            ? $dishesById->get((int) $item->dish_id)
+            : null;
+
+        $dish ??= $dishesByName->get($item->name);
+
+        return $dish?->image;
+    }
+
+    protected function resolveStatisticCombos(Collection $items): Collection
+    {
+        $comboIds = $items
+            ->pluck('combo_id')
+            ->filter(fn ($comboId) => is_numeric($comboId))
+            ->map(fn ($comboId) => (int) $comboId)
+            ->unique()
+            ->values();
+
+        if ($comboIds->isEmpty()) {
+            return collect();
+        }
+
+        return Combo::query()
+            ->whereIn('id', $comboIds->all())
+            ->get()
+            ->keyBy('id');
     }
 }
