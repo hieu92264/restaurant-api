@@ -102,6 +102,26 @@ class InvoiceTest extends TestCase
         $this->assertSame(CartOrderStatus::CONVERTED_TO_INVOICE, $cartOrder->status);
     }
 
+    public function test_authenticated_user_can_store_invoice_with_bank_qr_and_it_is_normalized_to_transfer(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $table = $this->createTable('c02-bank-qr');
+        $session = $this->createSession($table, $user->user_name, TableSessionStatus::OPEN);
+        $cartOrder = $this->createCartOrder($session, $table, $user->user_name, CartOrderStatus::OPEN);
+
+        $this->actingAs($user, 'api')->postJson('/api/v1/table/invoices', [
+            'cart_order_id' => $cartOrder->id,
+            'paid_amount' => 30000,
+            'payment_method' => PaymentMethod::BANK_QR,
+        ])->assertCreated()
+            ->assertJsonPath('metadata.payment_method', PaymentMethod::TRANSFER);
+
+        $this->assertDatabaseHas('invoices', [
+            'cart_order_id' => $cartOrder->id,
+            'payment_method' => PaymentMethod::TRANSFER,
+        ]);
+    }
+
     public function test_authenticated_user_cannot_store_invoice_when_cart_order_status_is_invalid(): void
     {
         $user = $this->createAuthenticatedUser();
