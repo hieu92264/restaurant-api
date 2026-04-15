@@ -18,6 +18,22 @@ use Illuminate\Support\Facades\DB;
 
 class StatisticsController extends Controller
 {
+    public function monthlyRevenue(Request $request): JsonResponse
+    {
+        [$year, $month] = $this->resolvePeriod($request);
+        [$monthStart, $monthEnd] = $this->buildPeriodBoundaries($year, $month);
+
+        return $this->success([
+            'filter' => [
+                'year' => $year,
+                'month' => $month,
+                'from_date' => $monthStart->toDateString(),
+                'to_date' => $monthEnd->toDateString(),
+            ],
+            'monthly_revenue' => $this->buildRevenueSnapshot($monthStart, $monthEnd, sprintf('%02d/%04d', $month, $year)),
+        ]);
+    }
+
     public function revenue(Request $request): JsonResponse
     {
         [$year, $month] = $this->resolvePeriod($request);
@@ -39,6 +55,24 @@ class StatisticsController extends Controller
                 'label' => (string) $year,
                 'total_amount' => (int) $yearlyRevenue,
             ],
+        ]);
+    }
+
+    public function revenueChart(Request $request): JsonResponse
+    {
+        [$year, $month] = $this->resolvePeriod($request);
+        [$monthStart, $monthEnd] = $this->buildPeriodBoundaries($year, $month);
+
+        $chartEnd = $this->resolveRevenueChartEnd($year, $month, $monthEnd);
+
+        return $this->success([
+            'filter' => [
+                'year' => $year,
+                'month' => $month,
+                'from_date' => $monthStart->toDateString(),
+                'to_date' => $chartEnd->toDateString(),
+            ],
+            'data' => $this->buildRevenueChart($monthStart, $chartEnd),
         ]);
     }
 
@@ -152,6 +186,58 @@ class StatisticsController extends Controller
             ->where('payment_status', InvoicePaymentStatus::PAID)
             ->whereNotNull('paid_at')
             ->whereBetween('paid_at', [$start, $end]);
+    }
+
+    protected function buildRevenueSnapshot(Carbon $start, Carbon $end, string $label): array
+    {
+        $aggregate = $this->paidInvoicesBetween($start, $end)
+            ->selectRaw('COUNT(*) as paid_invoice_count')
+            ->selectRaw('COALESCE(SUM(total_amount), 0) as total_amount')
+            ->first();
+
+        return [
+            'label' => $label,
+            'from_date' => $start->toDateString(),
+            'to_date' => $end->toDateString(),
+            'paid_invoice_count' => (int) ($aggregate?->paid_invoice_count ?? 0),
+            'total_amount' => (int) ($aggregate?->total_amount ?? 0),
+        ];
+    }
+
+    protected function resolveRevenueChartEnd(int $year, int $month, Carbon $monthEnd): Carbon
+    {
+        $today = now();
+
+        if ($year === $today->year && $month === $today->month) {
+            return $today->copy()->endOfDay();
+        }
+
+        return $monthEnd;
+    }
+
+    protected function buildRevenueChart(Carbon $start, Carbon $end): array
+    {
+        $totalsByDate = $this->paidInvoicesBetween($start, $end)
+            ->selectRaw('DATE(paid_at) as paid_date')
+            ->selectRaw('SUM(total_amount) as total_amount')
+            ->groupBy(DB::raw('DATE(paid_at)'))
+            ->pluck('total_amount', 'paid_date');
+
+        $data = [];
+        $cursor = $start->copy()->startOfDay();
+
+        while ($cursor->lte($end)) {
+            $date = $cursor->toDateString();
+
+            $data[] = [
+                'total_amount' => (int) ($totalsByDate[$date] ?? 0),
+                'date' => $date,
+            ];
+
+            $cursor->addDay();
+        }
+
+        return $data;
     }
 
     protected function buildAverageServiceTime(Carbon $start, Carbon $end): array

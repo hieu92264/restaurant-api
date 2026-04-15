@@ -14,6 +14,7 @@ use App\Models\Role;
 use App\Models\TableSession;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class StatisticsTest extends TestCase
@@ -22,133 +23,167 @@ class StatisticsTest extends TestCase
 
     public function test_authenticated_user_can_get_statistics_routes(): void
     {
-        $user = $this->createAuthenticatedUser();
-        $table = $this->createTable('s01');
-        $combo = $this->createCombo();
-        $comGa = $this->createDish('com-ga-stat', 'Com ga', 50000);
-        $bunBo = $this->createDish('bun-bo-stat', 'Bun bo', 80000);
-        $phoBo = $this->createDish('pho-bo-stat', 'Pho bo', 50000);
+        Carbon::setTestNow('2026-04-15 09:00:00');
 
-        $aprilSessionOne = $this->createSession($table, $user->user_name, '2026-04-10 10:00:00', '2026-04-10 11:00:00', TableSessionStatus::PAID);
-        $aprilSessionTwo = $this->createSession($table, $user->user_name, '2026-04-11 12:00:00', '2026-04-11 13:30:00', TableSessionStatus::CLOSED);
-        $marchSession = $this->createSession($table, $user->user_name, '2026-03-15 18:00:00', '2026-03-15 19:00:00', TableSessionStatus::PAID);
+        try {
+            $user = $this->createAuthenticatedUser();
+            $table = $this->createTable('s01');
+            $combo = $this->createCombo();
+            $comGa = $this->createDish('com-ga-stat', 'Com ga', 50000);
+            $bunBo = $this->createDish('bun-bo-stat', 'Bun bo', 80000);
+            $phoBo = $this->createDish('pho-bo-stat', 'Pho bo', 50000);
 
-        $aprilInvoiceOne = $this->createPaidInvoice($table, $aprilSessionOne, $user->user_name, '2026-04-10 11:05:00', 180000);
-        $aprilInvoiceOne->items()->createMany([
-            [
-                'dish_id' => $comGa->id,
+            $aprilSessionOne = $this->createSession($table, $user->user_name, '2026-04-10 10:00:00', '2026-04-10 11:00:00', TableSessionStatus::PAID);
+            $aprilSessionTwo = $this->createSession($table, $user->user_name, '2026-04-11 12:00:00', '2026-04-11 13:30:00', TableSessionStatus::CLOSED);
+            $marchSession = $this->createSession($table, $user->user_name, '2026-03-15 18:00:00', '2026-03-15 19:00:00', TableSessionStatus::PAID);
+
+            $aprilInvoiceOne = $this->createPaidInvoice($table, $aprilSessionOne, $user->user_name, '2026-04-10 11:05:00', 180000);
+            $aprilInvoiceOne->items()->createMany([
+                [
+                    'dish_id' => $comGa->id,
+                    'combo_id' => null,
+                    'item_name_snapshot' => 'Com ga',
+                    'variant_name_snapshot' => null,
+                    'quantity' => 2,
+                    'base_unit_price' => 50000,
+                    'option_total_price' => 0,
+                    'unit_final_price' => 50000,
+                    'line_total' => 100000,
+                    'item_note' => null,
+                    'is_active' => true,
+                ],
+                [
+                    'combo_id' => $combo->id,
+                    'item_name_snapshot' => 'Combo trua',
+                    'variant_name_snapshot' => null,
+                    'quantity' => 2,
+                    'base_unit_price' => 40000,
+                    'option_total_price' => 0,
+                    'unit_final_price' => 40000,
+                    'line_total' => 80000,
+                    'item_note' => null,
+                    'is_active' => true,
+                ],
+            ]);
+
+            $aprilInvoiceTwo = $this->createPaidInvoice($table, $aprilSessionTwo, $user->user_name, '2026-04-11 13:35:00', 120000);
+            $aprilInvoiceTwo->items()->createMany([
+                [
+                    'dish_id' => $bunBo->id,
+                    'combo_id' => null,
+                    'item_name_snapshot' => 'Bun bo',
+                    'variant_name_snapshot' => null,
+                    'quantity' => 1,
+                    'base_unit_price' => 80000,
+                    'option_total_price' => 0,
+                    'unit_final_price' => 80000,
+                    'line_total' => 80000,
+                    'item_note' => null,
+                    'is_active' => true,
+                ],
+                [
+                    'combo_id' => $combo->id,
+                    'item_name_snapshot' => 'Combo trua',
+                    'variant_name_snapshot' => null,
+                    'quantity' => 1,
+                    'base_unit_price' => 40000,
+                    'option_total_price' => 0,
+                    'unit_final_price' => 40000,
+                    'line_total' => 40000,
+                    'item_note' => null,
+                    'is_active' => true,
+                ],
+            ]);
+
+            $marchInvoice = $this->createPaidInvoice($table, $marchSession, $user->user_name, '2026-03-15 19:10:00', 50000);
+            $marchInvoice->items()->create([
+                'dish_id' => $phoBo->id,
                 'combo_id' => null,
-                'item_name_snapshot' => 'Com ga',
+                'item_name_snapshot' => 'Pho bo',
                 'variant_name_snapshot' => null,
-                'quantity' => 2,
+                'quantity' => 1,
                 'base_unit_price' => 50000,
                 'option_total_price' => 0,
                 'unit_final_price' => 50000,
-                'line_total' => 100000,
+                'line_total' => 50000,
                 'item_note' => null,
                 'is_active' => true,
-            ],
-            [
-                'combo_id' => $combo->id,
-                'item_name_snapshot' => 'Combo trua',
-                'variant_name_snapshot' => null,
-                'quantity' => 2,
-                'base_unit_price' => 40000,
-                'option_total_price' => 0,
-                'unit_final_price' => 40000,
-                'line_total' => 80000,
-                'item_note' => null,
-                'is_active' => true,
-            ],
-        ]);
+            ]);
 
-        $aprilInvoiceTwo = $this->createPaidInvoice($table, $aprilSessionTwo, $user->user_name, '2026-04-11 13:35:00', 120000);
-        $aprilInvoiceTwo->items()->createMany([
-            [
-                'dish_id' => $bunBo->id,
-                'combo_id' => null,
-                'item_name_snapshot' => 'Bun bo',
-                'variant_name_snapshot' => null,
-                'quantity' => 1,
-                'base_unit_price' => 80000,
-                'option_total_price' => 0,
-                'unit_final_price' => 80000,
-                'line_total' => 80000,
-                'item_note' => null,
-                'is_active' => true,
-            ],
-            [
-                'combo_id' => $combo->id,
-                'item_name_snapshot' => 'Combo trua',
-                'variant_name_snapshot' => null,
-                'quantity' => 1,
-                'base_unit_price' => 40000,
-                'option_total_price' => 0,
-                'unit_final_price' => 40000,
-                'line_total' => 40000,
-                'item_note' => null,
-                'is_active' => true,
-            ],
-        ]);
+            $this->actingAs($user, 'api')
+                ->getJson('/api/v1/statistics/monthly-revenue?year=2026&month=4')
+                ->assertOk()
+                ->assertJsonPath('metadata.filter.year', 2026)
+                ->assertJsonPath('metadata.filter.month', 4)
+                ->assertJsonPath('metadata.filter.from_date', '2026-04-01')
+                ->assertJsonPath('metadata.filter.to_date', '2026-04-30')
+                ->assertJsonPath('metadata.monthly_revenue.label', '04/2026')
+                ->assertJsonPath('metadata.monthly_revenue.paid_invoice_count', 2)
+                ->assertJsonPath('metadata.monthly_revenue.total_amount', 300000);
 
-        $marchInvoice = $this->createPaidInvoice($table, $marchSession, $user->user_name, '2026-03-15 19:10:00', 50000);
-        $marchInvoice->items()->create([
-            'dish_id' => $phoBo->id,
-            'combo_id' => null,
-            'item_name_snapshot' => 'Pho bo',
-            'variant_name_snapshot' => null,
-            'quantity' => 1,
-            'base_unit_price' => 50000,
-            'option_total_price' => 0,
-            'unit_final_price' => 50000,
-            'line_total' => 50000,
-            'item_note' => null,
-            'is_active' => true,
-        ]);
+            $this->actingAs($user, 'api')
+                ->getJson('/api/v1/statistics/revenue?year=2026&month=4')
+                ->assertOk()
+                ->assertJsonPath('metadata.filter.year', 2026)
+                ->assertJsonPath('metadata.filter.month', 4)
+                ->assertJsonPath('metadata.month.total_amount', 300000)
+                ->assertJsonPath('metadata.year.total_amount', 350000);
 
-        $this->actingAs($user, 'api')
-            ->getJson('/api/v1/statistics/revenue?year=2026&month=4')
-            ->assertOk()
-            ->assertJsonPath('metadata.filter.year', 2026)
-            ->assertJsonPath('metadata.filter.month', 4)
-            ->assertJsonPath('metadata.month.total_amount', 300000)
-            ->assertJsonPath('metadata.year.total_amount', 350000);
+            $this->actingAs($user, 'api')
+                ->getJson('/api/v1/statistics/revenue-chart?year=2026&month=4')
+                ->assertOk()
+                ->assertJsonPath('metadata.filter.year', 2026)
+                ->assertJsonPath('metadata.filter.month', 4)
+                ->assertJsonPath('metadata.filter.from_date', '2026-04-01')
+                ->assertJsonPath('metadata.filter.to_date', '2026-04-15')
+                ->assertJsonCount(15, 'metadata.data')
+                ->assertJsonPath('metadata.data.0.date', '2026-04-01')
+                ->assertJsonPath('metadata.data.0.total_amount', 0)
+                ->assertJsonPath('metadata.data.9.date', '2026-04-10')
+                ->assertJsonPath('metadata.data.9.total_amount', 180000)
+                ->assertJsonPath('metadata.data.10.date', '2026-04-11')
+                ->assertJsonPath('metadata.data.10.total_amount', 120000)
+                ->assertJsonPath('metadata.data.14.date', '2026-04-15')
+                ->assertJsonPath('metadata.data.14.total_amount', 0);
 
-        $this->actingAs($user, 'api')
-            ->getJson('/api/v1/statistics/average-service-time?year=2026&month=4')
-            ->assertOk()
-            ->assertJsonPath('metadata.average_service_time.served_sessions', 2)
-            ->assertJsonPath('metadata.average_service_time.average_minutes', 75);
+            $this->actingAs($user, 'api')
+                ->getJson('/api/v1/statistics/average-service-time?year=2026&month=4')
+                ->assertOk()
+                ->assertJsonPath('metadata.average_service_time.served_sessions', 2)
+                ->assertJsonPath('metadata.average_service_time.average_minutes', 75);
 
-        $this->actingAs($user, 'api')
-            ->getJson('/api/v1/statistics/top-dishes?year=2026&month=4&top_limit=3')
-            ->assertOk()
-            ->assertJsonPath('metadata.items.0.name', 'Com ga')
-            ->assertJsonPath('metadata.items.0.quantity_sold', 2)
-            ->assertJsonPath('metadata.items.0.image.url', 'storage/dishes/com-ga-stat.webp');
+            $this->actingAs($user, 'api')
+                ->getJson('/api/v1/statistics/top-dishes?year=2026&month=4&top_limit=3')
+                ->assertOk()
+                ->assertJsonPath('metadata.items.0.name', 'Com ga')
+                ->assertJsonPath('metadata.items.0.quantity_sold', 2)
+                ->assertJsonPath('metadata.items.0.image.url', 'storage/dishes/com-ga-stat.webp');
 
-        $this->actingAs($user, 'api')
-            ->getJson('/api/v1/statistics/top-combos?year=2026&month=4&top_limit=3')
-            ->assertOk()
-            ->assertJsonPath('metadata.items.0.name', 'Combo trua')
-            ->assertJsonPath('metadata.items.0.quantity_sold', 3)
-            ->assertJsonPath('metadata.items.0.image.url', 'storage/combos/combo-trua.webp');
+            $this->actingAs($user, 'api')
+                ->getJson('/api/v1/statistics/top-combos?year=2026&month=4&top_limit=3')
+                ->assertOk()
+                ->assertJsonPath('metadata.items.0.name', 'Combo trua')
+                ->assertJsonPath('metadata.items.0.quantity_sold', 3)
+                ->assertJsonPath('metadata.items.0.image.url', 'storage/combos/combo-trua.webp');
 
-        $this->actingAs($user, 'api')
-            ->getJson('/api/v1/statistics/summary?year=2026&month=4&top_limit=3')
-            ->assertOk()
-            ->assertJsonPath('metadata.filter.year', 2026)
-            ->assertJsonPath('metadata.filter.month', 4)
-            ->assertJsonPath('metadata.revenue.month.total_amount', 300000)
-            ->assertJsonPath('metadata.revenue.year.total_amount', 350000)
-            ->assertJsonPath('metadata.average_service_time.served_sessions', 2)
-            ->assertJsonPath('metadata.average_service_time.average_minutes', 75)
-            ->assertJsonPath('metadata.top_dishes.0.name', 'Com ga')
-            ->assertJsonPath('metadata.top_dishes.0.quantity_sold', 2)
-            ->assertJsonPath('metadata.top_dishes.0.image.url', 'storage/dishes/com-ga-stat.webp')
-            ->assertJsonPath('metadata.top_combos.0.name', 'Combo trua')
-            ->assertJsonPath('metadata.top_combos.0.quantity_sold', 3)
-            ->assertJsonPath('metadata.top_combos.0.image.url', 'storage/combos/combo-trua.webp');
+            $this->actingAs($user, 'api')
+                ->getJson('/api/v1/statistics/summary?year=2026&month=4&top_limit=3')
+                ->assertOk()
+                ->assertJsonPath('metadata.filter.year', 2026)
+                ->assertJsonPath('metadata.filter.month', 4)
+                ->assertJsonPath('metadata.revenue.month.total_amount', 300000)
+                ->assertJsonPath('metadata.revenue.year.total_amount', 350000)
+                ->assertJsonPath('metadata.average_service_time.served_sessions', 2)
+                ->assertJsonPath('metadata.average_service_time.average_minutes', 75)
+                ->assertJsonPath('metadata.top_dishes.0.name', 'Com ga')
+                ->assertJsonPath('metadata.top_dishes.0.quantity_sold', 2)
+                ->assertJsonPath('metadata.top_dishes.0.image.url', 'storage/dishes/com-ga-stat.webp')
+                ->assertJsonPath('metadata.top_combos.0.name', 'Combo trua')
+                ->assertJsonPath('metadata.top_combos.0.quantity_sold', 3)
+                ->assertJsonPath('metadata.top_combos.0.image.url', 'storage/combos/combo-trua.webp');
+        } finally {
+            Carbon::setTestNow();
+        }
     }
 
     private function createAuthenticatedUser(): User
