@@ -1803,8 +1803,37 @@
         },
         {
             "name": "Statistics",
-            "description": "API thống kê phục vụ các màn hình báo cáo doanh thu và hiệu suất vận hành.\n\nRoute hiện có:\n- `GET /statistics/revenue`\n- `GET /statistics/average-service-time`\n- `GET /statistics/top-dishes`\n- `GET /statistics/top-combos`\n- `GET /statistics/summary`\n\nLưu ý cho FE:\n- Các route đều cần đăng nhập `auth:api`.\n- `year`, `month` là bộ lọc chính. Nếu không truyền, backend mặc định dùng tháng/năm hiện tại.\n- `top_limit` chỉ áp dụng cho top món và top combo, mặc định `5`.\n- Doanh thu và top bán chạy hiện được tính từ `invoice` đã `PAID` và còn active.",
+            "description": "API thống kê phục vụ các màn hình báo cáo doanh thu và hiệu suất vận hành.\n\nRoute hiện có:\n- `GET /statistics/monthly-revenue`\n- `GET /statistics/revenue`\n- `GET /statistics/revenue-chart`\n- `GET /statistics/average-service-time`\n- `GET /statistics/top-dishes`\n- `GET /statistics/top-combos`\n- `GET /statistics/summary`\n\nLưu ý cho FE:\n- Các route đều cần đăng nhập `auth:api`.\n- `year`, `month` là bộ lọc chính. Nếu không truyền, backend mặc định dùng tháng/năm hiện tại.\n- `top_limit` chỉ áp dụng cho top món và top combo, mặc định `5`.\n- Doanh thu và top bán chạy hiện được tính từ `invoice` đã `PAID` và còn active.\n- `revenue-chart` trả mảng `metadata.data` theo ngày với format `{ total_amount, date }`, và tự fill các ngày không có doanh thu bằng `0`.",
             "item": [
+                {
+                    "name": "Monthly Revenue",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/statistics/monthly-revenue?year={{stat_year}}&month={{stat_month}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["statistics", "monthly-revenue"],
+                            "query": [
+                                {
+                                    "key": "year",
+                                    "value": "{{stat_year}}"
+                                },
+                                {
+                                    "key": "month",
+                                    "value": "{{stat_month}}"
+                                }
+                            ]
+                        },
+                        "description": "Lấy snapshot doanh thu của tháng được chọn, gồm `paid_invoice_count`, `total_amount`, `from_date`, `to_date`."
+                    },
+                    "response": []
+                },
                 {
                     "name": "Revenue Statistics",
                     "request": {
@@ -1831,6 +1860,35 @@
                             ]
                         },
                         "description": "Thống kê doanh thu theo tháng và năm của bộ lọc hiện tại."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Revenue Chart",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/statistics/revenue-chart?year={{stat_year}}&month={{stat_month}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["statistics", "revenue-chart"],
+                            "query": [
+                                {
+                                    "key": "year",
+                                    "value": "{{stat_year}}"
+                                },
+                                {
+                                    "key": "month",
+                                    "value": "{{stat_month}}"
+                                }
+                            ]
+                        },
+                        "description": "Lấy dữ liệu chart doanh thu theo ngày trong tháng. Response nằm ở `metadata.data`, mỗi phần tử có dạng `{ \"total_amount\": 3120000, \"date\": \"2026-04-01\" }`."
                     },
                     "response": []
                 },
